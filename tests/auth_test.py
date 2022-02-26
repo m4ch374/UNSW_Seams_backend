@@ -60,29 +60,29 @@ def register_email_exist():
     store['users'].append(('z5555555@ed.unsw.edu.au', '123123123', 'William', 'Wu', '2', 'williamwu'))
     store['users'].append(('z8888888@ed.unsw.edu.au', '321321321', 'Russell', 'Wang', '3', 'russellwu'))
     with pytest.raises(InputError):
-        assert auth_register_v1('z7654321ed.unsw.edu.au', '1234567', 'Donald', 'Trump')
+        assert auth_register_v1('z7654321@ed.unsw.edu.au', '1234567', 'Donald', 'Trump')
 
 def register_password_too_short_1():
     with pytest.raises(InputError):
-        assert auth_register_v1('z1234567ed.unsw.edu.au', '1', 'Donald', 'Trump')
+        assert auth_register_v1('z1234567@ed.unsw.edu.au', '1', 'Donald', 'Trump')
 
 def register_firstname_too_short():
     with pytest.raises(InputError):
-        assert auth_register_v1('z1234567ed.unsw.edu.au', '1234567', '', 'Trump')
+        assert auth_register_v1('z1234567@ed.unsw.edu.au', '1234567', '', 'Trump')
 
 def register_firstname_too_long():
     first_name_long = 'qweqweqweqweqweqweqweqweqweqweqweqweqweqweqweqweqweqweqweqwe'
     with pytest.raises(InputError):
-        assert auth_register_v1('z1234567ed.unsw.edu.au', '1234567', first_name_long, 'Trump')
+        assert auth_register_v1('z1234567@ed.unsw.edu.au', '1234567', first_name_long, 'Trump')
 
 def register_firstname_too_short():
     with pytest.raises(InputError):
-        assert auth_register_v1('z1234567ed.unsw.edu.au', '1234567', 'Donald', '')
+        assert auth_register_v1('z1234567@ed.unsw.edu.au', '1234567', 'Donald', '')
 
 def register_firstname_too_long():
     last_name_long = 'qweqweqweqweqweqweqweqweqweqweqweqweqweqweqweqweqweqweqweqwe'
     with pytest.raises(InputError):
-        assert auth_register_v1('z1234567ed.unsw.edu.au', '1234567', 'Donald', last_name_long)
+        assert auth_register_v1('z1234567@ed.unsw.edu.au', '1234567', 'Donald', last_name_long)
 
 def register_correct_input_1():
     assert auth_register_v1('z1234567@ed.unsw.edu.au', '1234567', 'Donald', 'Trump') == {4}
