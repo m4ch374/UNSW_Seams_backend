@@ -24,22 +24,29 @@ def login_account_not_exist():
 
 def login_incorrect_password():
     store = data_store.get()
-    store['users'].append(('z7654321@ed.unsw.edu.au', '1234567', 'Jason', 'Smith', 1, 'jasonsmith'))
+    new_user = {'email': 'z7654321@ed.unsw.edu.au', 'password' : '1234567', 'firstname' : 'Jason', 'lastname' : 'Smith', 'id' : 1, 'handle' : 'jasonsmith',}
+    store['users'].append(new_user)
     with pytest.raises(InputError):
         assert auth_login_v1('z7654321@ed.unsw.edu.au', '1111111')
 
 def login_correct_input_1():
     store = data_store.get()
-    store['users'].append(('z7654321@ed.unsw.edu.au', '1234567', 'Jason', 'Smith', 1, 'jasonsmith'))
-    store['users'].append(('z5555555@ed.unsw.edu.au', '123123123', 'William', 'Wu', 2, 'williamwu'))
-    store['users'].append(('z8888888@ed.unsw.edu.au', '321321321', 'Russell', 'Wang', 3, 'russellwu'))
+    new_user = {'email': 'z7654321@ed.unsw.edu.au', 'password' : '1234567', 'firstname' : 'Jason', 'lastname' : 'Smith', 'id' : 1, 'handle' : 'jasonsmith',}
+    store['users'].append(new_user)
+    new_user = {'email': 'z5555555@ed.unsw.edu.au', 'password' : '123123123', 'firstname' : 'William', 'lastname' : 'Wu', 'id' : 2, 'handle' : 'williamwu',}
+    store['users'].append(new_user)
+    new_user = {'email': 'z8888888@ed.unsw.edu.au', 'password' : '321321321', 'firstname' : 'Russell', 'lastname' : 'Wang', 'id' : 3, 'handle' : 'russellwu',}
+    store['users'].append(new_user)
     assert auth_login_v1('z7654321@ed.unsw.edu.au', '1234567') == {1}
 
 def login_correct_input_3():
     store = data_store.get()
-    store['users'].append(('z7654321@ed.unsw.edu.au', '1234567', 'Jason', 'Smith', 1, 'jasonsmith'))
-    store['users'].append(('z5555555@ed.unsw.edu.au', '123123123', 'William', 'Wu', 2, 'williamwu'))
-    store['users'].append(('z8888888@ed.unsw.edu.au', '321321321', 'Russell', 'Wang', 3, 'russellwu'))
+    new_user = {'email': 'z7654321@ed.unsw.edu.au', 'password' : '1234567', 'firstname' : 'Jason', 'lastname' : 'Smith', 'id' : 1, 'handle' : 'jasonsmith',}
+    store['users'].append(new_user)
+    new_user = {'email': 'z5555555@ed.unsw.edu.au', 'password' : '123123123', 'firstname' : 'William', 'lastname' : 'Wu', 'id' : 2, 'handle' : 'williamwu',}
+    store['users'].append(new_user)
+    new_user = {'email': 'z8888888@ed.unsw.edu.au', 'password' : '321321321', 'firstname' : 'Russell', 'lastname' : 'Wang', 'id' : 3, 'handle' : 'russellwu',}
+    store['users'].append(new_user)
     assert auth_login_v1('z8888888@ed.unsw.edu.au', '321321321') == {3}
 
 def register_email_unvalid_1():
@@ -56,9 +63,12 @@ def register_email_unvalid_3():
 
 def register_email_exist():
     store = data_store.get()
-    store['users'].append(('z7654321@ed.unsw.edu.au', '1234567', 'Jason', 'Smith', 1, 'jasonsmith'))
-    store['users'].append(('z5555555@ed.unsw.edu.au', '123123123', 'William', 'Wu', 2, 'williamwu'))
-    store['users'].append(('z8888888@ed.unsw.edu.au', '321321321', 'Russell', 'Wang', 3, 'russellwu'))
+    new_user = {'email': 'z7654321@ed.unsw.edu.au', 'password' : '1234567', 'firstname' : 'Jason', 'lastname' : 'Smith', 'id' : 1, 'handle' : 'jasonsmith',}
+    store['users'].append(new_user)
+    new_user = {'email': 'z5555555@ed.unsw.edu.au', 'password' : '123123123', 'firstname' : 'William', 'lastname' : 'Wu', 'id' : 2, 'handle' : 'williamwu',}
+    store['users'].append(new_user)
+    new_user = {'email': 'z8888888@ed.unsw.edu.au', 'password' : '321321321', 'firstname' : 'Russell', 'lastname' : 'Wang', 'id' : 3, 'handle' : 'russellwu',}
+    store['users'].append(new_user)
     with pytest.raises(InputError):
         assert auth_register_v1('z7654321@ed.unsw.edu.au', '1234567', 'Donald', 'Trump')
 
