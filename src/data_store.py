@@ -28,17 +28,17 @@ Example usage:
 initial_object = {
     'users': [
         {
-            'u_id':
-            'email':
-            'name_first':
-            'name_last':
-            'handle_str':
+            'u_id': None,
+            'email': None,
+            'name_first': None,
+            'name_last': None,
+            'handle_str': None,
         },
     ],
     'channels': [
         {
-            'channel_id':
-            'name':
+            'channel_id': None,
+            'name': None,
         }
     ]
 }
