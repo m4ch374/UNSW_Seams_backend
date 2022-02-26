@@ -18,9 +18,9 @@ import re
 def login_account_check(email, password):
     store = data_store.get()
     for user in store['users']:
-        if email in user:
-            if password in user:
-                return user[4]  
+        if email == user['email']:
+            if  password == user['password']:
+                return user['id']  
             return 0
     return -1
 
@@ -69,7 +69,7 @@ def check_email_valid(email):
 #             False if not
 def handle_exist(handle, users):
     for user in users:
-        if handle in user:
+        if handle == user['handle']:
             return True
     return False
 
@@ -107,9 +107,10 @@ def creat_handle(firsatname, lastname):
 def email_is_new(email):
     store = data_store.get()
     for user in store['users']:
-        if email in user:
+        if email == user['email']:
             return False
     return True
+
 
 # Arguments:
 #     email (sting)    - user's email
@@ -138,10 +139,10 @@ def auth_register_v1(email, password, name_first, name_last):
         store = data_store.get()
         handle = creat_handle(name_first, name_last)
         id = len(store['users']) + 1
-        user_id = id
-        store['users'].append((email, password, name_first, name_first, id, handle))
-    return {user_id}                 # return user's id
-    
+        new_user = {'email': email, 'password' : password, 'firstname' : name_first, 'lastname' : name_first, 'id' : id, 'handle' : handle,}
+        store['users'].append(new_user)
+        return {new_user['id']}                 # return user's id
+
 
 
 # # del
@@ -154,9 +155,38 @@ def auth_register_v1(email, password, name_first, name_last):
 #     # print(auth_login_v1('123@.com', '1231231'))
 #     # print(auth_login_v1('123@.com', '123123123'))
 #     store = data_store.get()
-#     store['users'].append(('z7654321@ed.unsw.edu.au', '1234567', 'Jason', 'Smith', 1, 'jasonsmith'))
-#     store['users'].append(('z5555555@ed.unsw.edu.au', '123123123', 'William', 'Wu', 2, 'williamwu'))
-#     store['users'].append(('z8888888@ed.unsw.edu.au', '321321321', 'Russell', 'Wang', 3, 'russellwu'))
+
+#     email = 'z7654321@ed.unsw.edu.au'
+#     password = '1234567'
+#     name_first = 'Jason'
+#     name_first = 'Smith'
+#     id = 1
+#     handle = 'jasonsmith'
+#     new_user = {'email': email, 'password' : password, 'firstname' : name_first, 'lastname' : name_first, 'id' : id, 'handle' : handle,}
+#     store['users'].append(new_user)
+#     # store['users'].append(('z7654321@ed.unsw.edu.au', '1234567', 'Jason', 'Smith', 1, 'jasonsmith'))
+
+
+#     email = 'z5555555@ed.unsw.edu.au'
+#     password = '123123123'
+#     name_first = 'William'
+#     name_first = 'Wu'
+#     id = 2
+#     handle = 'williamwu'
+#     new_user = {'email': email, 'password' : password, 'firstname' : name_first, 'lastname' : name_first, 'id' : id, 'handle' : handle,}
+#     store['users'].append(new_user)
+#     # store['users'].append(('z5555555@ed.unsw.edu.au', '123123123', 'William', 'Wu', 2, 'williamwu'))
+
+#     email = 'z8888888@ed.unsw.edu.au'
+#     password = '321321321'
+#     name_first = 'Russell'
+#     name_first = 'Wang'
+#     id = 3
+#     handle = 'russellwu'
+#     new_user = {'email': email, 'password' : password, 'firstname' : name_first, 'lastname' : name_first, 'id' : id, 'handle' : handle,}
+#     store['users'].append(new_user)
+#     # store['users'].append(('z8888888@ed.unsw.edu.au', '321321321', 'Russell', 'Wang', 3, 'russellwu'))
+
 #     # print(auth_login_v1('123a@.com', '123123123'))
 #     # print(auth_login_v1('z7654321@ed.unsw.edu.au', '123123'))
 #     # print(auth_login_v1('z7654321@ed.unsw.edu.au', '1234567'))
@@ -190,5 +220,6 @@ def auth_register_v1(email, password, name_first, name_last):
 #     assert auth_register_v1('z1234567@ed.unsw.edu.au', '1234567', 'Donald', 'Trump') == {4}
 #     assert auth_register_v1('z11231237@ed.unsw.edu.au', '1234567', 'qqqqqqqqqq', 'qqqqqqqqqq') == {5}
 #     assert auth_register_v1('z1546267@ed.unsw.edu.au', '1234567', 'qqqqqqqqqq', 'qqqqqqqqqq') == {6}
-#     print(store['users'])
+#     for user in store['users']:
+#         print(user)
 #     print("==============================================")
