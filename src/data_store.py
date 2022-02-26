@@ -26,22 +26,10 @@ Example usage:
 
 ## YOU SHOULD MODIFY THIS OBJECT BELOW
 initial_object = {
-    'users': [
-        {
-            'u_id':
-            'email':
-            'name_first':
-            'name_last':
-            'handle_str':
-        },
-    ],
-    'channels': [
-        {
-            'channel_id':
-            'name':
-        }
-    ]
-}
+    'users' : [], 
+    'channel' : [],
+} # credit to Hanqi for this placeholder love you <3
+
 ## YOU SHOULD MODIFY THIS OBJECT ABOVE
 
 ## YOU ARE ALLOWED TO CHANGE THE BELOW IF YOU WISH
