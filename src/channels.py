@@ -1,3 +1,9 @@
+# This is a random comment
+# by Henry
+#
+# Imma send a merge request later to sort of understand 
+# the process
+
 def channels_list_v1(auth_user_id):
     return {
         'channels': [
