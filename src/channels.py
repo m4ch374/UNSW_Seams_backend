@@ -15,8 +15,11 @@ from src.error import InputError
 def channels_list_v1(auth_user_id):
     channels_list = data_store.get()['channel']
 
+    usr_channel = [channel for channel in channels_list 
+        if auth_user_id in channel['member_ids']]
+        
     return {
-        'channels': [channel for channel in channels_list if channel['owner_id'] == auth_user_id],
+        'channels': usr_channel,
     }
 
 def channels_listall_v1(auth_user_id):
