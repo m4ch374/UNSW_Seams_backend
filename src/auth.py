@@ -137,4 +137,5 @@ def auth_register_v1(email, password, name_first, name_last):
         id = len(store['users']) + 1
         new_user = {'email': email, 'password' : password, 'firstname' : name_first, 'lastname' : name_last, 'id' : id, 'handle' : handle,}
         store['users'].append(new_user)
+        data_store.set(store)
         return {new_user['id']}                 # return user's id
