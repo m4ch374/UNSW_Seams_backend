@@ -1,4 +1,3 @@
-from msilib import datasizemask
 import pytest
 import src.channels as chnl
 
@@ -51,7 +50,7 @@ def names_list():
         "1234567890abcdefg![]", # combined strings, len == 20
         "trailing whitespace ", # str with trailing whitespace
         "a",                    # duplications
-        "!!!!!!!![[[]]]!!!!!!!", # all special chars
+        "!!!!!!![[[]]]!!!!!!!", # all special chars
     ]
     return names_list
 
@@ -92,22 +91,33 @@ def test_channels_create_error_pub_and_priv(auth_user_id, error_list):
 # Test for creating valid public channels
 def test_channels_create_public(auth_user_id, names_list):
     for name in names_list:
+        val = chnl.channels_create_v1(auth_user_id, name, False)
+
         channel_list = data_store.get()['channel']
-        assert chnl.channels_create_v1(auth_user_id, name, False) == len(channel_list) + 1
+        assert val == { 'channel_id': len(channel_list) }
 
 # Should not raise any error
 # 
 # Test for creating valid private channels
 def test_channels_create_private(auth_user_id, names_list):
     for name in names_list:
+        val = chnl.channels_create_v1(auth_user_id, name, True)
+
         channel_list = data_store.get()['channel']
-        assert chnl.channels_create_v1(auth_user_id, name, True) == len(channel_list) + 1
+        assert val == { 'channel_id': len(channel_list) }
 
 # Should not raise any error
 # 
 # Test for creating both valid public and private channels
 def test_channels_create_pub_and_priv(auth_user_id, names_list):
-    test_channels_create_error_public(auth_user_id, error_list)
-    test_channels_create_error_private(auth_user_id, error_list)
+    test_channels_create_public(auth_user_id, names_list)
+    test_channels_create_private(auth_user_id, names_list)
+
+# ==================================================
+
+
+# ============== Channels list v1 ==================
+def test_channels_list():
+    pass
 
 # ==================================================
