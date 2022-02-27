@@ -182,11 +182,11 @@ def test_combined_1():
     assert auth_register_v1('z9999999@ed.unsw.edu.au', '321321321', 'Russell', 'Wang') == {5}
     store = data_store.get()
     assert store['users'] == [{'email': 'z1234567@ed.unsw.edu.au', 'password' : '1234567', 'firstname' : 'Donald', 'lastname' : 'Trump', 'id' : 1, 'handle' : 'donaldtrump'},
-    {'email': 'z7654321@ed.unsw.edu.au', 'password' : '1234567', 'firstname' : 'Jason', 'lastname' : 'Smith', 'id' : 2, 'handle' : 'jasonsmith'}, 
-    {'email': 'z5555555@ed.unsw.edu.au', 'password' : '123123123', 'firstname' : 'William', 'lastname' : 'Wu', 'id' : 3, 'handle' : 'williamwu'}, 
-    {'email': 'z8888888@ed.unsw.edu.au', 'password' : '321321321', 'firstname' : 'Russell', 'lastname' : 'Wang', 'id' : 4, 'handle' : 'russellwang'}, 
+    {'email': 'z7654321@ed.unsw.edu.au', 'password' : '1234567', 'firstname' : 'Jason', 'lastname' : 'Smith', 'id' : 2, 'handle' : 'jasonsmith'},
+    {'email': 'z5555555@ed.unsw.edu.au', 'password' : '123123123', 'firstname' : 'William', 'lastname' : 'Wu', 'id' : 3, 'handle' : 'williamwu'},
+    {'email': 'z8888888@ed.unsw.edu.au', 'password' : '321321321', 'firstname' : 'Russell', 'lastname' : 'Wang', 'id' : 4, 'handle' : 'russellwang'},
     {'email': 'z9999999@ed.unsw.edu.au', 'password' : '321321321', 'firstname' : 'Russell', 'lastname' : 'Wang', 'id' : 5, 'handle' : 'russellwang0'}]
-    
+
 def test_combined_2():
     clear_v1()
     auth_register_v1('z7654321@ed.unsw.edu.au', '1234567', 'aaaaaaaaaa', 'aaaaaaaaaaa')
@@ -201,7 +201,7 @@ def test_combined_2():
         assert auth_login_v1('z1234567@ed.unsw.edu.au', 'xxxxxxx')
     assert auth_login_v1('z5555555@ed.unsw.edu.au', '123123123') == {2}
     assert auth_login_v1('z7654321@ed.unsw.edu.au', '1234567') == {1}
-    
+
 def test_combined_3():
     clear_v1()
     auth_register_v1('z7654321@ed.unsw.edu.au', '1234567', 'Jason', 'Smith')
@@ -222,3 +222,15 @@ def test_combined_3():
     with pytest.raises(InputError):
         assert auth_login_v1('z1234567@ed.unsw.edu.au', 'xxxxxxx')
     assert user_id == auth_login_v1('z1234567@ed.unsw.edu.au', '123456')
+
+def test_register_handle_number():
+    clear_v1()
+    auth_register_v1('z1234567@ed.unsw.edu.au', '1234567', '123$123', '456%456')
+    store = data_store.get()
+    assert store['users'][0]['handle'] == '123123456456'
+
+def test_register_handle_mix():
+    clear_v1()
+    auth_register_v1('z1234567@ed.unsw.edu.au', '1234567', '123$qwe', '456%ASD')
+    store = data_store.get()
+    assert store['users'][0]['handle'] == '123qwe456asd'
