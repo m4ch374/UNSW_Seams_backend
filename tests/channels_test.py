@@ -9,11 +9,6 @@ from src.data_store import data_store
 # These are the fixtures that would be used accross
 # all tests
 #
-# Runs this function before all tests
-@pytest.fixture(scope="session", autouse=True)
-def clear_data():
-    clear_v1()
-
 # A dummy user id
 @pytest.fixture
 def auth_user_id():
@@ -61,6 +56,7 @@ def names_list():
 #
 # Test for creating public channels
 def test_channels_create_error_public(auth_user_id, error_list):
+    clear_v1()
     with pytest.raises(InputError):
         for s in error_list:
             chnl.channels_create_v1(auth_user_id, s, True)
@@ -72,6 +68,7 @@ def test_channels_create_error_public(auth_user_id, error_list):
 #
 # Test for creating private channels
 def test_channels_create_error_private(auth_user_id, error_list):
+    clear_v1()
     with pytest.raises(InputError):
         for s in error_list:
             chnl.channels_create_v1(auth_user_id, s, False)
@@ -83,6 +80,7 @@ def test_channels_create_error_private(auth_user_id, error_list):
 #
 # Test for creating both public and private channels
 def test_channels_create_error_pub_and_priv(auth_user_id, error_list):
+    clear_v1()
     test_channels_create_error_public(auth_user_id, error_list)
     test_channels_create_error_private(auth_user_id, error_list)
 
@@ -90,6 +88,7 @@ def test_channels_create_error_pub_and_priv(auth_user_id, error_list):
 # 
 # Test for creating valid public channels
 def test_channels_create_public(auth_user_id, names_list):
+    clear_v1()
     for name in names_list:
         val = chnl.channels_create_v1(auth_user_id, name, True)
 
@@ -100,6 +99,7 @@ def test_channels_create_public(auth_user_id, names_list):
 # 
 # Test for creating valid private channels
 def test_channels_create_private(auth_user_id, names_list):
+    clear_v1()
     for name in names_list:
         val = chnl.channels_create_v1(auth_user_id, name, False)
 
@@ -110,6 +110,7 @@ def test_channels_create_private(auth_user_id, names_list):
 # 
 # Test for creating both valid public and private channels
 def test_channels_create_pub_and_priv(auth_user_id, names_list):
+    clear_v1()
     test_channels_create_public(auth_user_id, names_list)
     test_channels_create_private(auth_user_id, names_list)
 
@@ -131,6 +132,7 @@ def another_id():
 #
 # Test the behaviour with only one user creating on channel
 def test_channels_list_1(auth_user_id, channel_name):
+    clear_v1()
     chnl.channels_create_v1(auth_user_id, channel_name, True)
     val = chnl.channels_list_v1(auth_user_id)
     assert val['channels'][0]['owner_id'] == auth_user_id and len(val['channels']) == 1
@@ -139,18 +141,22 @@ def test_channels_list_1(auth_user_id, channel_name):
 #
 # Test the behaviour with only one user creating multiple channels
 def test_channels_list_2(auth_user_id, channel_name):
+    clear_v1()
+
     # User creates 5 channels
     for i in range(5):
         chnl.channels_create_v1(auth_user_id, channel_name, True)
     
     channel_list = chnl.channels_list_v1(auth_user_id)['channels']
     assert (all(channel['owner_id'] == auth_user_id for channel in channel_list) and
-        len(channel_list) == 1)
+        len(channel_list) == 5)
 
 # should not raise any error
 #
 # Test the behaviour with multiple user creating one channel each
 def test_channels_list_3(auth_user_id, another_id, channel_name):
+    clear_v1()
+
     chnl.channels_create_v1(auth_user_id, channel_name, True)
     chnl.channels_create_v1(another_id, channel_name, True)
 
@@ -166,12 +172,14 @@ def test_channels_list_3(auth_user_id, another_id, channel_name):
 #
 # Test the behaviour with multiple user creating multiple channel each
 def test_channels_list_4(auth_user_id, another_id, channel_name):
+    clear_v1()
+
     for i in range(5):
         chnl.channels_create_v1(auth_user_id, channel_name, True)
         chnl.channels_create_v1(another_id, channel_name, True)
 
     channel_list_usr_1 = chnl.channels_list_v1(auth_user_id)['channels']
-    channel_list_usr_2 = chnl.channels_list_v1(auth_user_id)['channels']
+    channel_list_usr_2 = chnl.channels_list_v1(another_id)['channels']
 
     assert (all(channel['owner_id'] == auth_user_id for channel in channel_list_usr_1) and
         len(channel_list_usr_1) == 5)
@@ -182,7 +190,9 @@ def test_channels_list_4(auth_user_id, another_id, channel_name):
 #
 # Test the behaviour with one user with no groups associated
 def test_channels_list_5(auth_user_id):
+    clear_v1()
+
     channel_list = chnl.channels_list_v1(auth_user_id)['channels']
     assert len(channel_list) == 0
-    
+
 # ==================================================
