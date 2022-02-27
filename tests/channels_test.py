@@ -7,6 +7,7 @@
 
 import pytest
 import src.channels as chnl
+import src.channel as channel
 import src.auth as auth
 
 from src.error import InputError
@@ -166,7 +167,7 @@ def list_helper_create_single(usr_1, name, n, is_public):
         chnl.channels_create_v1(usr_1, name, is_public)
     
     channel_list = chnl.channels_list_v1(usr_1)['channels']
-    assert (all(channel['owner_id'] == usr_1 for channel in channel_list) and
+    assert (all(usr_1 in channel['member_ids'] for channel in channel_list) and
         len(channel_list) == n)
 
 # helper function for testing channels list with multiple user
@@ -181,9 +182,9 @@ def list_helper_create_multiple(usr_1, usr_2, name, n, is_public):
     channel_list_usr_1 = chnl.channels_list_v1(usr_1)['channels']
     channel_list_usr_2 = chnl.channels_list_v1(usr_2)['channels']
 
-    assert (all(channel['owner_id'] == usr_1 for channel in channel_list_usr_1) and
+    assert (all(usr_1 in channel['member_ids'] for channel in channel_list_usr_1) and
         len(channel_list_usr_1) == n)
-    assert (all(channel['owner_id'] == usr_2 for channel in channel_list_usr_2) and
+    assert (all(usr_2 in channel['member_ids'] for channel in channel_list_usr_2) and
         len(channel_list_usr_2) == n) 
 
 # Should not raise any error
@@ -218,6 +219,30 @@ def test_channels_list_5(auth_user_id):
 
     channel_list = chnl.channels_list_v1(auth_user_id)['channels']
     assert len(channel_list) == 0
+
+# should not raise any error
+#
+# Test the behaviour with multiple user creating multiple channels and
+# joining different channels
+def test_channels_list_6(auth_user_id, another_id, channel_name):
+    clear_v1()
+
+    for i in range(5):
+        chnl.channels_create_v1(auth_user_id, channel_name, True)
+        chnl.channels_create_v1(another_id, channel_name, True)
+
+    for i in range(1, 11):
+        if i % 2 == 1:
+            channel.channel_join_v1(auth_user_id, i)
+        else:
+            channel.channel_join_v1(another_id, i)
+
+    channel_list_usr_1 = chnl.channels_list_v1(auth_user_id)['channels']
+    channel_list_usr_2 = chnl.channels_list_v1(another_id)['channels']
+
+    # will uncomment after channel.py is finished
+    # assert len(channel_list_usr_1) == 10
+    # assert len(channel_list_usr_2) == 10
 
 # ==================================================
 
