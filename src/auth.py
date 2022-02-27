@@ -2,6 +2,7 @@ from src.data_store import data_store
 from src.error import InputError
 import re
 
+from src.objecs import User
 
 # Arguments:
 #     email (sting)    - user's email
@@ -12,11 +13,11 @@ import re
 #               0       when the email matched but incorrect password
 #            user_id    when email and password both matched
 def login_account_check(email, password):
-    store = data_store.get()
-    for user in store['users']:
-        if email == user['email']:
-            if  password == user['password']:
-                return user['id']  
+    users = data_store.get()['users']
+    for user in users:
+        if email == user.email:
+            if  password == user.password:
+                return user.id
             return 0
     return -1
 
@@ -39,7 +40,7 @@ def auth_login_v1(email, password):
         raise InputError("Password incorrect")
     else:
         user_id = state
-        return {user_id}
+        return { 'auth_user_id': user_id }
 
 
 # Arguments:
@@ -49,11 +50,7 @@ def auth_login_v1(email, password):
 #     Returns True when email is valid
 #             False when email is not valid
 def check_email_valid(email):
-    valid = re.match(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$', email)
-    if valid:
-        return True
-    else:
-        return False
+    return re.match(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$', email)
 
 
 # Arguments:
@@ -64,10 +61,7 @@ def check_email_valid(email):
 #     Returns True when handle is exist
 #             False if not
 def handle_exist(handle, users):
-    for user in users:
-        if handle == user['handle']:
-            return True
-    return False
+    return any([handle == user.handle for user in users])
 
 
 # Arguments:
@@ -77,7 +71,7 @@ def handle_exist(handle, users):
 # Return Value:
 #     handle (string)   - Remove non-alphanumeric characters and convert to lowercase
 #                         length of handle aim to less than 20 characters
-def creat_handle(firsatname, lastname):
+def create_handle(firsatname, lastname):
     idx = 0
     handle = ''.join(c for c in firsatname if c.isalnum()) + ''.join(c for c in lastname if c.isalnum())
     handle = handle.lower()
@@ -101,11 +95,8 @@ def creat_handle(firsatname, lastname):
 #     boolean         - False if email already exist
 #                       True if not
 def email_is_new(email):
-    store = data_store.get()
-    for user in store['users']:
-        if email == user['email']:
-            return False
-    return True
+    users = data_store.get()['users']
+    return email not in [user.email for user in users]
 
 
 # Arguments:
@@ -133,8 +124,15 @@ def auth_register_v1(email, password, name_first, name_last):
         raise InputError("Length of first/last name should between 1 to 50 characters (inclusive)")
     else:                                                       
         store = data_store.get()
-        handle = creat_handle(name_first, name_last)
+        handle = create_handle(name_first, name_last)
         id = len(store['users']) + 1
-        new_user = {'email': email, 'password' : password, 'firstname' : name_first, 'lastname' : name_last, 'id' : id, 'handle' : handle,}
+        new_user = User(
+            email=email,
+            password=password,
+            name_first=name_first,
+            name_last=name_last,
+            id=id,
+            handle=handle
+        )
         store['users'].append(new_user)
-        return {new_user['id']}                 # return user's id
+        return { 'auth_user_id': new_user.id }         # return user's id

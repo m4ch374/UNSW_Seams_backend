@@ -3,6 +3,7 @@ import src.channel as channel
 
 from src.data_store import data_store
 from src.error import InputError
+from src.objecs import Channel
 
 # Arguments:
 #       auth_user_id (int) - user's id
@@ -16,7 +17,7 @@ def channels_list_v1(auth_user_id):
     channels_list = data_store.get()['channel']
 
     usr_channel = [channel for channel in channels_list 
-        if auth_user_id in channel['member_ids']]
+        if channel.has_member(data_store.get_user(auth_user_id))]
         
     return {
         'channels': usr_channel,
@@ -59,14 +60,13 @@ def channels_create_v1(auth_user_id, name, is_public):
     # Append new channel to data_store
     data = data_store.get()
     new_channel_id = len(data['channel']) + 1
-    channels = {
-        'channel_id': new_channel_id,
-        'name': name,
-        'owner_id': auth_user_id,
-        'member_ids': [auth_user_id],
-        'is_public': is_public,
-    }
-    data['channel'].append(channels)
+    new_channel = Channel(
+        id=new_channel_id,
+        name=name,
+        owners=data_store.get_user(auth_user_id),
+        is_public=is_public
+    )
+    data['channel'].append(new_channel)
     data_store.set(data)
 
     # User who creates it joins the channel automatically

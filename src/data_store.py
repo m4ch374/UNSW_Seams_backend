@@ -45,6 +45,12 @@ class Datastore:
             raise TypeError('store must be of type dictionary')
         self.__store = store
 
+    def get_user(self, id):
+        if len(self.__store['users']) == 0:
+            return None
+        else:
+            return [usr for usr in self.__store['users'] if usr.id == id][0]
+
 print('Loading Datastore...')
 
 global data_store
