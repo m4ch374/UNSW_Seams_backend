@@ -11,7 +11,7 @@ from src.error import InputError
 #       None
 
 # Return value:
-#       Returns a dick containing only field "channels" of type list
+#       Returns a dict containing only field "channels" of type list
 def channels_list_v1(auth_user_id):
     channels_list = data_store.get()['channel']
 
@@ -22,6 +22,17 @@ def channels_list_v1(auth_user_id):
         'channels': usr_channel,
     }
 
+# Arguments:
+#       auth_user_id (int) - user's id
+
+# Exceptions:
+#       None
+
+# Return value:
+#       Returns a dict containing only field "channels" of type list
+
+# Note:
+#       auth_user_id is useless for now afaik
 def channels_listall_v1(auth_user_id):
     channels_list = data_store.get()['channel']
 
