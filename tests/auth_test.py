@@ -13,6 +13,7 @@ new_user = {'email': 'z5555555@ed.unsw.edu.au', 'password' : '123123123', 'first
 store['users'].append(new_user)
 new_user = {'email': 'z8888888@ed.unsw.edu.au', 'password' : '321321321', 'firstname' : 'Russell', 'lastname' : 'Wang', 'id' : 3, 'handle' : 'russellwu',}
 store['users'].append(new_user)
+data_store.set(store)
 
 
 def test_login_account_not_exist_1():
