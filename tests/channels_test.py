@@ -1,5 +1,13 @@
+# ==================== Note =======================
+# Since the structure of the channels is not yet
+# defined, this piece of testing is half finished
+#
+# Will modify once the structure is set
+# ==================================================
+
 import pytest
 import src.channels as chnl
+import src.auth as auth
 
 from src.error import InputError
 from src.other import clear_v1
@@ -12,7 +20,29 @@ from src.data_store import data_store
 # A dummy user id
 @pytest.fixture
 def auth_user_id():
-    return 1
+    auth_id = auth.auth_register_v1(
+        'z100@ed.unsw.edu.au', 
+        '1234567', 
+        'Donald', 
+        'Trump'
+    )
+    return auth_id
+
+# Returns another dummy user id
+@pytest.fixture
+def another_id():
+    auth_id = auth.auth_register_v1(
+        'z200@ed.unsw.edu.au', 
+        '1234567', 
+        'qqqqqqqqqq', 
+        'qqqqqqqqqq'
+    )
+    return auth_id
+
+# Returns a valid channel name
+@pytest.fixture
+def channel_name():
+    return "This is a name"
 # ==================================================
 
 # ============= Channels create v1 =================
@@ -81,8 +111,10 @@ def test_channels_create_error_private(auth_user_id, error_list):
 # Test for creating both public and private channels
 def test_channels_create_error_pub_and_priv(auth_user_id, error_list):
     clear_v1()
-    test_channels_create_error_public(auth_user_id, error_list)
-    test_channels_create_error_private(auth_user_id, error_list)
+    with pytest.raises(InputError):
+        for s in error_list:
+            chnl.channels_create_v1(auth_user_id, s, True)
+            chnl.channels_create_v1(auth_user_id, s, False)
 
 # Should not raise any error
 # 
@@ -111,23 +143,19 @@ def test_channels_create_private(auth_user_id, names_list):
 # Test for creating both valid public and private channels
 def test_channels_create_pub_and_priv(auth_user_id, names_list):
     clear_v1()
-    test_channels_create_public(auth_user_id, names_list)
-    test_channels_create_private(auth_user_id, names_list)
+    for name in names_list:
+        val = chnl.channels_create_v1(auth_user_id, name, True)
+        val_1 = chnl.channels_create_v1(auth_user_id, name, False)
+
+        channel_list = data_store.get()['channel']
+        assert val == { 'channel_id': len(channel_list) - 1 }
+        assert val_1 == { 'channel_id': len(channel_list) }
 
 # ==================================================
 
 
 # ============== Channels list v1 ==================
 #
-# Returns a valid channel name
-@pytest.fixture
-def channel_name():
-    return "This is a name"
-
-@pytest.fixture
-def another_id():
-    return 2
-
 # Should not raise any error
 #
 # Test the behaviour with only one user creating on channel
@@ -194,5 +222,141 @@ def test_channels_list_5(auth_user_id):
 
     channel_list = chnl.channels_list_v1(auth_user_id)['channels']
     assert len(channel_list) == 0
+
+# ==================================================
+
+# ============ Channels list all v1 =================
+#
+# should not raise any error
+#
+# Test the behaviour of one user creating one public channel
+def test_channels_list_all_1(auth_user_id, channel_name):
+    clear_v1()
+
+    chnl.channels_create_v1(auth_user_id, channel_name, True)
+    assert len(chnl.channels_listall_v1(auth_user_id)['channels']) == 1
+
+# should not raise any error
+#
+# Test the behaviour of one user creating one private channel
+def test_channels_list_all_2(auth_user_id, channel_name):
+    clear_v1()
+
+    chnl.channels_create_v1(auth_user_id, channel_name, False)
+    assert len(chnl.channels_listall_v1(auth_user_id)['channels']) == 1
+
+# should not raise any error
+#
+# Test the behaviour of one user creating one private channel
+# and one public channel
+def test_channels_list_all_3(auth_user_id, channel_name):
+    clear_v1()
+
+    chnl.channels_create_v1(auth_user_id, channel_name, False)
+    chnl.channels_create_v1(auth_user_id, channel_name, True)
+    assert len(chnl.channels_listall_v1(auth_user_id)['channels']) == 2
+
+# should not raise any error
+#
+# Test the behaviour of one user creating multiple public channels
+def test_channels_list_all_4(auth_user_id, channel_name):
+    clear_v1()
+
+    for i in range(5):
+        chnl.channels_create_v1(auth_user_id, channel_name, True)
+    
+    assert len(chnl.channels_listall_v1(auth_user_id)['channels']) == 5
+
+# should not raise any error
+#
+# Test the behaviour of one user creating multiple private channels
+def test_channels_list_all_5(auth_user_id, channel_name):
+    clear_v1()
+
+    for i in range(5):
+        chnl.channels_create_v1(auth_user_id, channel_name, False)
+    
+    assert len(chnl.channels_listall_v1(auth_user_id)['channels']) == 5
+
+# should not rause any error
+#
+# Test the behaviour of multiple user creating one
+# public channel each
+def test_channels_list_all_6(auth_user_id, another_id, channel_name):
+    clear_v1()
+
+    chnl.channels_create_v1(auth_user_id, channel_name, True)
+    chnl.channels_create_v1(another_id, channel_name, True)
+
+    assert len(chnl.channels_listall_v1(auth_user_id)['channels']) == 2
+    assert len(chnl.channels_listall_v1(another_id)['channels']) == 2
+
+# should not rause any error
+#
+# Test the behaviour of multiple user creating one
+# private channel each
+def test_channels_list_all_7(auth_user_id, another_id, channel_name):
+    clear_v1()
+
+    chnl.channels_create_v1(auth_user_id, channel_name, False)
+    chnl.channels_create_v1(another_id, channel_name, False)
+
+    assert len(chnl.channels_listall_v1(auth_user_id)['channels']) == 2
+    assert len(chnl.channels_listall_v1(another_id)['channels']) == 2
+
+# should not raise any error
+#
+# Test the behaviour of 2 user one creating a public channel
+# and another one creates a private channel
+def test_channels_list_all_8(auth_user_id, another_id, channel_name):
+    clear_v1()
+
+    chnl.channels_create_v1(auth_user_id, channel_name, True)
+    chnl.channels_create_v1(another_id, channel_name, False)
+
+    assert len(chnl.channels_listall_v1(auth_user_id)['channels']) == 2
+    assert len(chnl.channels_listall_v1(another_id)['channels']) == 2
+
+# should not raise any error
+#
+# Test the behaviour of multiple user one creating 
+# multiple public channels
+def test_channels_list_all_9(auth_user_id, another_id, channel_name):
+    clear_v1()
+
+    for i in range(5):
+        chnl.channels_create_v1(auth_user_id, channel_name, True)
+        chnl.channels_create_v1(another_id, channel_name, True)
+
+    assert len(chnl.channels_listall_v1(auth_user_id)['channels']) == 10
+    assert len(chnl.channels_listall_v1(another_id)['channels']) == 10
+
+# should not raise any error
+#
+# Test the behaviour of multiple user one creating 
+# multiple private channels
+def test_channels_list_all_10(auth_user_id, another_id, channel_name):
+    clear_v1()
+
+    for i in range(5):
+        chnl.channels_create_v1(auth_user_id, channel_name, False)
+        chnl.channels_create_v1(another_id, channel_name, False)
+
+    assert len(chnl.channels_listall_v1(auth_user_id)['channels']) == 10
+    assert len(chnl.channels_listall_v1(another_id)['channels']) == 10
+
+# should not raise any error
+#
+# Test the behaviour of multiple user creating
+# multiple public and private channels
+def test_channels_list_all_11(auth_user_id, another_id, channel_name):
+    clear_v1()
+
+    for i in range(5):
+        chnl.channels_create_v1(auth_user_id, channel_name, True)
+        chnl.channels_create_v1(another_id, channel_name, False)
+
+    assert len(chnl.channels_listall_v1(auth_user_id)['channels']) == 10
+    assert len(chnl.channels_listall_v1(another_id)['channels']) == 10
 
 # ==================================================
