@@ -18,6 +18,11 @@ from src.data_store import data_store
 # These are the fixtures that would be used accross
 # all tests
 #
+# Runs clear_v1() before all tests
+@pytest.fixture(autouse=True)
+def clean():
+    clear_v1()
+
 # A dummy user id
 @pytest.fixture
 def auth_user_id():
@@ -87,7 +92,6 @@ def names_list():
 #
 # Test for creating public channels
 def test_channels_create_error_public(auth_user_id, error_list):
-    clear_v1()
     with pytest.raises(InputError):
         for s in error_list:
             chnl.channels_create_v1(auth_user_id, s, True)
@@ -99,7 +103,6 @@ def test_channels_create_error_public(auth_user_id, error_list):
 #
 # Test for creating private channels
 def test_channels_create_error_private(auth_user_id, error_list):
-    clear_v1()
     with pytest.raises(InputError):
         for s in error_list:
             chnl.channels_create_v1(auth_user_id, s, False)
@@ -111,7 +114,6 @@ def test_channels_create_error_private(auth_user_id, error_list):
 #
 # Test for creating both public and private channels
 def test_channels_create_error_pub_and_priv(auth_user_id, error_list):
-    clear_v1()
     with pytest.raises(InputError):
         for s in error_list:
             chnl.channels_create_v1(auth_user_id, s, True)
@@ -121,7 +123,6 @@ def test_channels_create_error_pub_and_priv(auth_user_id, error_list):
 # 
 # Test for creating valid public channels
 def test_channels_create_public(auth_user_id, names_list):
-    clear_v1()
     for name in names_list:
         val = chnl.channels_create_v1(auth_user_id, name, True)
 
@@ -132,7 +133,6 @@ def test_channels_create_public(auth_user_id, names_list):
 # 
 # Test for creating valid private channels
 def test_channels_create_private(auth_user_id, names_list):
-    clear_v1()
     for name in names_list:
         val = chnl.channels_create_v1(auth_user_id, name, False)
 
@@ -143,7 +143,6 @@ def test_channels_create_private(auth_user_id, names_list):
 # 
 # Test for creating both valid public and private channels
 def test_channels_create_pub_and_priv(auth_user_id, names_list):
-    clear_v1()
     for name in names_list:
         val = chnl.channels_create_v1(auth_user_id, name, True)
         val_1 = chnl.channels_create_v1(auth_user_id, name, False)
@@ -161,8 +160,6 @@ def test_channels_create_pub_and_priv(auth_user_id, names_list):
 # helper funtion for testing channels list with one user
 # creating n channels
 def list_helper_create_single(usr_1, name, n, is_public):
-    clear_v1()
-
     for i in range(n):
         chnl.channels_create_v1(usr_1, name, is_public)
     
@@ -173,8 +170,6 @@ def list_helper_create_single(usr_1, name, n, is_public):
 # helper function for testing channels list with multiple user
 # creating n channels
 def list_helper_create_multiple(usr_1, usr_2, name, n, is_public):
-    clear_v1()
-
     for i in range(n):
         chnl.channels_create_v1(usr_1, name, is_public)
         chnl.channels_create_v1(usr_2, name, is_public)
@@ -215,8 +210,6 @@ def test_channels_list_4(auth_user_id, another_id, channel_name):
 #
 # Test the behaviour with one user with no groups associated
 def test_channels_list_5(auth_user_id):
-    clear_v1()
-
     channel_list = chnl.channels_list_v1(auth_user_id)['channels']
     assert len(channel_list) == 0
 
@@ -225,8 +218,6 @@ def test_channels_list_5(auth_user_id):
 # Test the behaviour with multiple user creating multiple channels and
 # joining different channels
 def test_channels_list_6(auth_user_id, another_id, channel_name):
-    clear_v1()
-
     for i in range(5):
         chnl.channels_create_v1(auth_user_id, channel_name, True)
         chnl.channels_create_v1(another_id, channel_name, True)
@@ -252,8 +243,6 @@ def test_channels_list_6(auth_user_id, another_id, channel_name):
 # helper function for testing listall with one user creating
 # n channels
 def listall_helper_create_single(usr_1, name, n, is_public):
-    clear_v1()
-
     for i in range(n):
         chnl.channels_create_v1(usr_1, name, is_public)
     
@@ -262,8 +251,6 @@ def listall_helper_create_single(usr_1, name, n, is_public):
 # helper function for testing listall with one user creating
 # n channels for public and private each
 def listall_helper_create_single_alt(usr_1, name, n):
-    clear_v1()
-
     for i in range(n):
         chnl.channels_create_v1(usr_1, name, True)
         chnl.channels_create_v1(usr_1, name, False)
@@ -273,8 +260,6 @@ def listall_helper_create_single_alt(usr_1, name, n):
 # helper function for testing listall with multiple user creating
 # n public and private channels
 def listall_helper_create_multiple(usr_1, usr_2, name, n, is_public):
-    clear_v1()
-
     for i in range(n):
         chnl.channels_create_v1(usr_1, name, is_public)
         chnl.channels_create_v1(usr_2, name, is_public)
@@ -284,8 +269,6 @@ def listall_helper_create_multiple(usr_1, usr_2, name, n, is_public):
 # helper function for testing listall with multiple user creating
 # n channels, one only creates public channel while the other creates private
 def listall_helper_create_multiple_alt(usr_1, usr_2, name, n):
-    clear_v1()
-
     for i in range(n):
         chnl.channels_create_v1(usr_1, name, True)
         chnl.channels_create_v1(usr_2, name, False)
