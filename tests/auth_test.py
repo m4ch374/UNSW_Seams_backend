@@ -45,13 +45,13 @@ def test_login_incorrect_password_4():
         assert auth_login_v1('z7654321@ed.unsw.edu.au', '@#$%$^&^*(')
 
 def test_login_correct_input_1():
-    assert auth_login_v1('z7654321@ed.unsw.edu.au', '1234567') == {1}
+    assert auth_login_v1('z7654321@ed.unsw.edu.au', '1234567') == {'auth_user_id' : 1}
 
 def test_login_correct_input_2():
-    assert auth_login_v1('z8888888@ed.unsw.edu.au', '321321321') == {3}
+    assert auth_login_v1('z8888888@ed.unsw.edu.au', '321321321') == {'auth_user_id' : 3}
 
 def test_login_correct_input_3():
-    assert auth_login_v1('z5555555@ed.unsw.edu.au', '123123123') == {2}
+    assert auth_login_v1('z5555555@ed.unsw.edu.au', '123123123') == {'auth_user_id' : 2}
 
 def test_register_email_unvalid_1():
     with pytest.raises(InputError):
@@ -158,9 +158,9 @@ def test_register_input_all_error_5():
         assert auth_register_v1('z1234567unsw.edu.au', '12345', first_name_long, last_name_long)
 
 def test_register_correct_input_1():
-    assert auth_register_v1('z100@ed.unsw.edu.au', '1234567', 'Donald', 'Trump') == {4}
-    assert auth_register_v1('z200@ed.unsw.edu.au', '1234567', 'qqqqqqqqqq', 'qqqqqqqqqq') == {5}
-    assert auth_register_v1('z300@ed.unsw.edu.au', '1234567', 'qqqqqqqqqq', 'qqqqqqqqqq') == {6}
+    assert auth_register_v1('z100@ed.unsw.edu.au', '1234567', 'Donald', 'Trump') == {'auth_user_id' : 4}
+    assert auth_register_v1('z200@ed.unsw.edu.au', '1234567', 'qqqqqqqqqq', 'qqqqqqqqqq') == {'auth_user_id' : 5}
+    assert auth_register_v1('z300@ed.unsw.edu.au', '1234567', 'qqqqqqqqqq', 'qqqqqqqqqq') == {'auth_user_id' : 6}
 
 def test_register_correct_input_2():
     clear_v1()
@@ -179,7 +179,7 @@ def test_combined_1():
     auth_register_v1('z7654321@ed.unsw.edu.au', '1234567', 'Jason', 'Smith')
     auth_register_v1('z5555555@ed.unsw.edu.au', '123123123', 'William', 'Wu')
     auth_register_v1('z8888888@ed.unsw.edu.au', '321321321', 'Russell', 'Wang')
-    assert auth_register_v1('z9999999@ed.unsw.edu.au', '321321321', 'Russell', 'Wang') == {5}
+    assert auth_register_v1('z9999999@ed.unsw.edu.au', '321321321', 'Russell', 'Wang') == {'auth_user_id' : 5}
     store = data_store.get()
     assert store['users'] == [{'email': 'z1234567@ed.unsw.edu.au', 'password' : '1234567', 'firstname' : 'Donald', 'lastname' : 'Trump', 'id' : 1, 'handle' : 'donaldtrump'},
     {'email': 'z7654321@ed.unsw.edu.au', 'password' : '1234567', 'firstname' : 'Jason', 'lastname' : 'Smith', 'id' : 2, 'handle' : 'jasonsmith'},
@@ -196,11 +196,11 @@ def test_combined_2():
     assert store['users'] == [{'email': 'z7654321@ed.unsw.edu.au', 'password' : '1234567', 'firstname' : 'aaaaaaaaaa', 'lastname' : 'aaaaaaaaaaa', 'id' : 1, 'handle' : 'aaaaaaaaaaaaaaaaaaaa'},
     {'email': 'z5555555@ed.unsw.edu.au', 'password' : '123123123', 'firstname' : 'aaaaaaaaaa', 'lastname' : 'aaaaaaaaaaa', 'id' : 2, 'handle' : 'aaaaaaaaaaaaaaaaaaaa0'},
     {'email': 'z8888888@ed.unsw.edu.au', 'password' : '321321321', 'firstname' : 'aaaaaaaaaa', 'lastname' : 'aaaaaaaaaaa', 'id' : 3, 'handle' : 'aaaaaaaaaaaaaaaaaaaa1'}]
-    assert auth_login_v1('z8888888@ed.unsw.edu.au', '321321321') == {3}
+    assert auth_login_v1('z8888888@ed.unsw.edu.au', '321321321') == {'auth_user_id' : 3}
     with pytest.raises(InputError):
         assert auth_login_v1('z1234567@ed.unsw.edu.au', 'xxxxxxx')
-    assert auth_login_v1('z5555555@ed.unsw.edu.au', '123123123') == {2}
-    assert auth_login_v1('z7654321@ed.unsw.edu.au', '1234567') == {1}
+    assert auth_login_v1('z5555555@ed.unsw.edu.au', '123123123') == {'auth_user_id' : 2}
+    assert auth_login_v1('z7654321@ed.unsw.edu.au', '1234567') == {'auth_user_id' : 1}
 
 def test_combined_3():
     clear_v1()
