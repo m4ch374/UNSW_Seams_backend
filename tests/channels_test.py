@@ -32,7 +32,7 @@ def auth_user_id():
         'Donald', 
         'Trump'
     )
-    return auth_id
+    return auth_id['auth_user_id']
 
 # Returns another dummy user id
 @pytest.fixture
@@ -43,7 +43,7 @@ def another_id():
         'qqqqqqqqqq', 
         'qqqqqqqqqq'
     )
-    return auth_id
+    return auth_id['auth_user_id']
 
 # Returns a valid channel name
 @pytest.fixture
