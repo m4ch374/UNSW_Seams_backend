@@ -49,11 +49,7 @@ def auth_login_v1(email, password):
 #     Returns True when email is valid
 #             False when email is not valid
 def check_email_valid(email):
-    valid = re.match(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$', email)
-    if valid:
-        return True
-    else:
-        return False
+    return re.match(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$', email)
 
 
 # Arguments:
@@ -87,8 +83,7 @@ def creat_handle(firsatname, lastname):
     if handle_exist(handle, store['users']):
         handle_temp = handle
         while handle_exist(handle_temp, store['users']):
-            handle_temp = handle
-            handle_temp += str(idx)
+            handle_temp = handle + str(idx)
             idx += 1
         handle = handle_temp
     return handle
