@@ -11,10 +11,10 @@ store['users'].append(new_user)
 new_user = {'email': 'z8888888@ed.unsw.edu.au', 'password' : '321321321', 'firstname' : 'Russell', 'lastname' : 'Wang', 'id' : 3, 'handle' : 'russellwu',}
 store['users'].append(new_user)
 new_channel =  {'channel_id': 1, 'name':'COMP1521', 'members':[], 'messages':[]}
-store['channels'].append(new_channel)
+store['channel'].append(new_channel)
 new_channel =  {'channel_id': 2, 'name':'Ant', 'members':[store['users'][0]], 'messages':[{'message_id':0, 'id':1, 'string':'hi', 'time':'07:41:19'}]}
-store['channels'].append(new_channel)
+store['channel'].append(new_channel)
 
 def test_cleared():
     clear_v1()
-    assert data_store.get() == {'users': [], 'channels': []}
+    assert data_store.get() == {'users': [], 'channel': []}
