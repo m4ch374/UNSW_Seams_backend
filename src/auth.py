@@ -60,10 +60,7 @@ def check_email_valid(email):
 #     Returns True when handle is exist
 #             False if not
 def handle_exist(handle, users):
-    for user in users:
-        if handle == user['handle']:
-            return True
-    return False
+    return any(handle == user['handle'] for user in users)
 
 
 # Arguments:
@@ -97,10 +94,7 @@ def creat_handle(firsatname, lastname):
 #                       True if not
 def email_is_new(email):
     store = data_store.get()
-    for user in store['users']:
-        if email == user['email']:
-            return False
-    return True
+    return email not in (user['email'] for user in store['users'])
 
 
 # Arguments:
