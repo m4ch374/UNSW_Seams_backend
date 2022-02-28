@@ -16,7 +16,7 @@ def login_account_check(email, password):
     for user in store['users']:
         if email == user['email']:
             if  password == user['password']:
-                return user['id']  
+                return user['id']
             return 0
     return -1
 
@@ -90,7 +90,7 @@ def creat_handle(firsatname, lastname):
             handle_temp = handle
             handle_temp += str(idx)
             idx += 1
-        handle = handle_temp 
+        handle = handle_temp
     return handle
 
 
@@ -124,17 +124,18 @@ def email_is_new(email):
 #     Returns user's ID (integer) on the correct input
 def auth_register_v1(email, password, name_first, name_last):
     if not check_email_valid(email):                        # email not valid
-        raise InputError("Email address not valid")         
+        raise InputError("Email address not valid")
     elif not email_is_new(email):                           # email exists
-        raise InputError("Email address already exists")   
+        raise InputError("Email address already exists")
     elif len(password) < 6:                                 # password less than 6 characters
         raise InputError("Length of password should more than 6 characters")
     elif len(name_first) > 50 or len(name_first) < 1 or len(name_last) > 50 or len(name_last) < 1:
         raise InputError("Length of first/last name should between 1 to 50 characters (inclusive)")
-    else:                                                       
+    else:
         store = data_store.get()
         handle = creat_handle(name_first, name_last)
         id = len(store['users']) + 1
         new_user = {'email': email, 'password' : password, 'firstname' : name_first, 'lastname' : name_last, 'id' : id, 'handle' : handle,}
         store['users'].append(new_user)
+        data_store.set(store)
         return {new_user['id']}                 # return user's id
