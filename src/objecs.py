@@ -1,6 +1,37 @@
 # This python file contains all custom objects and classes
 # besides the given ones
 
+# User Class, store information of each user
+# Contains:
+#       email       (string) - User's email
+#       password    (string) - User's password in plain text
+#       name_first  (strong) - User's first name
+#       name_last   (string) - User's last name
+#       id          (int)    - User's id
+#       handle      (string) - User's handle
+#
+# Help:
+# To initialize a new user:
+# new_user = User(.....) # Fill in arguments as how it is in functions
+#
+# To add new user to data_store:
+# data = data_store.get()
+# new_usr = User(.....)
+# data['users'].append(new_usr)
+# data_store.set(data)
+#
+# To access the content of User:
+# email_account = new_user.email
+#
+# To change the content of User:
+# new_user.email = new_email
+#
+# To represent User in dict
+# usr_in_dict = new_user.to_dict()
+#
+# NOTE: When comparing whether 2 Users variable are the same,
+# it compares by the equality of its attributes i.e. email, password .....
+# instead of the equality of address in the memory
 class User:
     def __init__(self, email, password, name_first, name_last, id, handle):
         self.email = email
