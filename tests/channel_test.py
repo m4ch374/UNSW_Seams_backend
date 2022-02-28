@@ -13,15 +13,14 @@ from src.data_store import data_store
 ####################################################
 ##          Tests for channel_details_v1          ##
 ####################################################
-
+#
 # Expected behaviour:
 # InputError when:
 #   - channel_id does not refer to a valid channel
 # AccessError when:
 #   - channel_id is valid and the authorised user is not a member of the
 #     channel
-
-# =======================================
+# ==================================================
 
 # raise AccessError since invalid auth_user_id passed
 #
@@ -87,10 +86,56 @@ def test_valid_channel_details_2():
 ####################################################
 ##          Tests for channel_join_v1             ##
 ####################################################
+#
+# Expected behaviour:
+# InputError when:
+#   - channel_id does not refer to a valid channel
+#   - the authorised user is already a member of the channel
+# AccessError when:
+#   - channel_id refers to a channel that is private and the authorised
+#     user is not already a channel member and is not a global owner
+#
+# ==================================================
 
+# raise AccessError since invalid auth_user_id passed
+#
+# note: while the invalid auth_user & channel id's passed should raise
+#       InputErrors on their own, the AccessError takes precedent
+def test_invalid_user_id_for_channel_join():
+    clear_v1()
+    invalid_channel_id = -100
+    invalid_auth_user_id = -100
+    with pytest.raises(AccessError):
+        channel_join_v1(invalid_auth_user_id, invalid_channel_id)
 
+# 
+#
+#
 
 ####################################################
 ##          Tests for channel_invite_v1           ##
 ####################################################
+
+# Expected behaviour:
+# InputError when:
+#   - channel_id does not refer to a valid channel
+#   - u_id does not refer to a valid user
+#   - u_id refers to a user who is already a member of the channel
+# AccessError when:
+#   - channel_id is valid and the authorised user is not a member of the
+#     channel
+# ==================================================
+
+# raise AccessError since invalid auth_user_id passed
+#
+# note: while the invalid auth_user & channel id's passed should raise
+#       InputErrors on their own, the AccessError takes precedent
+def test_invalid_user_id_for_channel_invite():
+    clear_v1()
+    invalid_channel_id = -100
+    invalid_auth_user_id = -100
+    invalid_u_id = -100
+    with pytest.raises(AccessError):
+        channel_invite_v1(invalid_auth_user_id, invalid_channel_id,
+                          invalid_u_id)
 
