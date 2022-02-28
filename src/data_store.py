@@ -22,6 +22,15 @@ Example usage:
 
     print(store) # Prints { 'names': ['Emily', 'Hayden', 'Jake', 'Nick'] }
     data_store.set(store)
+
+    ================================
+
+    Added functions and usage
+
+    # To get the user:
+    usr = data_store.get_user(auth_user_id)
+
+    NOTE: assumes id is valid, returns None if there are no entries in users list
 '''
 
 ## YOU SHOULD MODIFY THIS OBJECT BELOW
