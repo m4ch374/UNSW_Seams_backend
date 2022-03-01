@@ -80,7 +80,7 @@ class User:
     #                         length of handle aim to less than 20 characters
     def __create_handle(self, firsatname, lastname):
         idx = 0
-        handle = ''.join(c for c in firsatname if c.isalnum()) + ''.join(c for c in lastname if c.isalnum())
+        handle = ''.join(c for c in firsatname + lastname if c.isalnum())
         handle = handle.lower()
         store = data_store.get()
         if len(handle) > 20:
@@ -169,7 +169,7 @@ class Channel:
     def to_dict(self):
         return_dict = {
             'name': self.name,
-            'owner_members': self.owners,
-            'all_members': self.members,
+            'owner_members': [owner.to_dict() for owner in self.owners],
+            'all_members': [member.to_dict() for member in self.members],
         }
         return return_dict
