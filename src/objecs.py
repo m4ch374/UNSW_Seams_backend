@@ -1,6 +1,9 @@
 # This python file contains all custom objects and classes
 # besides the given ones
 
+# Imports
+from src.data_store import data_store
+
 # User Class, store information of each user
 # Contains:
 #       email       (string) - User's email
@@ -33,13 +36,13 @@
 # it compares by the equality of its attributes i.e. email, password .....
 # instead of the equality of address in the memory
 class User:
-    def __init__(self, email, password, name_first, name_last, id, handle):
+    def __init__(self, email, password, name_first, name_last):
         self.email = email
         self.password = password
         self.name_first = name_first
         self.name_last = name_last
-        self.id = id
-        self.handle = handle
+        self.id = self.__generate_id()
+        self.handle = self.__create_handle(name_first, name_last)
 
     def __eq__(self, other):
         return all(
@@ -52,6 +55,44 @@ class User:
                 self.handle == other.handle
             ]
         )
+
+    def __generate_id(self):
+        store = data_store.get()
+        return len(store['users']) + 1
+
+    # Arguments:
+    #     handle (sting)    - user's email
+    #     users  (list)     - a list of all user
+
+    # Return Value:
+    #     Returns True when handle is exist
+    #             False if not
+    def __handle_exist(self, handle, users):
+        return any([handle == user.handle for user in users])
+
+
+    # Arguments:
+    #     firsatname (sting)    - user's first name
+    #     lastname (sting)    - user's last name
+
+    # Return Value:
+    #     handle (string)   - Remove non-alphanumeric characters and convert to lowercase
+    #                         length of handle aim to less than 20 characters
+    def __create_handle(self, firsatname, lastname):
+        idx = 0
+        handle = ''.join(c for c in firsatname if c.isalnum()) + ''.join(c for c in lastname if c.isalnum())
+        handle = handle.lower()
+        store = data_store.get()
+        if len(handle) > 20:
+            handle = handle[0:20]
+        if self.__handle_exist(handle, store['users']):
+            handle_temp = handle
+            while self.__handle_exist(handle_temp, store['users']):
+                handle_temp = handle
+                handle_temp += str(idx)
+                idx += 1
+            handle = handle_temp 
+        return handle
 
     def to_dict(self):
         return_dict = {
@@ -96,12 +137,16 @@ class User:
 # NOTE: member is of type User, NOT ITS ID
 # If you want to use id, use `has_member_id()` instead
 class Channel:
-    def __init__(self, id, name, owners, is_public):
-        self.id = id
+    def __init__(self, name, owner, is_public):
+        self.id = self.__generate_id()
         self.name = name
-        self.owners = [owners]
-        self.members = [owners]
+        self.owners = [owner]
+        self.members = [owner]
         self.is_public = is_public
+
+    def __generate_id(self):
+        data = data_store.get()
+        return len(data['channel']) + 1
 
     # Might need it someday
     # def __eq__(self, other):

@@ -57,21 +57,20 @@ def channels_create_v1(auth_user_id, name, is_public):
     if name == None or len(name) == 0 or len(name) > 20:
         raise InputError("error: Channel name should have 1 - 20 characters inclusive")
 
-    # Append new channel to data_store
-    data = data_store.get()
-    new_channel_id = len(data['channel']) + 1
     new_channel = Channel(
-        id=new_channel_id,
         name=name,
-        owners=data_store.get_user(auth_user_id),
+        owner=data_store.get_user(auth_user_id),
         is_public=is_public
     )
+
+    # Append new channel to data_store
+    data = data_store.get()
     data['channel'].append(new_channel)
     data_store.set(data)
 
     # User who creates it joins the channel automatically
-    channel.channel_join_v1(auth_user_id, new_channel_id)
+    channel.channel_join_v1(auth_user_id, new_channel.id)
 
     return {
-        'channel_id': new_channel_id,
+        'channel_id': new_channel.id,
     }

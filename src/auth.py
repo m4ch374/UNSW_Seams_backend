@@ -54,41 +54,6 @@ def check_email_valid(email):
 
 
 # Arguments:
-#     handle (sting)    - user's email
-#     users  (list)     - a list of all user
-
-# Return Value:
-#     Returns True when handle is exist
-#             False if not
-def handle_exist(handle, users):
-    return any([handle == user.handle for user in users])
-
-
-# Arguments:
-#     firsatname (sting)    - user's first name
-#     lastname (sting)    - user's last name
-
-# Return Value:
-#     handle (string)   - Remove non-alphanumeric characters and convert to lowercase
-#                         length of handle aim to less than 20 characters
-def create_handle(firsatname, lastname):
-    idx = 0
-    handle = ''.join(c for c in firsatname if c.isalnum()) + ''.join(c for c in lastname if c.isalnum())
-    handle = handle.lower()
-    store = data_store.get()
-    if len(handle) > 20:
-        handle = handle[0:20]
-    if handle_exist(handle, store['users']):
-        handle_temp = handle
-        while handle_exist(handle_temp, store['users']):
-            handle_temp = handle
-            handle_temp += str(idx)
-            idx += 1
-        handle = handle_temp 
-    return handle
-
-
-# Arguments:
 #     email (sting)   - user's email
 
 # Return Value:
@@ -123,16 +88,13 @@ def auth_register_v1(email, password, name_first, name_last):
     elif len(name_first) > 50 or len(name_first) < 1 or len(name_last) > 50 or len(name_last) < 1:
         raise InputError("Length of first/last name should between 1 to 50 characters (inclusive)")
     else:                                                       
-        store = data_store.get()
-        handle = create_handle(name_first, name_last)
-        id = len(store['users']) + 1
         new_user = User(
             email=email,
             password=password,
             name_first=name_first,
-            name_last=name_last,
-            id=id,
-            handle=handle
+            name_last=name_last
         )
+
+        store = data_store.get()
         store['users'].append(new_user)
         return { 'auth_user_id': new_user.id }         # return user's id

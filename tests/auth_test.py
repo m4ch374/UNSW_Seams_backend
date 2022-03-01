@@ -13,27 +13,21 @@ new_user = User(
     email='z7654321@ed.unsw.edu.au',
     password='1234567',
     name_first='Jason',
-    name_last='Smith',
-    id=1,
-    handle='jasonsmith'
+    name_last='Smith'
 )
 store['users'].append(new_user)
 new_user = User(
     email='z5555555@ed.unsw.edu.au',
     password='123123123',
     name_first='William',
-    name_last='Wu',
-    id=2,
-    handle='williamwu'
+    name_last='Wu'
 )
 store['users'].append(new_user)
 new_user = User(
     email='z8888888@ed.unsw.edu.au',
     password='321321321',
     name_first='Russell',
-    name_last='Wang',
-    id=3,
-    handle='russellwu'
+    name_last='Wang'
 )
 store['users'].append(new_user)
 
@@ -188,16 +182,7 @@ def test_register_correct_input_2():
     clear_v1()
     auth_register_v1('z100@ed.unsw.edu.au', '1234567', '@#$@#%^', '&*)^&*^%&$')
     store = data_store.get()
-
-    expected_output = User(
-        email='z100@ed.unsw.edu.au',
-        password='1234567',
-        name_first='@#$@#%^',
-        name_last='&*)^&*^%&$',
-        id=1,
-        handle=''
-    )
-    assert store['users'] == [ expected_output ]
+    assert store['users'][0].id == 1 and store['users'][0].handle == ''
 
 def test_combined_1():
     clear_v1()
@@ -212,13 +197,11 @@ def test_combined_1():
     auth_register_v1('z8888888@ed.unsw.edu.au', '321321321', 'Russell', 'Wang')
     assert auth_register_v1('z9999999@ed.unsw.edu.au', '321321321', 'Russell', 'Wang') == {'auth_user_id': 5}
     store = data_store.get()
-    assert store['users'] == [
-        User('z1234567@ed.unsw.edu.au', '1234567', 'Donald', 'Trump', 1, 'donaldtrump'),
-        User('z7654321@ed.unsw.edu.au', '1234567', 'Jason', 'Smith', 2, 'jasonsmith'), 
-        User('z5555555@ed.unsw.edu.au', '123123123', 'William', 'Wu', 3, 'williamwu'), 
-        User('z8888888@ed.unsw.edu.au', '321321321', 'Russell', 'Wang', 4, 'russellwang'), 
-        User('z9999999@ed.unsw.edu.au', '321321321', 'Russell', 'Wang', 5, 'russellwang0')
-    ]
+    assert store['users'][0].id == 1 and store['users'][0].handle == 'donaldtrump'
+    assert store['users'][1].id == 2 and store['users'][1].handle == 'jasonsmith'
+    assert store['users'][2].id == 3 and store['users'][2].handle == 'williamwu'
+    assert store['users'][3].id == 4 and store['users'][3].handle == 'russellwang'
+    assert store['users'][4].id == 5 and store['users'][4].handle == 'russellwang0'
     
 def test_combined_2():
     clear_v1()
@@ -226,11 +209,9 @@ def test_combined_2():
     auth_register_v1('z5555555@ed.unsw.edu.au', '123123123', 'aaaaaaaaaa', 'aaaaaaaaaaa')
     auth_register_v1('z8888888@ed.unsw.edu.au', '321321321', 'aaaaaaaaaa', 'aaaaaaaaaaa')
     store = data_store.get()
-    assert store['users'] == [
-        User('z7654321@ed.unsw.edu.au', '1234567', 'aaaaaaaaaa', 'aaaaaaaaaaa', 1, 'aaaaaaaaaaaaaaaaaaaa'),
-        User('z5555555@ed.unsw.edu.au', '123123123', 'aaaaaaaaaa', 'aaaaaaaaaaa', 2, 'aaaaaaaaaaaaaaaaaaaa0'),
-        User('z8888888@ed.unsw.edu.au', '321321321', 'aaaaaaaaaa', 'aaaaaaaaaaa', 3, 'aaaaaaaaaaaaaaaaaaaa1')
-    ]
+    assert store['users'][0].id == 1 and store['users'][0].handle == 'aaaaaaaaaaaaaaaaaaaa'
+    assert store['users'][1].id == 2 and store['users'][1].handle == 'aaaaaaaaaaaaaaaaaaaa0'
+    assert store['users'][2].id == 3 and store['users'][2].handle == 'aaaaaaaaaaaaaaaaaaaa1'
     assert auth_login_v1('z8888888@ed.unsw.edu.au', '321321321') == {'auth_user_id': 3}
     with pytest.raises(InputError):
         assert auth_login_v1('z1234567@ed.unsw.edu.au', 'xxxxxxx')
@@ -251,7 +232,7 @@ def test_combined_3():
         assert auth_register_v1('z1234567@ed.unsw.edu.au', '123456', 'Hanqi', '')
     user_id = auth_register_v1('z1234567@ed.unsw.edu.au', '123456', 'Ha@#$nq$i', '$%^Bai')
     store = data_store.get()
-    assert store['users'][2] == User('z1234567@ed.unsw.edu.au', '123456', 'Ha@#$nq$i', '$%^Bai', 3, 'hanqibai')
+    assert store['users'][2].id == 3 and store['users'][2].handle == 'hanqibai'
     with pytest.raises(InputError):
         assert auth_login_v1('zsssssss@ed.unsw.edu.au', 'xxxxxxx')
     with pytest.raises(InputError):
