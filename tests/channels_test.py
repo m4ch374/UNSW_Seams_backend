@@ -18,7 +18,7 @@ from src.data_store import data_store
 # These are the fixtures that would be used accross
 # all tests
 #
-# Runs clear_v1() before all tests
+# Runs clean_v1() before all tests
 @pytest.fixture(autouse=True)
 def clean():
     clear_v1()
@@ -26,6 +26,7 @@ def clean():
 # A dummy user id
 @pytest.fixture
 def auth_user_id():
+    #clear_v1()
     auth_id = auth.auth_register_v1(
         'z100@ed.unsw.edu.au', 
         '1234567', 
@@ -164,7 +165,7 @@ def list_helper_create_single(usr_1, name, n, is_public):
         chnl.channels_create_v1(usr_1, name, is_public)
     
     channel_list = chnl.channels_list_v1(usr_1)['channels']
-    assert (all(usr_1 in channel['member_ids'] for channel in channel_list) and
+    assert (all(channel.has_member(data_store.get_user(usr_1)) for channel in channel_list) and
         len(channel_list) == n)
 
 # helper function for testing channels list with multiple user
@@ -177,9 +178,9 @@ def list_helper_create_multiple(usr_1, usr_2, name, n, is_public):
     channel_list_usr_1 = chnl.channels_list_v1(usr_1)['channels']
     channel_list_usr_2 = chnl.channels_list_v1(usr_2)['channels']
 
-    assert (all(usr_1 in channel['member_ids'] for channel in channel_list_usr_1) and
+    assert (all(channel.has_member(data_store.get_user(usr_1)) for channel in channel_list_usr_1) and
         len(channel_list_usr_1) == n)
-    assert (all(usr_2 in channel['member_ids'] for channel in channel_list_usr_2) and
+    assert (all(channel.has_member(data_store.get_user(usr_2)) for channel in channel_list_usr_2) and
         len(channel_list_usr_2) == n) 
 
 # Should not raise any error
