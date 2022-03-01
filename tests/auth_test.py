@@ -30,6 +30,7 @@ new_user = User(
     name_last='Wang'
 )
 store['users'].append(new_user)
+data_store.set(store)
 
 
 def test_login_account_not_exist_1():

@@ -80,9 +80,9 @@ def email_is_new(email):
 #     Returns user's ID (integer) on the correct input
 def auth_register_v1(email, password, name_first, name_last):
     if not check_email_valid(email):                        # email not valid
-        raise InputError("Email address not valid")         
+        raise InputError("Email address not valid")
     elif not email_is_new(email):                           # email exists
-        raise InputError("Email address already exists")   
+        raise InputError("Email address already exists")
     elif len(password) < 6:                                 # password less than 6 characters
         raise InputError("Length of password should more than 6 characters")
     elif len(name_first) > 50 or len(name_first) < 1 or len(name_last) > 50 or len(name_last) < 1:
