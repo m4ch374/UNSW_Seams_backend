@@ -60,6 +60,12 @@ class Datastore:
         else:
             return [usr for usr in self.__store['users'] if usr.id == id][0]
 
+    def get_channel(self, id):
+        if len(self.__store['channel']) == 0:
+            return None
+        else:
+            return [chnl for chnl in self.__store['channel'] if chnl.id == id][0]
+
 print('Loading Datastore...')
 
 global data_store

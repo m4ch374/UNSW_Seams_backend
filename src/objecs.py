@@ -166,7 +166,13 @@ class Channel:
     def has_member_id(self, member_id):
         return member_id in [mem.id for mem in self.members]
 
-    def to_dict(self):
+    def add_member(self, usr):
+        self.members.append(usr)
+
+    def add_member_id(self, usr_id):
+        self.members.append(data_store.get_user(usr_id))
+
+    def channel_details_dict(self):
         return_dict = {
             'name': self.name,
             'owner_members': [owner.to_dict() for owner in self.owners],
