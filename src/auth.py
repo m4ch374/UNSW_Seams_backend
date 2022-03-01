@@ -143,7 +143,9 @@ def auth_register_v1(email, password, name_first, name_last):
                     'firstname' : name_first,
                     'lastname' : name_last,
                     'id' : new_id,
-                    'handle' : handle,}
+                    'handle' : handle,
+                    'is_in_channel' : [],
+                    'owner' : False,}
         store['users'].append(new_user)
         data_store.set(store)
         return {'auth_user_id' : new_user['id']}                 # return user's id
