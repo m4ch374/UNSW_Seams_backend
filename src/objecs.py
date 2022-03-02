@@ -1,5 +1,5 @@
-# This python file contains all custom objects and classes
-# besides the given ones
+""" This python file contains all custom objects and classes
+besides the given ones """
 
 # Imports
 from src.data_store import data_store
@@ -34,10 +34,6 @@ new_user.email = new_email
 
 To represent User in dict
 usr_in_dict = new_user.to_dict()
-
-NOTE: When comparing whether 2 Users variable are the same,
-it compares by the equality of its attributes i.e. email, password .....
-instead of the equality of address in the memory
 '''
 class User:
     def __init__(self, email, password, name_first, name_last):
@@ -50,24 +46,9 @@ class User:
         self.channels = []
         self.owner = False
 
-    def __eq__(self, other):
-        return all(
-            [
-                self.email == other.email,
-                self.password == other.password,
-                self.name_first == other.name_first,
-                self.name_last == other.name_last,
-                self.id == other.id,
-                self.handle == other.handle,
-                self.channels == other.channels,
-                self.owner == other.owner,
-            ]
-        )
-
     def __generate_id(self):
         store = data_store.get()
         return len(store['users']) + 1
-
 
     '''
     Arguments:
@@ -107,6 +88,9 @@ class User:
             handle = handle_temp
         return handle
 
+    '''
+        Output format following section 6.1. of the sepec
+    '''
     def to_dict(self):
         return_dict = {
             'u_id': int(self.id),
@@ -114,8 +98,6 @@ class User:
             'name_first': str(self.name_first),
             'name_last': str(self.name_last),
             'handle_str': str(self.handle),
-            'is_in_channels' : str(self.channels),
-            'owner' : self.owner
         }
         return return_dict
 
@@ -181,11 +163,12 @@ class Channel:
     def has_member_id(self, member_id):
         return member_id in [mem.id for mem in self.members]
 
-    def add_member(self, usr):
+    def add_member(self, usr: User):
         self.members.append(usr)
+        usr.channels.append(self)
 
     def add_member_id(self, usr_id):
-        self.members.append(data_store.get_user(usr_id))
+        self.add_member(data_store.get_user(usr_id))
 
     def channel_details_dict(self):
         return_dict = {
