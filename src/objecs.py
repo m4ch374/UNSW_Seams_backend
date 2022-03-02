@@ -4,37 +4,41 @@
 # Imports
 from src.data_store import data_store
 
-# User Class, store information of each user
-# Contains:
-#       email       (string) - User's email
-#       password    (string) - User's password in plain text
-#       name_first  (strong) - User's first name
-#       name_last   (string) - User's last name
-#       id          (int)    - User's id
-#       handle      (string) - User's handle
-#
-# Help:
-# To initialize a new user:
-# new_user = User(.....) # Fill in arguments as how it is in functions
-#
-# To add new user to data_store:
-# data = data_store.get()
-# new_usr = User(.....)
-# data['users'].append(new_usr)
-# data_store.set(data)
-#
-# To access the content of User:
-# email_account = new_user.email
-#
-# To change the content of User:
-# new_user.email = new_email
-#
-# To represent User in dict
-# usr_in_dict = new_user.to_dict()
-#
-# NOTE: When comparing whether 2 Users variable are the same,
-# it compares by the equality of its attributes i.e. email, password .....
-# instead of the equality of address in the memory
+'''
+User Class, store information of each user
+Contains:
+      email       (string) - User's email
+      password    (string) - User's password in plain text
+      name_first  (strong) - User's first name
+      name_last   (string) - User's last name
+      id          (int)    - User's id
+      handle      (string) - User's handle
+      channels    (list)   - User's channels
+      ower        (boolean)- user's global permissions
+
+Help:
+To initialize a new user:
+new_user = User(.....) # Fill in arguments as how it is in functions
+
+To add new user to data_store:
+data = data_store.get()
+new_usr = User(.....)
+data['users'].append(new_usr)
+data_store.set(data)
+
+To access the content of User:
+email_account = new_user.email
+
+To change the content of User:
+new_user.email = new_email
+
+To represent User in dict
+usr_in_dict = new_user.to_dict()
+
+NOTE: When comparing whether 2 Users variable are the same,
+it compares by the equality of its attributes i.e. email, password .....
+instead of the equality of address in the memory
+'''
 class User:
     def __init__(self, email, password, name_first, name_last):
         self.email = email
@@ -43,6 +47,8 @@ class User:
         self.name_last = name_last
         self.id = self.__generate_id()
         self.handle = self.__create_handle(name_first, name_last)
+        self.channels = []
+        self.owner = False
 
     def __eq__(self, other):
         return all(
@@ -52,7 +58,9 @@ class User:
                 self.name_first == other.name_first,
                 self.name_last == other.name_last,
                 self.id == other.id,
-                self.handle == other.handle
+                self.handle == other.handle,
+                self.channels == other.channels,
+                self.owner == other.owner,
             ]
         )
 
@@ -60,24 +68,29 @@ class User:
         store = data_store.get()
         return len(store['users']) + 1
 
-    # Arguments:
-    #     handle (sting)    - user's email
-    #     users  (list)     - a list of all user
 
-    # Return Value:
-    #     Returns True when handle is exist
-    #             False if not
+    '''
+    Arguments:
+        handle (sting)    - user's email
+        users  (list)     - a list of all user
+
+    Return Value:
+        Returns True when handle is exist
+                False if not
+    '''
     def __handle_exist(self, handle, users):
-        return any([handle == user.handle for user in users])
+        return any(handle == user.handle for user in users)
 
 
-    # Arguments:
-    #     firsatname (sting)    - user's first name
-    #     lastname (sting)    - user's last name
+    '''
+    Arguments:
+        firsatname (sting)    - user's first name
+        lastname (sting)    - user's last name
 
-    # Return Value:
-    #     handle (string)   - Remove non-alphanumeric characters and convert to lowercase
-    #                         length of handle aim to less than 20 characters
+    Return Value:
+        handle (string)   - Remove non-alphanumeric characters and convert to lowercase
+                            length of handle aim to less than 20 characters
+    '''
     def __create_handle(self, firsatname, lastname):
         idx = 0
         handle = ''.join(c for c in firsatname + lastname if c.isalnum())
@@ -91,7 +104,7 @@ class User:
                 handle_temp = handle
                 handle_temp += str(idx)
                 idx += 1
-            handle = handle_temp 
+            handle = handle_temp
         return handle
 
     def to_dict(self):
@@ -101,6 +114,8 @@ class User:
             'name_first': str(self.name_first),
             'name_last': str(self.name_last),
             'handle_str': str(self.handle),
+            'is_in_channels' : str(self.channels),
+            'owner' : self.owner
         }
         return return_dict
 
