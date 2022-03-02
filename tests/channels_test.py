@@ -5,6 +5,7 @@
 # Will modify once the structure is set
 # ==================================================
 
+from unicodedata import name
 import pytest
 import src.channels as chnl
 import src.channel as channel
@@ -124,33 +125,30 @@ def test_channels_create_error_pub_and_priv(auth_user_id, error_list):
 # 
 # Test for creating valid public channels
 def test_channels_create_public(auth_user_id, names_list):
-    for name in names_list:
+    for i, name in enumerate(names_list):
         val = chnl.channels_create_v1(auth_user_id, name, True)
 
-        channel_list = data_store.get()['channel']
-        assert val == { 'channel_id': len(channel_list) }
+        assert val == { 'channel_id': i + 1 }
 
 # Should not raise any error
 # 
 # Test for creating valid private channels
 def test_channels_create_private(auth_user_id, names_list):
-    for name in names_list:
+    for i, name in enumerate(names_list):
         val = chnl.channels_create_v1(auth_user_id, name, False)
 
-        channel_list = data_store.get()['channel']
-        assert val == { 'channel_id': len(channel_list) }
+        assert val == { 'channel_id': i + 1 }
 
 # Should not raise any error
 # 
 # Test for creating both valid public and private channels
 def test_channels_create_pub_and_priv(auth_user_id, names_list):
-    for name in names_list:
+    for i, name in enumerate(names_list):
         val = chnl.channels_create_v1(auth_user_id, name, True)
         val_1 = chnl.channels_create_v1(auth_user_id, name, False)
 
-        channel_list = data_store.get()['channel']
-        assert val == { 'channel_id': len(channel_list) - 1 }
-        assert val_1 == { 'channel_id': len(channel_list) }
+        assert val == { 'channel_id': i * 2 + 1 }
+        assert val_1 == { 'channel_id': i * 2 + 2 }
 
 # ==================================================
 
@@ -165,8 +163,8 @@ def list_helper_create_single(usr_1, name, n, is_public):
         chnl.channels_create_v1(usr_1, name, is_public)
     
     channel_list = chnl.channels_list_v1(usr_1)['channels']
-    assert (all(channel.has_member(data_store.get_user(usr_1)) for channel in channel_list) and
-        len(channel_list) == n)
+    expected_output = [{'channel_id': i + 1, 'name': name} for i in range(n)]
+    assert channel_list == expected_output
 
 # helper function for testing channels list with multiple user
 # creating n channels
@@ -178,10 +176,11 @@ def list_helper_create_multiple(usr_1, usr_2, name, n, is_public):
     channel_list_usr_1 = chnl.channels_list_v1(usr_1)['channels']
     channel_list_usr_2 = chnl.channels_list_v1(usr_2)['channels']
 
-    assert (all(channel.has_member(data_store.get_user(usr_1)) for channel in channel_list_usr_1) and
-        len(channel_list_usr_1) == n)
-    assert (all(channel.has_member(data_store.get_user(usr_2)) for channel in channel_list_usr_2) and
-        len(channel_list_usr_2) == n) 
+    expected_output_1 = [{'channel_id': i * 2 + 1, 'name': name} for i in range(n)]
+    expected_output_2 = [{'channel_id': i * 2 + 2, 'name': name} for i in range(n)]
+
+    assert channel_list_usr_1 == expected_output_1
+    assert channel_list_usr_2 == expected_output_2
 
 # Should not raise any error
 #
