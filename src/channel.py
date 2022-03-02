@@ -1,8 +1,38 @@
+from src.data_store import data_store
+from src.error import InputError, AccessError
+
 def channel_invite_v1(auth_user_id, channel_id, u_id):
     return {
+    
     }
 
+# Arguments:
+#   - auth_user_id (int)
+#   - channel_id (int)
+#
+# Exceptions:
+#   - InputError -> raised when channel_id does not refer to a valid channel
+#   - AccessError -> raised when channel_id is valid and the authorised user is 
+#                    not a member of the channel
+#
+# Returns:
+#   - name (string)
+#   - is_public (boolean)
+#   - owner_members (list of dictionaries)
+#   - all_members (list of dictionaires)
 def channel_details_v1(auth_user_id, channel_id):
+    
+    store = data_store.get()
+    is_auth_user_id_valid = False
+    for user in store['users']:
+        print(user.id)
+        #if auth_user_id == user.id:
+         #   is_auth_user_id_valid = True
+        print("traversed a loop")
+    if is_auth_user_id_valid == False:
+        raise AccessError("auth user id passed is invalid!")
+    
+    
     return {
         'name': 'Hayden',
         'owner_members': [
@@ -42,3 +72,5 @@ def channel_messages_v1(auth_user_id, channel_id, start):
 def channel_join_v1(auth_user_id, channel_id):
     return {
     }
+
+
