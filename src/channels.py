@@ -18,9 +18,9 @@ from src.objecs import Channel
 def channels_list_v1(auth_user_id):
     channels_list = data_store.get()['channel']
 
-    usr_channel = [channel for channel in channels_list
-                   if channel.has_member(data_store.get_user(auth_user_id))]
-
+    usr_channel = [channel.channel_dict() for channel in channels_list 
+        if channel.has_member(data_store.get_user(auth_user_id))]
+        
     return {
         'channels': usr_channel,
     }
@@ -42,7 +42,7 @@ def channels_listall_v1(auth_user_id):
     channels_list = data_store.get()['channel']
 
     return {
-        'channels': [channel for channel in channels_list],
+        'channels': [channel.channel_dict() for channel in channels_list],
     }
 
 # Arguments:
