@@ -163,7 +163,7 @@ class Channel:
     def has_member_id(self, member_id):
         return member_id in [mem.id for mem in self.members]
 
-    def add_member(self, usr: User):
+    def add_member(self, usr):
         self.members.append(usr)
         usr.channels.append(self)
 
