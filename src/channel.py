@@ -1,6 +1,12 @@
+from re import A
+from src.data_store import data_store
+from src.error import InputError, AccessError
+
+
 def channel_invite_v1(auth_user_id, channel_id, u_id):
     return {
     }
+
 
 def channel_details_v1(auth_user_id, channel_id):
     return {
@@ -25,7 +31,20 @@ def channel_details_v1(auth_user_id, channel_id):
         ],
     }
 
+
 def channel_messages_v1(auth_user_id, channel_id, start):
+    
+    channel = data_store.get_channel(channel_id)
+    if channel == None:
+        raise InputError
+
+    if start > len(data_store['messages'][channel_id]):
+        raise InputError
+
+    user = data_store.get_user(auth_user_id)
+    if user not in data_store['channel']['users']:
+        raise AccessError
+
     return {
         'messages': [
             {
@@ -38,6 +57,7 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         'start': 0,
         'end': 50,
     }
+
 
 def channel_join_v1(auth_user_id, channel_id):
     return {
