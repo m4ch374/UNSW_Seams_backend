@@ -170,6 +170,13 @@ class Channel:
     def add_member_id(self, usr_id):
         self.add_member(data_store.get_user(usr_id))
 
+    def channel_dict(self):
+        return_dict = {
+            'channel_id': self.id,
+            'name': self.name,
+        }
+        return return_dict
+
     def channel_details_dict(self):
         return_dict = {
             'name': self.name,
