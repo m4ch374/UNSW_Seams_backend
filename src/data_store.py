@@ -22,6 +22,15 @@ Example usage:
 
     print(store) # Prints { 'names': ['Emily', 'Hayden', 'Jake', 'Nick'] }
     data_store.set(store)
+
+    ================================
+
+    Added functions and usage
+
+    # To get the user:
+    usr = data_store.get_user(auth_user_id)
+
+    NOTE: assumes id is valid, returns None if there are no entries in users list
 '''
 
 ## YOU SHOULD MODIFY THIS OBJECT BELOW
@@ -44,6 +53,18 @@ class Datastore:
         if not isinstance(store, dict):
             raise TypeError('store must be of type dictionary')
         self.__store = store
+
+    def get_user(self, id):
+        if len(self.__store['users']) == 0:
+            return None
+        else:
+            return [usr for usr in self.__store['users'] if usr.id == id][0]
+
+    def get_channel(self, id):
+        if len(self.__store['channel']) == 0:
+            return None
+        else:
+            return [chnl for chnl in self.__store['channel'] if chnl.id == id][0]
 
 print('Loading Datastore...')
 
