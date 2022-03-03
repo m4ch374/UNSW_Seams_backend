@@ -1,6 +1,3 @@
-import sys
-sys.path.append('/Users/ellahuang/Documents/COMP1531/project-backend')
-
 import pytest
 from src.error import InputError, AccessError
 
@@ -18,14 +15,18 @@ def test_invalid_channel_id():
 
 def test_invalid_start_messgae_id_1():
     clear_v1()
+    channels_create_v1(1, 'Ant', 'y')
+    auth_register_v1('z5555555@ad.unsw.edu.au', '123456a', 'Anthony', 'Smith')
     with pytest.raises(InputError):
         assert channel_messages_v1(1, 1, -2)
 
 
 def test_invalid_start_messgae_id_2():
     clear_v1()
+    channels_create_v1(1, 'Ant', 'y')
+    auth_register_v1('z5555555@ad.unsw.edu.au', '123456a', 'Anthony', 'Smith')
     with pytest.raises(InputError):
-        assert channel_messages_v1(1, 2, 1)
+        assert channel_messages_v1(1, 1, 1)
 
 
 def test_user_not_authorised():
@@ -37,9 +38,11 @@ def test_user_not_authorised():
         assert channel_messages_v1(2, 1, 0)
 
 
-def test_end_returns():
+def test_end_return_when_finished():
     clear_v1()
     auth_register_v1('z5555555@ad.unsw.edu.au', '123456a', 'Anthony', 'Smith')
     channels_create_v1(1, 'Ant', 'y')
     assert channel_messages_v1(1, 1, 0) == {'messages': [], 'start': 0, 'end': -1}
         
+
+# Further tests to be implemented once send_messages function is implemented.

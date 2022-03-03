@@ -1,6 +1,3 @@
-import sys
-sys.path.append('/Users/ellahuang/Documents/COMP1531/project-backend')
-
 from re import A
 from src.data_store import data_store
 from src.error import InputError, AccessError
@@ -41,7 +38,7 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     if channel == None:
         raise InputError
 
-    if start > len(channel.messages):
+    if start > len(channel.messages) or start < 0:
         raise InputError
 
     user = data_store.get_user(auth_user_id)
