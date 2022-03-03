@@ -27,8 +27,8 @@ from src.data_store import data_store
 # note: channel_id passed is also invalid (since no channels yet created)
 def test_invalid_user_id_for_channel_details():
     clear_v1()
-    invalid_channel_id = -100
-    invalid_auth_user_id = -100
+    invalid_channel_id = {'channel_id': -100}
+    invalid_auth_user_id = {'auth_user_id': -100}
     with pytest.raises(AccessError):
         channel_details_v1(invalid_auth_user_id, invalid_channel_id)
 
@@ -38,51 +38,51 @@ def test_invalid_user_id_for_channel_details():
 def test_invalid_channel_id():
     clear_v1()
     auth_user_id = auth_register_v1('z1234567@ad.unsw.edu.au', 'password', 'firstname', 'lastname');
-    invalid_channel_id = -100
+    invalid_channel_id = {'channel_id': -100}
     with pytest.raises(InputError):
-        channel_details_v1(auth_user_id, invalid_channel_id)
+        channel_details_v1(auth_user_id['auth_user_id'], invalid_channel_id)
 
 # raise InputError since channel_id passed doesn't match channel created
 def test_channel_id_doesnt_match_valid_channel_1():
     clear_v1()
-    auth_user_id = auth_register_v1('z1234567@ad.unsw.edu.au', 'password', 'firstname', 'lastname');
-    valid_channel_id = channels_create_v1(auth_user_id, 'First Channel', True)
+    auth_user_id = auth_register_v1('z1234567@ad.unsw.edu.au', 'password', 'firstname', 'lastname')
+    valid_channel_id = channels_create_v1(auth_user_id['auth_user_id'], 'First Channel', True)
     
     # purposely change the valid channel_id to get an invalid_channel_id
-    invalid_channel_id = valid_channel_id + 100
+    # DELETE above comment
+    invalid_channel_id = {'channel_id': -100}
     with pytest.raises(InputError):
-        channel_details_v1(auth_user_id, invalid_channel_id)
+        channel_details_v1(auth_user_id['auth_user_id'], invalid_channel_id)
 
 # raise InputError since channel_id passed doesn't match any of channels created
 def test_channel_id_doesnt_match_valid_channel_2():
     clear_v1()
     auth_user_id1 = auth_register_v1('z1234567@ad.unsw.edu.au', 'password', 'firstname', 'lastname');
-    valid_channel_id1 = channels_create_v1(auth_user_id1, 'First Channel', True)
-    auth_user_id2 = auth_register_v1('z7654321@ad.unsw.edu.au', 'cat', 'dog', 'chicken');
-    valid_channel_id2 = channels_create_v1(auth_user_id2, 'Second Channel', True)
-    auth_user_id3 = auth_register_v1('z3141592@ad.unsw.edu.au', 'potato', 'firstname', 'lastname');
-    valid_channel_id3 = channels_create_v1(auth_user_id3, 'Third Channel', False)
-    
+    valid_channel_id1 = channels_create_v1(auth_user_id1['auth_user_id'], 'First Channel', True)
+    auth_user_id2 = auth_register_v1('z7654321@ad.unsw.edu.au', 'password', 'dog', 'chicken');
+    valid_channel_id2 = channels_create_v1(auth_user_id2['auth_user_id'], 'Second Channel', True)
+    auth_user_id3 = auth_register_v1('z3141592@ad.unsw.edu.au', 'potatopotato', 'firstname', 'lastname');
+    valid_channel_id3 = channels_create_v1(auth_user_id3['auth_user_id'], 'Third Channel', False)
     
     # create a channel id that doesn't match any of the created channels
-    invalid_channel_id = valid_channel_id1 + valid_channel_id2 + valid_channel_id3
+    invalid_channel_id = {'channel_id': -100}
     with pytest.raises(InputError):
-        channel_details_v1(auth_user_id, invalid_channel_id)
+        channel_details_v1(auth_user_id['auth_user_id'], invalid_channel_id)
     
 
 # create a single private channel and list details with no errors
 def test_valid_channel_details_1():
     clear_v1()
     auth_user_id = auth_register_v1('z1234567@ad.unsw.edu.au', 'password', 'firstname', 'lastname');
-    valid_channel_id = channels_create_v1(auth_user_id, 'First Channel', True)
-    # assert channel_details_v1(auth_user_id, valid_channel_id) == {'name': 'First Channel', 'is_public': True}
+    valid_channel_id = channels_create_v1(auth_user_id['auth_user_id'], 'First Channel', True)
+    assert channel_details_v1(auth_user_id['auth_user_id'], valid_channel_id) == {'name': 'First Channel', 'is_public': True}
 
 # create a single public channel and list details with no errors
 def test_valid_channel_details_2():
     clear_v1()
     auth_user_id = auth_register_v1('z1234567@ad.unsw.edu.au', 'password', 'firstname', 'lastname');
     valid_channel_id = channels_create_v1(auth_user_id, 'First Channel', False)
-    assert channel_details_v1(auth_user_id, valid_channel_id) == {'name': 'First Channel', 'is_public': False}
+    assert channel_details_v1(auth_user_id['auth_user_id'], valid_channel_id) == {'name': 'First Channel', 'is_public': False}
 
 # create several channels and list details with no errors
 def test_valid_channel_details_3():
@@ -123,12 +123,9 @@ def test_valid_channel_details_3():
 #
 # note: while the invalid auth_user & channel id's passed should raise
 #       InputErrors on their own, the AccessError takes precedent
-def test_invalid_user_id_for_channel_join():
-    clear_v1()
-    invalid_channel_id = -100
-    invalid_auth_user_id = -100
-    with pytest.raises(AccessError):
-        channel_join_v1(invalid_auth_user_id, invalid_channel_id)
+
+
+
 
 # 
 #
@@ -152,12 +149,4 @@ def test_invalid_user_id_for_channel_join():
 #
 # note: while the invalid auth_user & channel id's passed should raise
 #       InputErrors on their own, the AccessError takes precedent
-def test_invalid_user_id_for_channel_invite():
-    clear_v1()
-    invalid_channel_id = -100
-    invalid_auth_user_id = -100
-    invalid_u_id = -100
-    with pytest.raises(AccessError):
-        channel_invite_v1(invalid_auth_user_id, invalid_channel_id,
-                          invalid_u_id)
 
