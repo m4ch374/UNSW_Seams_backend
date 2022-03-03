@@ -58,6 +58,27 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     }
 
 
+def channel_id_exist(channel_id):
+    channels = data_store.get()['channel']
+    return any(channel_id == channel.id for channel in channels)
+
+def user_in_channel(auth_user_id, channel_id):
+    channels = data_store.get()['channel']
+    for channel in channels:
+        if channel.id == channel_id:
+            for users in channel.members:
+                if auth_user_id == users.id:
+                    return True
+    return False
+
 def channel_join_v1(auth_user_id, channel_id):
-    return {
-    }
+    '''
+    if not channel_id_exist(channel_id):
+        raise InputError("Channel id invalid")
+    if user_in_channel(auth_user_id, channel_id):
+        raise InputError("User is already a member of the channel")
+    channels = data_store.get()['channel']
+    # join the user
+    data_store.set(channels)
+    '''
+    return {}
