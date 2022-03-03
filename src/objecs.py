@@ -140,6 +140,7 @@ class Channel:
         self.owners = [owner]
         self.members = [owner]
         self.is_public = is_public
+        self.messages = []
 
     def __generate_id(self):
         data = data_store.get()

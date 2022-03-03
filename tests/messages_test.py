@@ -1,7 +1,13 @@
+import sys
+sys.path.append('/Users/ellahuang/Documents/COMP1531/project-backend')
+
 import pytest
 from src.error import InputError, AccessError
+
 from src.channel import channel_messages_v1
+from src.channels import channels_create_v1
 from src.other import clear_v1
+from src.auth import auth_register_v1
 
 
 def test_invalid_channel_id():
@@ -30,5 +36,7 @@ def test_user_not_authorised():
 
 def test_end_returns():
     clear_v1()
-    assert channel_messages_v1(1, 2, 0) == ({'messages': [
-        {'message_id': 0, 'id': 1, 'string': 'hi', 'time': '07:41:19'}], 'start': 0, 'end': -1})
+    auth_register_v1('z5555555@ad.unsw.edu.au', '123456a', 'Anthony', 'Smith')
+    channels_create_v1(1, 'Ant', 'y')
+    assert channel_messages_v1(1, 1, 0) == {'messages': [], 'start': 0, 'end': -1}
+        
