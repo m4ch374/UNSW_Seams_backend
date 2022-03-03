@@ -147,10 +147,12 @@ new_user.email = new_email
 Example Usage:
 
 ```python
+auth_user_id = auth_register_v1(....)['auth_user_id']
 new_channel = Channel('this is a name', data_store.get_user(auth_user_id), True)
 
 # or
 
+auth_user_id = auth_register_v1(....)['auth_user_id']
 new_channel = Channel(
     name='this is a name',
     owner=data_store.get_user(auth_user_id),
