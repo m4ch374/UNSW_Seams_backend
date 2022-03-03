@@ -72,11 +72,6 @@ def another_id():
         'qqqqqqqqqq'
     )
     return auth_id['auth_user_id']
-
-# Returns a valid channel name
-@pytest.fixture
-def channel_name():
-    return "This is a name"
 # ==================================================
 
 # ============= Channels create v1 =================
@@ -154,26 +149,30 @@ def test_channels_create_pub_and_priv(auth_user_id):
 # Helper funtion
 # helper funtion for testing channels list with one user
 # creating n channels
-def list_helper_create_single(usr_1, name, n, is_public):
-    for i in range(n):
+def list_helper_create_single(usr_1, n, is_public):
+    local_name_list = NAMES_LIST[:n]
+
+    for name in local_name_list:
         chnl.channels_create_v1(usr_1, name, is_public)
     
     channel_list = chnl.channels_list_v1(usr_1)['channels']
-    expected_output = [{'channel_id': i + 1, 'name': name} for i in range(n)]
+    expected_output = [{'channel_id': i + 1, 'name': name} for i, name in enumerate(local_name_list)]
     assert channel_list == expected_output
 
 # helper function for testing channels list with multiple user
 # creating n channels
-def list_helper_create_multiple(usr_1, usr_2, name, n, is_public):
-    for i in range(n):
+def list_helper_create_multiple(usr_1, usr_2, n, is_public):
+    local_name_list = NAMES_LIST[:n]
+
+    for name in local_name_list:
         chnl.channels_create_v1(usr_1, name, is_public)
         chnl.channels_create_v1(usr_2, name, is_public)
 
     channel_list_usr_1 = chnl.channels_list_v1(usr_1)['channels']
     channel_list_usr_2 = chnl.channels_list_v1(usr_2)['channels']
 
-    expected_output_1 = [{'channel_id': i * 2 + 1, 'name': name} for i in range(n)]
-    expected_output_2 = [{'channel_id': i * 2 + 2, 'name': name} for i in range(n)]
+    expected_output_1 = [{'channel_id': i * 2 + 1, 'name': name} for i, name in enumerate(local_name_list)]
+    expected_output_2 = [{'channel_id': i * 2 + 2, 'name': name} for i, name in enumerate(local_name_list)]
 
     assert channel_list_usr_1 == expected_output_1
     assert channel_list_usr_2 == expected_output_2
@@ -181,26 +180,26 @@ def list_helper_create_multiple(usr_1, usr_2, name, n, is_public):
 # Should not raise any error
 #
 # Test the behaviour with only one user creating one channel
-def test_channels_list_1(auth_user_id, channel_name):
-    list_helper_create_single(auth_user_id, channel_name, 1, True)
+def test_channels_list_1(auth_user_id):
+    list_helper_create_single(auth_user_id, 1, True)
 
 # Should not raise any error
 #
 # Test the behaviour with only one user creating multiple channels
-def test_channels_list_2(auth_user_id, channel_name):
-    list_helper_create_single(auth_user_id, channel_name, 5, True)
+def test_channels_list_2(auth_user_id):
+    list_helper_create_single(auth_user_id, len(NAMES_LIST), True)
 
 # should not raise any error
 #
 # Test the behaviour with multiple user creating one channel each
-def test_channels_list_3(auth_user_id, another_id, channel_name):
-    list_helper_create_multiple(auth_user_id, another_id, channel_name, 1, True)
+def test_channels_list_3(auth_user_id, another_id):
+    list_helper_create_multiple(auth_user_id, another_id, 1, True)
 
 # should not raise any error
 #
 # Test the behaviour with multiple user creating multiple channel each
-def test_channels_list_4(auth_user_id, another_id, channel_name):
-    list_helper_create_multiple(auth_user_id, another_id, channel_name, 5, True)
+def test_channels_list_4(auth_user_id, another_id):
+    list_helper_create_multiple(auth_user_id, another_id, len(NAMES_LIST), True)
 
 # should not raise any error
 #
@@ -213,7 +212,7 @@ def test_channels_list_5(auth_user_id):
 #
 # Test the behaviour with multiple user creating multiple channels and
 # joining different channels
-def test_channels_list_6(auth_user_id, another_id, channel_name):
+def test_channels_list_7(auth_user_id, another_id, channel_name):
     for i in range(5):
         chnl.channels_create_v1(auth_user_id, channel_name, True)
         chnl.channels_create_v1(another_id, channel_name, True)
@@ -238,110 +237,126 @@ def test_channels_list_6(auth_user_id, another_id, channel_name):
 # Helper function
 # helper function for testing listall with one user creating
 # n channels
-def listall_helper_create_single(usr_1, name, n, is_public):
-    for i in range(n):
-        chnl.channels_create_v1(usr_1, name, is_public)
-    
-    assert len(chnl.channels_listall_v1(usr_1)['channels']) == n
+#
+# NOTE: if is_alt is True, is_public will have no effect
+# since the channels created will alternate between public and private 
+def listall_helper_create_single(usr_1, n, is_public, is_alt):
+    local_name_list = NAMES_LIST[:n]
 
-# helper function for testing listall with one user creating
-# n channels for public and private each
-def listall_helper_create_single_alt(usr_1, name, n):
-    for i in range(n):
-        chnl.channels_create_v1(usr_1, name, True)
-        chnl.channels_create_v1(usr_1, name, False)
+    for i, name in enumerate(local_name_list):
+        if is_alt:
+            chnl.channels_create_v1(usr_1, name, i % 2)
+        else:
+            chnl.channels_create_v1(usr_1, name, is_public)
     
-    assert len(chnl.channels_listall_v1(usr_1)['channels']) == n * 2
+    expected_output = [{'channel_id': i + 1, 'name': name} for i, name in enumerate(local_name_list)]
+    assert chnl.channels_listall_v1(usr_1)['channels'] == expected_output
 
 # helper function for testing listall with multiple user creating
 # n public and private channels
-def listall_helper_create_multiple(usr_1, usr_2, name, n, is_public):
-    for i in range(n):
-        chnl.channels_create_v1(usr_1, name, is_public)
-        chnl.channels_create_v1(usr_2, name, is_public)
+def listall_helper_create_multiple(usr_1, usr_2, n, is_public):
+    local_name_list = NAMES_LIST[:n]
+
+    for i, name in enumerate(local_name_list):
+        if i % 2:
+            chnl.channels_create_v1(usr_1, name, is_public)
+        else:
+            chnl.channels_create_v1(usr_2, name, is_public)
+
+    expected_output_1 = [{'channel_id': i + 1, 'name': name} for i, name in enumerate(local_name_list)]
+    expected_output_2 = [{'channel_id': i + 1, 'name': name} for i, name in enumerate(local_name_list)]
     
-    assert len(chnl.channels_listall_v1(usr_1)['channels']) == n * 2
+    assert chnl.channels_listall_v1(usr_1)['channels'] == expected_output_1
+    assert chnl.channels_listall_v1(usr_2)['channels'] == expected_output_2
 
 # helper function for testing listall with multiple user creating
 # n channels, one only creates public channel while the other creates private
-def listall_helper_create_multiple_alt(usr_1, usr_2, name, n):
-    for i in range(n):
-        chnl.channels_create_v1(usr_1, name, True)
-        chnl.channels_create_v1(usr_2, name, False)
+def listall_helper_create_multiple_alt(usr_1, usr_2, n):
+    local_name_list = NAMES_LIST[:n]
+
+    for i, name in enumerate(local_name_list):
+        if i % 2:
+            chnl.channels_create_v1(usr_1, name, True)
+        else:
+            chnl.channels_create_v1(usr_2, name, False)
     
-    assert len(chnl.channels_listall_v1(usr_1)['channels']) == n * 2
+    expected_output_1 = [{'channel_id': i + 1, 'name': name} for i, name in enumerate(local_name_list)]
+    expected_output_2 = [{'channel_id': i + 1, 'name': name} for i, name in enumerate(local_name_list)]
+    
+    assert chnl.channels_listall_v1(usr_1)['channels'] == expected_output_1
+    assert chnl.channels_listall_v1(usr_2)['channels'] == expected_output_2
 
 # should not raise any error
 #
 # Test the behaviour of one user creating one public channel
-def test_channels_list_all_1(auth_user_id, channel_name):
-    listall_helper_create_single(auth_user_id, channel_name, 1, True)
+def test_channels_list_all_1(auth_user_id):
+    listall_helper_create_single(auth_user_id, 1, True, False)
 
 # should not raise any error
 #
 # Test the behaviour of one user creating one private channel
-def test_channels_list_all_2(auth_user_id, channel_name):
-    listall_helper_create_single(auth_user_id, channel_name, 1, False)
+def test_channels_list_all_2(auth_user_id):
+    listall_helper_create_single(auth_user_id, 1, False, False)
 
 # should not raise any error
 #
 # Test the behaviour of one user creating one private channel
 # and one public channel
-def test_channels_list_all_3(auth_user_id, channel_name):
-    listall_helper_create_single_alt(auth_user_id, channel_name, 1)
+def test_channels_list_all_3(auth_user_id):
+    listall_helper_create_single(auth_user_id, 2, True, True)
 
 # should not raise any error
 #
 # Test the behaviour of one user creating multiple public channels
-def test_channels_list_all_4(auth_user_id, channel_name):
-    listall_helper_create_single(auth_user_id, channel_name, 5, True)
+def test_channels_list_all_4(auth_user_id):
+    listall_helper_create_single(auth_user_id, len(NAMES_LIST), True, False)
 
 # should not raise any error
 #
 # Test the behaviour of one user creating multiple private channels
-def test_channels_list_all_5(auth_user_id, channel_name):
-    listall_helper_create_single(auth_user_id, channel_name, 5, False)
+def test_channels_list_all_5(auth_user_id):
+    listall_helper_create_single(auth_user_id, len(NAMES_LIST), False, False)
 
 # should not rause any error
 #
 # Test the behaviour of multiple user creating one
 # public channel each
-def test_channels_list_all_6(auth_user_id, another_id, channel_name):
-    listall_helper_create_multiple(auth_user_id, another_id, channel_name, 1, True)
+def test_channels_list_all_6(auth_user_id, another_id):
+    listall_helper_create_multiple(auth_user_id, another_id, 1, True)
 
 # should not rause any error
 #
 # Test the behaviour of multiple user creating one
 # private channel each
-def test_channels_list_all_7(auth_user_id, another_id, channel_name):
-    listall_helper_create_multiple(auth_user_id, another_id, channel_name, 1, False)
+def test_channels_list_all_7(auth_user_id, another_id):
+    listall_helper_create_multiple(auth_user_id, another_id, 1, False)
 
 # should not raise any error
 #
 # Test the behaviour of 2 user one creating a public channel
 # and another one creates a private channel
-def test_channels_list_all_8(auth_user_id, another_id, channel_name):
-    listall_helper_create_multiple_alt(auth_user_id, another_id, channel_name, 1)
+def test_channels_list_all_8(auth_user_id, another_id):
+    listall_helper_create_multiple_alt(auth_user_id, another_id, 1)
 
 # should not raise any error
 #
 # Test the behaviour of multiple user one creating 
 # multiple public channels
-def test_channels_list_all_9(auth_user_id, another_id, channel_name):
-    listall_helper_create_multiple(auth_user_id, another_id, channel_name, 5, True)
+def test_channels_list_all_9(auth_user_id, another_id):
+    listall_helper_create_multiple(auth_user_id, another_id, 5, True)
 
 # should not raise any error
 #
 # Test the behaviour of multiple user one creating 
 # multiple private channels
-def test_channels_list_all_10(auth_user_id, another_id, channel_name):
-    listall_helper_create_multiple(auth_user_id, another_id, channel_name, 5, False)
+def test_channels_list_all_10(auth_user_id, another_id):
+    listall_helper_create_multiple(auth_user_id, another_id, 5, False)
 
 # should not raise any error
 #
 # Test the behaviour of multiple user creating
 # multiple public and private channels
-def test_channels_list_all_11(auth_user_id, another_id, channel_name):
-    listall_helper_create_multiple_alt(auth_user_id, another_id, channel_name, 5)
+def test_channels_list_all_11(auth_user_id, another_id):
+    listall_helper_create_multiple_alt(auth_user_id, another_id, 5)
 
 # ==================================================
