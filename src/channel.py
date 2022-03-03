@@ -1,4 +1,3 @@
-from re import A
 from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.objecs import Channel
