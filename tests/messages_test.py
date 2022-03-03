@@ -30,8 +30,11 @@ def test_invalid_start_messgae_id_2():
 
 def test_user_not_authorised():
     clear_v1()
+    auth_register_v1('z5555555@ad.unsw.edu.au', '123456a', 'Anthony', 'Smith')
+    auth_register_v1('z5222222@ad.unsw.edu.au', 'abcde123', 'Brian', 'Smith')
+    channels_create_v1(1, 'Ant', 'y')
     with pytest.raises(AccessError):
-        assert channel_messages_v1(3, 1, 0)
+        assert channel_messages_v1(2, 1, 0)
 
 
 def test_end_returns():
