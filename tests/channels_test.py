@@ -195,7 +195,7 @@ def test_channels_list_2(auth_user_id):
 #
 # Test the behaviour with multiple user creating one channel each
 def test_channels_list_3(auth_user_id, another_id):
-    list_helper_create_multiple(auth_user_id, another_id, 1, True)
+    list_helper_create_multiple(auth_user_id, another_id, 2, True)
 
 # should not raise any error
 #
