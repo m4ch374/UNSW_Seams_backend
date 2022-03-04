@@ -1,11 +1,6 @@
 from src.data_store import data_store
 from src.error import InputError, AccessError
-<<<<<<< HEAD
 from src.objecs import Channel
-=======
-import src.channels as channels
-import src.objecs as obj 
->>>>>>> james_channel_branch
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
     return {
@@ -31,34 +26,6 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
 #   - all_members (list of dictionaires)
 >>>>>>> james_channel_branch
 def channel_details_v1(auth_user_id, channel_id):
-    
-    # testing if the auth_user_id passed is valid (AccessError if invalid)
-    store = data_store.get()
-    is_auth_user_id_valid = False
-    for user in store['users']:
-        if auth_user_id == user.id:
-            is_auth_user_id_valid = True
-    if is_auth_user_id_valid == False:
-        raise AccessError("auth user id passed is invalid!")
-        
-        
-    channels_dict = channels.channels_listall_v1(auth_user_id)
-    channels_list = channels_dict['channels']
-    
-    # FOR DEBUGGING ONLY
-    print(f"channels dict is {channels_dict}")
-    print(channels_dict['channels'])
-    print(f"channels_list[0] is :{channels_list[0]}")
-    print(f"channels_list[0]['channel_id'] is :{channels_list[0]['channel_id']}")
-    
-    is_channel_id_valid = False
-    for idx, channel in enumerate(channels_list):
-        print(channel['channel_id'])
-        if channel['channel_id'] == channel_id:
-            is_channel_id_valid = True
-            
-    if is_channel_id_valid != False:
-        raise InputError("channel id passed is invalid!")
     
     
     return {
