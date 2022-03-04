@@ -52,3 +52,75 @@ def test_channel_details_invalid_access(initialise_user_and_channel):
 def test_channel_details_invalid_channel_and_user(initialise_user_and_channel):
     with pytest.raises(AccessError):
         assert channel_details_v1(2, 2)
+
+
+
+#########################################
+
+# add an authorised user to a created channel with no errors
+#
+# 
+def test_channel_join_valid_1():
+    clear_v1()
+    auth_user_id = auth_register_v1('z1234567@ad.unsw.edu.au', 'password', 'firstname', 'lastname')
+    valid_channel_id = channels_create_v1(auth_user_id['auth_user_id'], 'First Channel', True)
+    auth_user_id2 = auth_register_v1('z1111111@ad.unsw.edu.au', 'ypspspsp', 'firstname', 'lastname')
+    
+    channel_join_v1(auth_user_id2['auth_user_id'], valid_channel_id['channel_id'])
+    assert channels_listall_v1(auth_user_id['auth_user_id']) == {'channels': [{'channel_id': 1, 'name': 'First Channel'}]}
+    
+# add several authorised users to a created channel with no errors
+#
+# 
+def test_channel_join_valid_2():
+    clear_v1()
+    auth_user_id = auth_register_v1('z1234567@ad.unsw.edu.au', 'password', 'firstname', 'lastname')
+    valid_channel_id = channels_create_v1(auth_user_id['auth_user_id'], 'First Channel', True)
+    
+    auth_user_id2 = auth_register_v1('z1111111@ad.unsw.edu.au', 'ypspspsp', 'firstname', 'lastname')
+    auth_user_id3 = auth_register_v1('z3141592@ad.unsw.edu.au', 'potatopotato', 'firstname', 'lastname')
+    
+    channel_join_v1(auth_user_id2['auth_user_id'], valid_channel_id['channel_id'])
+    channel_join_v1(auth_user_id3['auth_user_id'], valid_channel_id['channel_id'])
+    
+    assert channels_listall_v1(auth_user_id2['auth_user_id']) == {'channels': [{'channel_id': 1, 'name': 'First Channel'}]}
+    assert channels_listall_v1(auth_user_id3['auth_user_id']) == {'channels': [{'channel_id': 1, 'name': 'First Channel'}]}
+    
+# add a user to several channels with no errors
+#
+#
+def test_channel_join_valid_3():
+    clear_v1()
+    auth_user_id1 = auth_register_v1('z1234567@ad.unsw.edu.au', 'password', 'firstname', 'lastname')
+    valid_channel_id1 = channels_create_v1(auth_user_id1['auth_user_id'], 'First Channel', True)
+    
+    auth_user_id2 = auth_register_v1('z7654321@ad.unsw.edu.au', 'password', 'firstname', 'lastname')
+    valid_channel_id2 = channels_create_v1(auth_user_id2['auth_user_id'], 'Second Channel', True)
+    auth_user_id3 = auth_register_v1('z3141592@ad.unsw.edu.au', 'potatopotato', 'firstname', 'lastname')
+    channel_join_v1(auth_user_id3['auth_user_id'], valid_channel_id1['channel_id'])
+    channel_join_v1(auth_user_id3['auth_user_id'], valid_channel_id2['channel_id'])
+    assert channels_listall_v1(auth_user_id3['auth_user_id']) == {'channels': [{'channel_id': 1, 'name': 'First Channel'}, {'channel_id': 2, 'name': 'Second Channel'}]}
+
+
+
+###############################################################
+
+# raise InputError since the auth user being joined is already the only
+# member of the channel
+# 
+def test_channel_join_user_already_member_1():
+    clear_v1()
+    auth_user_id = auth_register_v1('z1234567@ad.unsw.edu.au', 'password', 'firstname', 'lastname')
+    valid_channel_id = channels_create_v1(auth_user_id['auth_user_id'], 'First Channel', True)
+    
+# raise AccessError since channel_id refers to private channel, auth 
+#   user is not part of channel and member is not global owner
+#
+def test_channel_raise_access_error():
+    clear_v1()
+    auth_user_id = auth_register_v1('z1234567@ad.unsw.edu.au', 'password', 'firstname', 'lastname')
+    valid_channel_id = channels_create_v1(auth_user_id['auth_user_id'], 'First Channel', False)
+    auth_user_id2 = auth_register_v1('z1111111@ad.unsw.edu.au', 'ypspspsp', 'firstname', 'lastname')
+    
+    with pytest.raises(AccessError):
+        assert channel_details_v1(2, 2)
