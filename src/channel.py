@@ -4,27 +4,9 @@ from src.objecs import Channel
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
     return {
-    
     }
 
-<<<<<<< HEAD
 
-=======
-# Arguments:
-#   - auth_user_id (int)
-#   - channel_id (int)
-#
-# Exceptions:
-#   - InputError -> raised when channel_id does not refer to a valid channel
-#   - AccessError -> raised when channel_id is valid and the authorised user is 
-#                    not a member of the channel
-#
-# Returns:
-#   - name (string)
-#   - is_public (boolean)
-#   - owner_members (list of dictionaries)
-#   - all_members (list of dictionaires)
->>>>>>> james_channel_branch
 def channel_details_v1(auth_user_id, channel_id):
     
     
@@ -49,7 +31,6 @@ def channel_details_v1(auth_user_id, channel_id):
             }
         ],
     }
-    
 
 print(data_store.get_channel(0))
 def channel_messages_v1(auth_user_id, channel_id, start):
@@ -80,12 +61,5 @@ def channel_messages_v1(auth_user_id, channel_id, start):
 
 
 def channel_join_v1(auth_user_id, channel_id):
-    
-    
-    
-    
-    
     return {
     }
-
-
