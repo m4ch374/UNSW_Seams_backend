@@ -69,9 +69,17 @@ class Datastore:
     def has_channel(self, id):
         for chnl in self.__store['channel']:
             if id == chnl.id:
-                return 1
+                return True
         
-        return None
+        return False
+    
+    def has_user(self, id):
+        for user in self.__store['users']:
+            if id == user.id:
+                return True
+
+        return False
+        
 print('Loading Datastore...')
 
 global data_store
