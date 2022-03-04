@@ -75,6 +75,7 @@ def channels_create_v1(auth_user_id, name, is_public):
     data['channel'].append(new_channel)
     data_store.set(data)
 
+
     return {
         'channel_id': new_channel.id,
     }
