@@ -8,46 +8,34 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
 
 
 def channel_details_v1(auth_user_id, channel_id):
+
+    if data_store.has_user(auth_user_id) == False:
+        raise AccessError
+    if data_store.has_channel(channel_id) == False:
+        raise InputError
+    channel = data_store.get_channel(channel_id)
     
-    
-    return {
-        'name': 'Hayden',
-        'owner_members': [
-            {
-                'u_id': 1,
-                'email': 'example@gmail.com',
-                'name_first': 'Hayden',
-                'name_last': 'Jacobs',
-                'handle_str': 'haydenjacobs',
-            }
-        ],
-        'all_members': [
-            {
-                'u_id': 1,
-                'email': 'example@gmail.com',
-                'name_first': 'Hayden',
-                'name_last': 'Jacobs',
-                'handle_str': 'haydenjacobs',
-            }
-        ],
-    }
+    if channel.has_member(auth_user_id) == False:
+        raise AccessError
+
+    return channel.channel_details_dict()
+
 
 def channel_messages_v1(auth_user_id, channel_id, start):
     
     # Checking valid channel id, start id and user access
-    if channel_id < 0 or start < 0 or auth_user_id < 0:
-        raise InputError
-    if data_store.has_channel(channel_id) == None:
-        raise InputError
-
-    channel = data_store.get_channel(channel_id)
-    if start > len(channel.messages):
-        raise InputError
-    if channel.has_member(auth_user_id) == False:
+    if data_store.has_user(auth_user_id) == False:
         raise AccessError
     user = data_store.get_user(auth_user_id)
-    if user not in channel.members:
+    
+    if data_store.has_channel(channel_id) == False:
+        raise InputError
+    channel = data_store.get_channel(channel_id)
+    
+    if channel.has_member_id(auth_user_id) == False:
         raise AccessError
+    if start > len(channel.messages) or start < 0:
+        raise InputError
     
 
     # Splitting the stored messages list to paginate returned messages
@@ -66,5 +54,10 @@ def channel_messages_v1(auth_user_id, channel_id, start):
 
 
 def channel_join_v1(auth_user_id, channel_id):
+    channel = data_store.get_channel(channel_id)
+    user = data_store.get_user(auth_user_id)
+    channel.add_member(user)
+
     return {
+
     }
