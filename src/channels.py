@@ -13,6 +13,8 @@ from src.objecs import Channel
 
 # Return value:
 #       Returns a dict containing only field "channels" of type list
+
+
 def channels_list_v1(auth_user_id):
     channels_list = data_store.get()['channel']
 
@@ -34,6 +36,8 @@ def channels_list_v1(auth_user_id):
 
 # Note:
 #       auth_user_id is useless for now afaik
+
+
 def channels_listall_v1(auth_user_id):
     channels_list = data_store.get()['channel']
 
@@ -53,9 +57,12 @@ def channels_listall_v1(auth_user_id):
 
 # Return value:
 #       Returns a dict containing channel_id of type int
+
+
 def channels_create_v1(auth_user_id, name, is_public):
     if name == None or len(name) == 0 or len(name) > 20:
-        raise InputError("error: Channel name should have 1 - 20 characters inclusive")
+        raise InputError(
+            "error: Channel name should have 1 - 20 characters inclusive")
 
     new_channel = Channel(
         name=name,
