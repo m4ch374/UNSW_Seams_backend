@@ -12,6 +12,22 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     }
 
 
+# Function that determines if auth_user_id passed in is invalid
+#
+# Arguments:
+#   - auth_user_id (int)
+#
+# Returns:
+#   - True if valid
+#   - False if invalid
+def is_auth_id_valid(auth_user_id):
+    store = data_store.get()
+    is_auth_user_id_valid = False
+    for user in store['users']:
+        if auth_user_id == user.id:
+            is_auth_user_id_valid = True
+    return is_auth_user_id_valid
+
 # Arguments:
 #   - auth_user_id (int)
 #   - channel_id (int)
@@ -28,34 +44,6 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
 #   - all_members (list of dictionaires)
 
 def channel_details_v1(auth_user_id, channel_id):
-    
-    # testing if the auth_user_id passed is valid (AccessError if invalid)
-    store = data_store.get()
-    is_auth_user_id_valid = False
-    for user in store['users']:
-        if auth_user_id == user.id:
-            is_auth_user_id_valid = True
-    if is_auth_user_id_valid == False:
-        raise AccessError("auth user id passed is invalid!")
-        
-        
-    channels_dict = channels.channels_listall_v1(auth_user_id)
-    channels_list = channels_dict['channels']
-    
-    # FOR DEBUGGING ONLY
-    print(f"channels dict is {channels_dict}")
-    print(channels_dict['channels'])
-    print(f"channels_list[0] is :{channels_list[0]}")
-    print(f"channels_list[0]['channel_id'] is :{channels_list[0]['channel_id']}")
-    
-    is_channel_id_valid = False
-    for idx, channel in enumerate(channels_list):
-        print(channel['channel_id'])
-        if channel['channel_id'] == channel_id:
-            is_channel_id_valid = True
-            
-    if is_channel_id_valid != False:
-        raise InputError("channel id passed is invalid!")
     
     
     return {
@@ -122,16 +110,30 @@ def user_in_channel(auth_user_id, channel_id):
                     return True
     return False
 
-def channel_join_v1(auth_user_id, channel_id):
+def able_access(auth_user_id, channel_id):
+    user = data_store.get_user(auth_user_id)
+    channels = data_store.get_channel(channel_id)
+    if not user.owner and not channels.is_public:
+        return False
+    return True
 
-    '''
+#
+#
+#
+def channel_join_v1(auth_user_id, channel_id):
+    if is_auth_id_valid(auth_user_id) == False:
+        raise AccessError("Auth user id passed is invalid!")
+    
     if not channel_id_exist(channel_id):
         raise InputError("Channel id invalid")
     if user_in_channel(auth_user_id, channel_id):
         raise InputError("User is already a member of the channel")
-    channels = data_store.get()['channel']
-    # join the user
-    data_store.set(channels)
-    '''
+    if not able_access(auth_user_id, channel_id):
+        raise AccessError("Channel is prive")
+    
+    # now that no errors have been detected, join the user to the channel
+    chnl = data_store.get_channel(channel_id)
+    chnl.add_member_id(auth_user_id)
+    
     return {}
 
