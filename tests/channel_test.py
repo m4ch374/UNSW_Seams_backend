@@ -112,15 +112,3 @@ def test_channel_join_user_already_member_1():
     clear_v1()
     auth_user_id = auth_register_v1('z1234567@ad.unsw.edu.au', 'password', 'firstname', 'lastname')
     valid_channel_id = channels_create_v1(auth_user_id['auth_user_id'], 'First Channel', True)
-    
-# raise AccessError since channel_id refers to private channel, auth 
-#   user is not part of channel and member is not global owner
-#
-def test_channel_raise_access_error():
-    clear_v1()
-    auth_user_id = auth_register_v1('z1234567@ad.unsw.edu.au', 'password', 'firstname', 'lastname')
-    valid_channel_id = channels_create_v1(auth_user_id['auth_user_id'], 'First Channel', False)
-    auth_user_id2 = auth_register_v1('z1111111@ad.unsw.edu.au', 'ypspspsp', 'firstname', 'lastname')
-    
-    with pytest.raises(AccessError):
-        assert channel_details_v1(2, 2)
