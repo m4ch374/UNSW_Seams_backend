@@ -129,7 +129,7 @@ def channel_join_v1(auth_user_id, channel_id):
     if user_in_channel(auth_user_id, channel_id):
         raise InputError("User is already a member of the channel")
     if not able_access(auth_user_id, channel_id):
-        raise AccessError("Channel is prive")
+        raise AccessError("Channel is private")
     
     # now that no errors have been detected, join the user to the channel
     chnl = data_store.get_channel(channel_id)
