@@ -69,7 +69,7 @@ class User:
     '''
     Arguments:
         firsatname (string)    - user's first name
-        lastname (sting)    - user's last name
+        lastname (string)    - user's last name
 
     Return Value:
         handle (string)   - Remove non-alphanumeric characters and convert to lowercase
