@@ -92,6 +92,18 @@ class User:
         return handle
 
     '''
+    Function that determines if a user is in the channel
+    Arguments:
+        - channel_id (int)
+    Return Value:
+        - True - if user is in channel
+        - False - if user is not in channel
+    '''
+    def is_in_channel_id(self, chnl_id):
+        print([chnl.id for chnl in self.channels])
+        return any(chnl_id == chnl.id for chnl in self.channels)
+
+    '''
         Output format following section 6.1. of the sepec
     '''
     def to_dict(self):
@@ -146,6 +158,9 @@ class Channel:
         self.members = [owner]
         self.is_public = is_public
         self.messages = []
+
+        # Add this channel to users channel list
+        owner.channels.append(self)
 
     '''
         Generates id for Channel

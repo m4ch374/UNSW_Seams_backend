@@ -1,9 +1,18 @@
 from src.data_store import data_store
 from src.error import InputError, AccessError
 
-import src.channels as channels
-
-from src.objecs import Channel
+'''
+Function that determines if a user is in the channel
+Arguments:
+    - auth_user_id (int)
+    - channel_id (int)
+Return Value:
+    - True - if user is in channel
+    - False - if user is not in channel
+'''
+def user_in_channel(auth_user_id, channel_id):
+    user = data_store.get_user(auth_user_id)
+    return user.is_in_channel_id(channel_id)
 
 '''
 Function: channel_invite_v1
@@ -24,13 +33,13 @@ Exceptions:
 Return Value:{}
 '''
 def channel_invite_v1(auth_user_id, channel_id, u_id):
-    if is_auth_id_valid(auth_user_id) == False:
+    if data_store.has_user_id(auth_user_id) == False:
         raise AccessError("Auth user id passed is invalid!")
-    if not channel_id_exist(channel_id):
+    if not data_store.has_channel_id(channel_id):
         raise InputError("Channel id invalid")
     if not user_in_channel(auth_user_id, channel_id):
         raise AccessError("Auth user id is not a member of the channel")
-    if is_auth_id_valid(u_id) == False:
+    if data_store.has_user_id(u_id) == False:
         raise InputError("User id passed is invalid!")
     if user_in_channel(u_id, channel_id):
         raise InputError("User is already a member of the channel")
@@ -38,25 +47,6 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     chnl = data_store.get_channel(channel_id)
     chnl.add_member_id(u_id)
     return {}
-
-'''
-Function that determines if auth_user_id passed in is invalid
-
-Arguments:
-    - auth_user_id (int)
-Exceptions:
-    None
-Return Value:
-    - True if auth_user_id exists
-    - False if auth_user_id does not exist
-'''
-def is_auth_id_valid(auth_user_id):
-    store = data_store.get()
-    is_auth_user_id_valid = False
-    for user in store['users']:
-        if auth_user_id == user.id:
-            is_auth_user_id_valid = True
-    return is_auth_user_id_valid
 
 
 '''
@@ -81,9 +71,9 @@ Arguments:
 
 def channel_details_v1(auth_user_id, channel_id):
     
-    if data_store.has_user(auth_user_id) == False:
+    if data_store.has_user_id(auth_user_id) == False:
         raise AccessError
-    if data_store.has_channel(channel_id) == False:
+    if data_store.has_channel_id(channel_id) == False:
         raise InputError
     channel = data_store.get_channel(channel_id)
     
@@ -115,11 +105,11 @@ Arguments:
 def channel_messages_v1(auth_user_id, channel_id, start):
     
     # Checking valid channel id, start id and user access
-    if data_store.has_user(auth_user_id) == False:
+    if data_store.has_user_id(auth_user_id) == False:
         raise AccessError
     user = data_store.get_user(auth_user_id)
     
-    if data_store.has_channel(channel_id) == False:
+    if data_store.has_channel_id(channel_id) == False:
         raise InputError
     channel = data_store.get_channel(channel_id)
     
@@ -143,30 +133,6 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         'start': start,
         'end': end,
     }
-'''
-Function that finds and returns a channel when given a channel_id
-'''
-def channel_id_exist(channel_id):
-    channels = data_store.get()['channel']
-    return any(channel_id == channel.id for channel in channels)
-
-'''
-Function that determines if a user is in the channel
-Arguments:
-    - auth_user_id (int)
-    - channel_id (int)
-Return Value:
-    - True - if user is in channel
-    - False - if user is not in channel
-'''
-def user_in_channel(auth_user_id, channel_id):
-    channels = data_store.get()['channel']
-    for channel in channels:
-        if channel.id == channel_id:
-            for users in channel.members:
-                if auth_user_id == users.id:
-                    return True
-    return False
 
 '''
 Function that determines if a user is allowed to access the channel
@@ -202,10 +168,10 @@ Exceptions:
 Return Value:{}
 '''
 def channel_join_v1(auth_user_id, channel_id):
-    if is_auth_id_valid(auth_user_id) == False:
+    if data_store.has_user_id(auth_user_id) == False:
         raise AccessError("Auth user id passed is invalid!")
-    
-    if not channel_id_exist(channel_id):
+
+    if not data_store.has_channel_id(channel_id):
         raise InputError("Channel id invalid")
     if user_in_channel(auth_user_id, channel_id):
         raise InputError("User is already a member of the channel")
