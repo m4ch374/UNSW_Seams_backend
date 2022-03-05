@@ -6,7 +6,7 @@ from src.objecs import User
 
 '''
 Arguments:
-    email (sting)    - user's email
+    email (string)    - user's email
     password (string)    - password for login
 
 Return Value:
@@ -49,7 +49,7 @@ def auth_login_v1(email, password):
 
 '''
 Arguments:
-    email (sting)    - user's email
+    email (string)    - user's email
 
 Return Value:
     Returns True when email is valid
@@ -61,7 +61,7 @@ def check_email_valid(email):
 
 '''
 Arguments:
-    email (sting)   - user's email
+    email (string)   - user's email
 
 Return Value:
     boolean         - False if email already exist
@@ -74,7 +74,7 @@ def email_is_new(email):
 
 '''
 Arguments:
-    email (sting)    - user's email
+    email (string)    - user's email
     password (string)    - user's password
     name_first (string)    - user's first name
     name_last (string)    - user's last name
