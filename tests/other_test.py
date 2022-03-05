@@ -1,4 +1,3 @@
-import pytest
 from src.other import clear_v1
 
 from src.data_store import data_store

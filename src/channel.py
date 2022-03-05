@@ -1,10 +1,6 @@
 from src.data_store import data_store
 from src.error import InputError, AccessError
 
-import src.channels as channels
-
-from src.objecs import Channel
-
 '''
 Function: channel_invite_v1
 Invites a user with ID u_id to join a channel with ID channel_id. Once invited, 
