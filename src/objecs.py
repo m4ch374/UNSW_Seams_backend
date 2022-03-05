@@ -55,7 +55,7 @@ class User:
 
     '''
     Arguments:
-        handle (sting)    - user's email
+        handle (string)    - user's email
         users  (list)     - a list of all user
 
     Return Value:
@@ -68,7 +68,7 @@ class User:
 
     '''
     Arguments:
-        firsatname (sting)    - user's first name
+        firsatname (string)    - user's first name
         lastname (sting)    - user's last name
 
     Return Value:
