@@ -1,3 +1,5 @@
+1. Assuming that all inputs provided will be in the correct format/order/numer (Other than those stated error cases in asignment specs)
+2. Assuming that message id 0 will always be valid, for the sake of current autotests. Subject to change later once an add messages function is implemented.
 
 data_store = {
 	'users': [

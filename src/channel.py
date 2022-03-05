@@ -58,46 +58,81 @@ def is_auth_id_valid(auth_user_id):
             is_auth_user_id_valid = True
     return is_auth_user_id_valid
 
+
+'''
+Function: channel_details_v1
+Given a channel with ID channel_id that the authorised user is a member of, 
+provide basic details about the channel.
+
+Arguments:
+   - auth_user_id - id of the user requesting channe details
+   - channel_id - id of the channel whose details are being requested
+
+ Exceptions:
+   - InputError - Occurs when channel_id does not refer to valid channel
+   - AccessError -> Occurs when the user id is invalid or when the ids are valid the 
+                    user is not a member of the channel. Takes priority over InputError
+ Returns:
+   - name (string) when no errors raised
+   - is_public (boolean) when no errors raised
+   - owner_members (list of dictionaries) when no errors raised
+   - all_members (list of dictionaires) when no errors raised
+'''
+
 def channel_details_v1(auth_user_id, channel_id):
     
+    if data_store.has_user(auth_user_id) == False:
+        raise AccessError
+    if data_store.has_channel(channel_id) == False:
+        raise InputError
+    channel = data_store.get_channel(channel_id)
     
-    return {
-        'name': 'Hayden',
-        'owner_members': [
-            {
-                'u_id': 1,
-                'email': 'example@gmail.com',
-                'name_first': 'Hayden',
-                'name_last': 'Jacobs',
-                'handle_str': 'haydenjacobs',
-            }
-        ],
-        'all_members': [
-            {
-                'u_id': 1,
-                'email': 'example@gmail.com',
-                'name_first': 'Hayden',
-                'name_last': 'Jacobs',
-                'handle_str': 'haydenjacobs',
-            }
-        ],
-    }
+    if channel.has_member_id(auth_user_id) == False:
+        raise AccessError
+
+    return channel.channel_details_dict()
+
+'''
+Function: channel_messages_v1
+Given a channel with ID channel_id that the authorised user is a member of, 
+returns up to 50 messages starting from given start position.
+
+Arguments:
+   - auth_user_id - id of the user requesting messages
+   - channel_id - id of the channel messages are being requested from
+   - start - the id of first message that is required
+ Exceptions:
+   - InputError - Occurs when channel_id does not refer to valid channel or start does not 
+                  refer to a valid message id
+   - AccessError -> Occurs when the user id is invalid or when the ids are valid the 
+                    user is not a member of the channel. Takes priority over InputError
+ Returns:
+   - messages (list of dictionaries) when no errors raised
+   - start (integer) when no errors raised
+   - end (integer) when no errors raised
+'''
 
 def channel_messages_v1(auth_user_id, channel_id, start):
     
-    channel = data_store.get_channel(channel_id)
-    if channel == None:
+    # Checking valid channel id, start id and user access
+    if data_store.has_user(auth_user_id) == False:
+        raise AccessError
+    user = data_store.get_user(auth_user_id)
+    
+    if data_store.has_channel(channel_id) == False:
         raise InputError
-
+    channel = data_store.get_channel(channel_id)
+    
+    if channel.has_member_id(auth_user_id) == False:
+        raise AccessError
     if start > len(channel.messages) or start < 0:
         raise InputError
+    
+    
 
-    user = data_store.get_user(auth_user_id)
-    if user not in channel.members:
-        raise AccessError
-
+    # Splitting the stored messages list to paginate returned messages
     if start + 50 < len(channel.messages):
-        end = start +50
+        end = start + 50
         messages = channel.messages[start:start+50]
     else: 
         end = -1

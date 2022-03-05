@@ -181,6 +181,7 @@ class Channel:
     def channel_details_dict(self):
         return_dict = {
             'name': self.name,
+            'is_public': self.is_public,
             'owner_members': [owner.to_dict() for owner in self.owners],
             'all_members': [member.to_dict() for member in self.members],
         }
