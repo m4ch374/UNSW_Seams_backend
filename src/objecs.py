@@ -46,6 +46,9 @@ class User:
         self.channels = []
         self.owner = False
 
+    '''
+        Generates id for user
+    '''
     def __generate_id(self):
         store = data_store.get()
         return len(store['users']) + 1
@@ -101,38 +104,40 @@ class User:
         }
         return return_dict
 
-# Channel class, stores info of a channel
-# Contains:
-#       id          (int)           - id of the chanel
-#       name        (str)           - name of the channel
-#       owners      (list(Users))   - List of owners who owns the channel
-#       members     (list(Users))   - List of members in the channel
-#       is_public   (bool)          - weather its public or not
-#
-# Help:
-# To initialize a new channel
-# new_channel = Channel(.....)  # same as User
-#
-# To add new channel to data_store:
-# data = data_store.get()
-# new_chnl = Channel(.....)
-# data['channel'].append(new_chnl)
-# data_store.set(data)
-#
-# To access the content of User:
-# channel_name = new_chnl.name
-#
-# To change the content of User:
-# new_chnl.name = new_channel_name
-#
-# To represent User in dict:
-# chnl_in_dict = new_chnl.to_dict()
-#
-# To know whether a member is in channel:
-# has_mem = new_chnl.has_member(member)
-#
-# NOTE: member is of type User, NOT ITS ID
-# If you want to use id, use `has_member_id()` instead
+'''
+Channel class, stores info of a channel
+Contains:
+      id          (int)           - id of the chanel
+      name        (str)           - name of the channel
+      owners      (list(Users))   - List of owners who owns the channel
+      members     (list(Users))   - List of members in the channel
+      is_public   (bool)          - weather its public or not
+
+Help:
+To initialize a new channel
+new_channel = Channel(.....)  # same as User
+
+To add new channel to data_store:
+data = data_store.get()
+new_chnl = Channel(.....)
+data['channel'].append(new_chnl)
+data_store.set(data)
+
+To access the content of User:
+channel_name = new_chnl.name
+
+To change the content of User:
+new_chnl.name = new_channel_name
+
+To represent User in dict:
+chnl_in_dict = new_chnl.to_dict()
+
+To know whether a member is in channel:
+has_mem = new_chnl.has_member(member)
+
+NOTE: member is of type User, NOT ITS ID
+If you want to use id, use `has_member_id()` instead
+'''
 class Channel:
     def __init__(self, name, owner, is_public):
         self.id = self.__generate_id()
@@ -142,35 +147,59 @@ class Channel:
         self.is_public = is_public
         self.messages = []
 
+    '''
+        Generates id for Channel
+    '''
     def __generate_id(self):
         data = data_store.get()
         return len(data['channel']) + 1
 
-    # Might need it someday
-    # def __eq__(self, other):
-    #     return all(
-    #         [
-    #             self.id == other.id,
-    #             self.name == other.name,
-    #             len(set(self.owners) ^ set(other.owners)) == 0,  # Same owners
-    #             len(set(self.members) ^ set(other.members)) == 0,
-    #             self.is_public == other.is_public
-    #         ]
-    #     )
-
+    '''
+        Argument:
+            - member: User()
+        
+        Returns:
+            True: when an User() object was found in this channel
+            False: otherwise
+    '''
     def has_member(self, member):
         return member in self.members
 
+    '''
+        Arugument:
+            - member_id: int
+
+        Returns:
+            True: member_id was found in this channel
+            False: otherwise
+    '''
     def has_member_id(self, member_id):
         return member_id in [mem.id for mem in self.members]
 
+    '''
+        Argument:
+            - usr: User()
+
+        Adds a user to the current channel
+    '''
     def add_member(self, usr):
         self.members.append(usr)
         usr.channels.append(self)
 
+    '''
+        Argument:
+            -usr_id: int
+
+        Adds a usr corresponding to the id to the current channel
+    '''
     def add_member_id(self, usr_id):
         self.add_member(data_store.get_user(usr_id))
 
+    '''
+        Returns basic info of this channel in dictionary form (following docs)
+
+        Return value: {channel_id, name}
+    '''
     def channel_dict(self):
         return_dict = {
             'channel_id': self.id,
@@ -178,6 +207,11 @@ class Channel:
         }
         return return_dict
 
+    '''
+        Returns detailed info of this channel in dictionary form (following docs)
+
+        Return value: {name, is_public, owner_members, all_members}
+    '''
     def channel_details_dict(self):
         return_dict = {
             'name': self.name,
