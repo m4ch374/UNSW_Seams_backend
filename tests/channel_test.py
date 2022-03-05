@@ -237,8 +237,6 @@ def test_invalid_auth_user_id_for_channel_invite():
                           invalid_u_id)
 
 # raise InputError since invalid channel_id and invalid_u_id passed
-#
-# 
 def test_invalid_channel_and_u_id_for_channel_invite():
     clear_v1()
     auth_user_id = auth_register_v1('z1234567@ad.unsw.edu.au', 'password',
@@ -275,7 +273,7 @@ def test_invalid_u_id_for_channel_invite():
     invalid_u_id = -100
     with pytest.raises(InputError):
         channel_invite_v1(auth_user_id['auth_user_id'], 
-                          invalid_channel_id['channel_id'], invalid_u_id)
+                          valid_channel_id['channel_id'], invalid_u_id)
 
 # raise InputError since u_id refers to user already a member of the channel
 def test_already_a_member_channel_invite_1():
@@ -286,6 +284,9 @@ def test_already_a_member_channel_invite_1():
                                           'First Channel', True)
     u_id = auth_register_v1('z1111111@ad.unsw.edu.au', 'ypspspsp',
                             'firstname', 'lastname')
+    channel_invite_v1(auth_user_id['auth_user_id'],
+                      valid_channel_id['channel_id'],
+                      u_id['auth_user_id'])
     with pytest.raises(InputError):
         channel_invite_v1(auth_user_id['auth_user_id'], 
                           valid_channel_id['channel_id'],
