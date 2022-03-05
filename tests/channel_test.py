@@ -15,7 +15,7 @@ from src.data_store import data_store
 def initialise_user_and_channel():
     clear_v1()
     auth_register_v1('z5555555@ad.unsw.edu.au', '123456a', 'Anthony', 'Smith')
-    channels_create_v1(1, 'Ant', 'y')
+    channels_create_v1(1, 'Ant', True)
 
 
 ####################################################
@@ -54,7 +54,7 @@ def test_channel_details_invalid_channel_and_user(initialise_user_and_channel):
 
 # Test that correct channel details are returned when all inputs valid
 def test_channel_details_simple(initialise_user_and_channel):
-    assert channel_details_v1(1, 1) == {'name': 'Ant', 'is_public': 'y', 
+    assert channel_details_v1(1, 1) == {'name': 'Ant', 'is_public': True, 
     'owner_members': [{'email': 'z5555555@ad.unsw.edu.au',
                        'handle_str': 'anthonysmith',
                        'name_first': 'Anthony',
