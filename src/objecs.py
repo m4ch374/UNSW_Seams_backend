@@ -202,8 +202,8 @@ class Channel:
     '''
     def channel_dict(self):
         return_dict = {
-            'channel_id': self.id,
-            'name': self.name,
+            'channel_id': int(self.id),
+            'name': str(self.name),
         }
         return return_dict
 
@@ -214,8 +214,8 @@ class Channel:
     '''
     def channel_details_dict(self):
         return_dict = {
-            'name': self.name,
-            'is_public': self.is_public,
+            'name': str(self.name),
+            'is_public': bool(self.is_public),
             'owner_members': [owner.to_dict() for owner in self.owners],
             'all_members': [member.to_dict() for member in self.members],
         }
