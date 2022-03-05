@@ -15,7 +15,7 @@ from src.data_store import data_store
 def initialise_user_and_channel():
     clear_v1()
     auth_register_v1('z5555555@ad.unsw.edu.au', '123456a', 'Anthony', 'Smith')
-    channels_create_v1(1, 'Ant', 'y')
+    channels_create_v1(1, 'Ant', True)
 
 
 ####################################################
