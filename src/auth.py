@@ -26,7 +26,7 @@ def login_account_check(email, password):
 
 '''
 Arguments:
-    email (sting)    - user's email
+    email (string)    - user's email
     password (string)    - password for login
 
 Exceptions:

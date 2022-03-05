@@ -2,7 +2,7 @@ from re import A
 import pytest
 from src.error import InputError, AccessError
 
-from src.channel import channel_invite_v1, channel_details_v1, channel_join_v1
+from src.channel import channel_details_v1, channel_join_v1
 from src.channels import channels_create_v1, channels_list_v1, channels_listall_v1
 from src.auth import auth_register_v1
 
@@ -47,13 +47,25 @@ def test_channel_details_invalid_access(initialise_user_and_channel):
     with pytest.raises(AccessError):
         assert channel_details_v1(2, 1)
 
-
 # Test that AccessError is raised when both user and channel ids are invalid
 def test_channel_details_invalid_channel_and_user(initialise_user_and_channel):
     with pytest.raises(AccessError):
         assert channel_details_v1(2, 2)
 
-
+# Test that correct channel details are returned when all inputs valid
+def test_channel_details_simple(initialise_user_and_channel):
+    assert channel_details_v1(1, 1) == {'name': 'Ant', 'is_public': 'y', 
+    'owner_members': [{'email': 'z5555555@ad.unsw.edu.au',
+                       'handle_str': 'anthonysmith',
+                       'name_first': 'Anthony',
+                       'name_last': 'Smith',
+                       'u_id': 1}], 
+    'all_members': [{'email': 'z5555555@ad.unsw.edu.au',
+                     'handle_str': 'anthonysmith',
+                     'name_first': 'Anthony',
+                     'name_last': 'Smith',
+                     'u_id': 1}],
+    }
 
 #########################################
 
