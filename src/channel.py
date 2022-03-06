@@ -50,7 +50,7 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
 
 
 '''
-Function: channel_details_v1
+Function: channel__v1
 Given a channel with ID channel_id that the authorised user is a member of, 
 provide basic details about the channel.
 
