@@ -273,18 +273,6 @@ def test_already_a_member_channel_invite_1():
                           channel_id['channel_id'],
                           u_id['auth_user_id'])
 
-# raise InputError since u_id refers to user already a member of the channel
-#
-# note: the u_id passed is the same as the auth_id_passed
-def test_already_a_member_channel_invite_2():
-    clear_v1()
-    auth_user_id = create_new_user_z1234567()
-    channel_id = create_first_channel(auth_user_id, True)
-    with pytest.raises(InputError):
-        channel_invite_v1(auth_user_id['auth_user_id'], 
-                          channel_id['channel_id'],
-                          auth_user_id['auth_user_id'])
-
 # raise AccessError since authorised user is not a member of the channel
 def test_auth_user_not_in_channel_for_channel_invite():
     clear_v1()
