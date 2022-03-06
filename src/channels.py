@@ -6,7 +6,7 @@
 
 # Imports
 from src.data_store import data_store
-from src.error import InputError
+from src.error import InputError, AccessError
 from src.objecs import Channel
 
 '''
@@ -14,12 +14,15 @@ Arguments:
       auth_user_id (int) - user's id
 
 Exceptions:
-      None
+      Access Error - Occurs when auth_user_id is invalid
 
 Return value:
         { channels }
 '''
 def channels_list_v1(auth_user_id):
+    if not data_store.has_user_id(auth_user_id):
+        raise AccessError("error: Invalid user id")
+
     channels_list = data_store.get()['channel']
 
     usr_channel = [channel.channel_dict() for channel in channels_list
@@ -32,7 +35,7 @@ Arguments:
       auth_user_id (int) - user's id
 
 Exceptions:
-      None
+      Access Error - Occurs when auth_user_id is invalid
 
 Return value:
       Returns a dict containing only field "channels" of type list
@@ -41,6 +44,9 @@ Note:
       auth_user_id is useless for now afaik
 '''
 def channels_listall_v1(auth_user_id):
+    if not data_store.has_user_id(auth_user_id):
+        raise AccessError("error: Invalid user id")
+
     channels_list = data_store.get()['channel']
 
     return {'channels': [channel.channel_dict() for channel in channels_list]}
@@ -52,6 +58,8 @@ Arguments:
       is_public    (bool) - if the channel to be created is public
 
 Exceptions:
+      Access Error - Occurs when auth_user_id is invalid
+
       InputError - Occurs when length of name is less than 1 ||
                                length of name is more than 20 ||
                                name is None
@@ -60,6 +68,9 @@ Return value:
       Returns a dict containing channel_id of type int
 '''
 def channels_create_v1(auth_user_id, name, is_public):
+    if not data_store.has_user_id(auth_user_id):
+        raise AccessError("error: Invalid user id")
+
     if name is None or len(name) == 0 or len(name) > 20:
         raise InputError(
             "error: Channel name should have 1 - 20 characters inclusive")
