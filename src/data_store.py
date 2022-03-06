@@ -66,19 +66,11 @@ class Datastore:
         else:
             return [chnl for chnl in self.__store['channel'] if chnl.id == id][0]
 
-    def has_channel(self, id):
-        for chnl in self.__store['channel']:
-            if id == chnl.id:
-                return True
-        
-        return False
+    def has_channel_id(self, id):
+        return any(id == chnl.id for chnl in self.__store['channel'])
     
-    def has_user(self, id):
-        for user in self.__store['users']:
-            if id == user.id:
-                return True
-
-        return False
+    def has_user_id(self, id):
+        return any(id == usr.id for usr in self.__store['users'])
         
 print('Loading Datastore...')
 

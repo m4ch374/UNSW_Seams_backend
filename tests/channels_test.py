@@ -1,11 +1,3 @@
-# ==================== Note =======================
-# Since the structure of the channels is not yet
-# defined, this piece of testing is half finished
-#
-# Will modify once the structure is set
-# ==================================================
-
-from unicodedata import name
 import pytest
 import src.channels as chnl
 import src.channel as channel
