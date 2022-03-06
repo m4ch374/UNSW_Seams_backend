@@ -10,11 +10,13 @@ from src.other import clear_v1
 
 # Registers user 1 and has them create channel 1
 @pytest.fixture
-def initialise_user_and_channel():
+def first_user_and_channel():
     clear_v1()
-    valid_user = auth_register_v1('z5555555@ad.unsw.edu.au', '123456a', 'Anthony', 'Smith')
-    channels_create_v1(valid_user['auth_user_id'], 'Ant', True)
+    first_user_id = auth_register_v1('z5555555@ad.unsw.edu.au', '123456a', 'Anthony', 'Smith')['auth_user_id']
+    first_channel_id = channels_create_v1(first_user_id, 'Ant', True)['channel_id']
 
+    return {'first_user_id': first_user_id, 'first_channel_id': first_channel_id}
+    
 
 ####################################################
 ##          Tests for channel_details_v1          ##
@@ -30,29 +32,44 @@ def initialise_user_and_channel():
 #user, channel
 
 # Test invalid channel id where id doesn't exist yet
-def test_channel_details_invalid_channel_id(initialise_user_and_channel):
+def test_channel_details_invalid_channel_id(first_user_and_channel):
+    user = first_user_and_channel['first_user_id']
+    channel = first_user_and_channel['first_channel_id']
+
     with pytest.raises(InputError):
-        assert channel_details_v1(1, 2)
+        assert channel_details_v1(user, channel + 1)
 
 # Test invalid user id where id doesn't exist yet
-def test_channel_details_invalid_user_id(initialise_user_and_channel):
+def test_channel_details_invalid_user_id(first_user_and_channel):
+    user = first_user_and_channel['first_user_id']
+    channel = first_user_and_channel['first_channel_id']
+
     with pytest.raises(AccessError):
-        assert channel_details_v1(2, 1)
+        assert channel_details_v1(user + 1, channel)
 
 # Test invalid user access permissions
-def test_channel_details_invalid_access(initialise_user_and_channel):
-    invalid_user_id = auth_register_v1('z5222222@ad.unsw.edu.au', 'abcde123', 'Brian', 'Smith')
+def test_channel_details_invalid_access(first_user_and_channel):
+    user = first_user_and_channel['first_user_id']
+    channel = first_user_and_channel['first_channel_id']
+    second_user = auth_register_v1('z5555551@ad.unsw.edu.au', '123456b', 'Brian', 'Smith')['auth_user_id']
+    
     with pytest.raises(AccessError):
-        assert channel_details_v1(invalid_user_id, 1)
+        assert channel_details_v1(second_user, channel)
 
 # Test that AccessError is raised when both user and channel ids are invalid
-def test_channel_details_invalid_channel_and_user(initialise_user_and_channel):
+def test_channel_details_invalid_channel_and_user(first_user_and_channel):
+    user = first_user_and_channel['first_user_id']
+    channel = first_user_and_channel['first_channel_id']
+
     with pytest.raises(AccessError):
-        assert channel_details_v1(2, 2)
+        assert channel_details_v1(user + 1, channel + 1)
 
 # Test that correct channel details are returned when all inputs valid
-def test_channel_details_simple(initialise_user_and_channel):
-    assert channel_details_v1(1, 1) == {'name': 'Ant', 'is_public': True, 
+def test_channel_details_simple(first_user_and_channel):
+    user = first_user_and_channel['first_user_id']
+    channel = first_user_and_channel['first_channel_id']
+
+    assert channel_details_v1(user, channel) == {'name': 'Ant', 'is_public': True, 
     'owner_members': [{'email': 'z5555555@ad.unsw.edu.au',
                        'handle_str': 'anthonysmith',
                        'name_first': 'Anthony',
@@ -65,7 +82,25 @@ def test_channel_details_simple(initialise_user_and_channel):
                      'u_id': 1}],
     }
 
-#########################################
+####################################################
+##          Tests for channel_join_v1             ##
+####################################################
+#
+# Expected behaviour:
+# InputError when:
+#   - channel_id does not refer to a valid channel
+#   - the authorised user is already a member of the channel
+# AccessError when:
+#   - channel_id refers to a channel that is private and the authorised
+#     user is not already a channel member and is not a global owner
+#
+# ==================================================
+
+# raise AccessError since invalid auth_user_id passed
+#
+# note: while the invalid channel id passed should raise
+#       InputError on their own, the AccessError takes precedent
+
 
 # add an authorised user to a created channel with no errors
 def test_channel_join_valid_1():
