@@ -3,7 +3,7 @@ import src.channels as chnl
 import src.channel as channel
 import src.auth as auth
 
-from src.error import InputError
+from src.error import InputError, AccessError
 from src.other import clear_v1
 
 # ================= Definitions ====================
@@ -31,6 +31,8 @@ NAMES_LIST = [
         "a",                    # duplications
         "!!!!!!![[[]]]!!!!!!!", # all special chars
     ]
+
+INVALID_ID = -1
 # ==================================================
 
 # =============== Global fixtures ==================
@@ -103,6 +105,15 @@ def test_channels_create_error_pub_and_priv(auth_user_id):
         for s in ERROR_LIST:
             chnl.channels_create_v1(auth_user_id, s, True)
             chnl.channels_create_v1(auth_user_id, s, False)
+
+# Should raise access error
+#
+# When:     auth_user_id is invalid
+#
+# Test passing in invalid user id
+def test_channels_create_error_pub_and_priv():
+    with pytest.raises(AccessError):
+        chnl.channels_create_v1(INVALID_ID, "dummy", True)
 
 # Should not raise any error
 # 
@@ -227,6 +238,15 @@ def test_channels_list_7(auth_user_id, another_id):
     assert chnl.channels_list_v1(auth_user_id)['channels'] == expected_output_1
     assert chnl.channels_list_v1(another_id)['channels'] == expected_output_2
 
+# Should raise access error
+#
+# When:     auth_user_id is invalid
+#
+# Test for passing in invalid user id
+def test_channels_list_8():
+    with pytest.raises(AccessError):
+        chnl.channels_list_v1(INVALID_ID)
+
 # ==================================================
 
 # ============ Channels list all v1 =================
@@ -339,5 +359,14 @@ def test_channels_list_all_10(auth_user_id, another_id):
 # multiple public and private channels
 def test_channels_list_all_11(auth_user_id, another_id):
     listall_helper_create_multiple(auth_user_id, another_id, len(NAMES_LIST), False, True)
+
+# Should raise access error
+#
+# When:     auth_user_id is invalid
+#
+# Test for passing in invalid user id
+def test_channels_list_all_12():
+    with pytest.raises(AccessError):
+        chnl.channels_listall_v1(INVALID_ID)
 
 # ==================================================
