@@ -9,8 +9,8 @@ from src.auth import auth_register_v1
 @pytest.fixture
 def initialise_user_and_channel():
     clear_v1()
-    auth_register_v1('z5555555@ad.unsw.edu.au', '123456a', 'Anthony', 'Smith')
-    channels_create_v1(1, 'Ant', 'y')
+    valid_user_id_in_channel = auth_register_v1('z5555555@ad.unsw.edu.au', '123456a', 'Anthony', 'Smith')['auth_user_id']
+    valid_channel = channels_create_v1(valid_user_id_in_channel, 'Ant', True)
 
 # Test for invalid channel id where id doesn't exist yet
 def test_invalid_channel_id(initialise_user_and_channel):

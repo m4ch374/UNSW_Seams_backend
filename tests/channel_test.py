@@ -14,8 +14,8 @@ from src.data_store import data_store
 @pytest.fixture
 def initialise_user_and_channel():
     clear_v1()
-    auth_register_v1('z5555555@ad.unsw.edu.au', '123456a', 'Anthony', 'Smith')
-    channels_create_v1(1, 'Ant', 'y')
+    valid_user = auth_register_v1('z5555555@ad.unsw.edu.au', '123456a', 'Anthony', 'Smith')
+    channels_create_v1(valid_user['auth_user_id'], 'Ant', 'y')
 
 
 ####################################################
@@ -43,9 +43,9 @@ def test_channel_details_invalid_user_id(initialise_user_and_channel):
 
 # Test invalid user access permissions
 def test_channel_details_invalid_access(initialise_user_and_channel):
-    auth_register_v1('z5222222@ad.unsw.edu.au', 'abcde123', 'Brian', 'Smith')
+    invalid_user_id = auth_register_v1('z5222222@ad.unsw.edu.au', 'abcde123', 'Brian', 'Smith')
     with pytest.raises(AccessError):
-        assert channel_details_v1(2, 1)
+        assert channel_details_v1(invalid_user_id, 1)
 
 # Test that AccessError is raised when both user and channel ids are invalid
 def test_channel_details_invalid_channel_and_user(initialise_user_and_channel):
@@ -54,7 +54,7 @@ def test_channel_details_invalid_channel_and_user(initialise_user_and_channel):
 
 # Test that correct channel details are returned when all inputs valid
 def test_channel_details_simple(initialise_user_and_channel):
-    assert channel_details_v1(1, 1) == {'name': 'Ant', 'is_public': 'y', 
+    assert channel_details_v1(1, 1) == {'name': 'Ant', 'is_public': True, 
     'owner_members': [{'email': 'z5555555@ad.unsw.edu.au',
                        'handle_str': 'anthonysmith',
                        'name_first': 'Anthony',
