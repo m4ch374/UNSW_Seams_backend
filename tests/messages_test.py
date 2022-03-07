@@ -75,7 +75,7 @@ def test_invalid_user_channel_start(first_user_and_channel):
 def test_user_not_authorised(first_user_and_channel):
     user = first_user_and_channel['first_user_id']
     channel = first_user_and_channel['first_channel_id']
-    second_user = auth_register_v1('z5222222@ad.unsw.edu.au', 'abcde123', 'Brian', 'Smith')
+    second_user = auth_register_v1('z5222222@ad.unsw.edu.au', 'abcde123', 'Brian', 'Smith')['auth_user_id']
 
     with pytest.raises(AccessError):
         assert channel_messages_v1(second_user, channel, 0)
