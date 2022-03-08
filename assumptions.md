@@ -1,0 +1,31 @@
+# Asumptions
+
+# Iteration - 1
+
+## **1. General Assumptions**
+
+- Assuming that all inputs provided will be in the correct format/order/numer (Other than those stated error cases in asignment specs)
+
+- data_store structure:
+  ```python
+    data_store = {
+        'users': [ ], # list of User() objects
+        'channel': [ ], # list of Channel() objects
+    }
+  ```
+
+## **2. Assumptions - `auth.py`**
+
+- Assuming user id starts form `1` instead of `0`
+- Accepts name with all special characters or whitespaces
+
+## **3. Assumptions - `channels.py`**
+
+- `channels_list_v1()` will list both `public` and `private` channels that the user is a part of
+- `channels_listall_v1()` will list all channels from `data_store` therefore `auth_user_id` argument is unused.
+- Assumes `owner` is also a `member` of the channel
+
+## **4. Assumptions - `channel.py`**
+
+- Assuming that message id 0 will always be valid, for the sake of current autotests. Subject to change later once an add messages function is implemented.
+- Messages returned form `channel_messages_v1()` will always be an empty list as there are no function for adding messages implemented yet.
