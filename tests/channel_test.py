@@ -49,7 +49,6 @@ def test_channel_details_invalid_user_id(first_user_and_channel):
 
 # Test invalid user access permissions
 def test_channel_details_invalid_access(first_user_and_channel):
-    user = first_user_and_channel['first_user_id']
     channel = first_user_and_channel['first_channel_id']
     second_user = auth_register_v1('z5555551@ad.unsw.edu.au', '123456b', 'Brian', 'Smith')['auth_user_id']
     

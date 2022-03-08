@@ -111,7 +111,7 @@ def test_channels_create_error_pub_and_priv(auth_user_id):
 # When:     auth_user_id is invalid
 #
 # Test passing in invalid user id
-def test_channels_create_error_pub_and_priv():
+def test_channels_create_error_invalid_id():
     with pytest.raises(AccessError):
         chnl.channels_create_v1(INVALID_ID, "dummy", True)
 
@@ -220,7 +220,7 @@ def test_channels_list_5(auth_user_id):
 def test_channels_list_7(auth_user_id, another_id):
     for i, name in enumerate(NAMES_LIST):
         if i % 2 == 0:
-            curr_chnl_id = chnl.channels_create_v1(auth_user_id, name, True)
+            chnl.channels_create_v1(auth_user_id, name, True)
         else:
             chnl.channels_create_v1(another_id, name, True)
             
