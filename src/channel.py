@@ -107,7 +107,6 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     # Checking valid channel id, start id and user access
     if data_store.has_user_id(auth_user_id) == False:
         raise AccessError
-    user = data_store.get_user(auth_user_id)
     
     if data_store.has_channel_id(channel_id) == False:
         raise InputError
