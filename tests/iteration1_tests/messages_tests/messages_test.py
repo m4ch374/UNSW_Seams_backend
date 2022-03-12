@@ -2,18 +2,7 @@ import pytest
 from src.error import InputError, AccessError
 
 from src.channel import channel_messages_v1
-from src.channels import channels_create_v1
-from src.other import clear_v1
 from src.auth import auth_register_v1
-
-# Registers user 1 and has them create channel 1
-@pytest.fixture
-def first_user_and_channel():
-    clear_v1()
-    first_user_id = auth_register_v1('z5555555@ad.unsw.edu.au', '123456a', 'Anthony', 'Smith')['auth_user_id']
-    first_channel_id = channels_create_v1(first_user_id, 'Ant', True)['channel_id']
-
-    return {'first_user_id': first_user_id, 'first_channel_id': first_channel_id}
    
 # Test for invalid channel id where id doesn't exist yet
 def test_invalid_channel_id(first_user_and_channel):
