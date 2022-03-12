@@ -185,31 +185,31 @@ def list_helper_create_multiple(usr_1, usr_2, n, is_public):
 # Should not raise any error
 #
 # Test the behaviour with only one user creating one channel
-def test_channels_list_1(auth_user_id):
+def test_channels_list_single_user_one_channel(auth_user_id):
     list_helper_create_single(auth_user_id, 1, True)
 
 # Should not raise any error
 #
 # Test the behaviour with only one user creating multiple channels
-def test_channels_list_2(auth_user_id):
+def test_channels_list_single_user_multi_channels(auth_user_id):
     list_helper_create_single(auth_user_id, len(NAMES_LIST), True)
 
 # should not raise any error
 #
 # Test the behaviour with multiple user creating one channel each
-def test_channels_list_3(auth_user_id, another_id):
+def test_channels_list_multi_users_one_channel_each(auth_user_id, another_id):
     list_helper_create_multiple(auth_user_id, another_id, 2, True)
 
 # should not raise any error
 #
 # Test the behaviour with multiple user creating multiple channel each
-def test_channels_list_4(auth_user_id, another_id):
+def test_channels_list_multi_users_multi_channels(auth_user_id, another_id):
     list_helper_create_multiple(auth_user_id, another_id, len(NAMES_LIST), True)
 
 # should not raise any error
 #
 # Test the behaviour with one user with no groups associated
-def test_channels_list_5(auth_user_id):
+def test_channels_list_single_user_no_channel(auth_user_id):
     channel_list = chnl.channels_list_v1(auth_user_id)['channels']
     assert channel_list == []
 
@@ -217,7 +217,7 @@ def test_channels_list_5(auth_user_id):
 #
 # Test the behaviour with multiple user creating multiple channels and
 # joining different channels
-def test_channels_list_7(auth_user_id, another_id):
+def test_channels_list_multi_user_multi_channels_with_join(auth_user_id, another_id):
     for i, name in enumerate(NAMES_LIST):
         if i % 2 == 0:
             chnl.channels_create_v1(auth_user_id, name, True)
@@ -243,7 +243,7 @@ def test_channels_list_7(auth_user_id, another_id):
 # When:     auth_user_id is invalid
 #
 # Test for passing in invalid user id
-def test_channels_list_8():
+def test_channels_list_access_error():
     with pytest.raises(AccessError):
         chnl.channels_list_v1(INVALID_ID)
 
@@ -290,74 +290,74 @@ def listall_helper_create_multiple(usr_1, usr_2, n, is_public, is_alt):
 # should not raise any error
 #
 # Test the behaviour of one user creating one public channel
-def test_channels_list_all_1(auth_user_id):
+def test_channels_list_all_single_user_single_channel_public(auth_user_id):
     listall_helper_create_single(auth_user_id, 1, True, False)
 
 # should not raise any error
 #
 # Test the behaviour of one user creating one private channel
-def test_channels_list_all_2(auth_user_id):
+def test_channels_list_all_single_user_single_channel_private(auth_user_id):
     listall_helper_create_single(auth_user_id, 1, False, False)
 
 # should not raise any error
 #
 # Test the behaviour of one user creating one private channel
 # and one public channel
-def test_channels_list_all_3(auth_user_id):
+def test_channels_list_all_single_user_pub_and_priv_each(auth_user_id):
     listall_helper_create_single(auth_user_id, 2, False, True)
 
 # should not raise any error
 #
 # Test the behaviour of one user creating multiple public channels
-def test_channels_list_all_4(auth_user_id):
+def test_channels_list_all_single_user_multi_channels_public(auth_user_id):
     listall_helper_create_single(auth_user_id, len(NAMES_LIST), True, False)
 
 # should not raise any error
 #
 # Test the behaviour of one user creating multiple private channels
-def test_channels_list_all_5(auth_user_id):
+def test_channels_list_all_single_user_multi_channels_private(auth_user_id):
     listall_helper_create_single(auth_user_id, len(NAMES_LIST), False, False)
 
 # should not rause any error
 #
 # Test the behaviour of multiple user creating one
 # public channel each
-def test_channels_list_all_6(auth_user_id, another_id):
+def test_channels_list_all_multi_users_one_channel_each_public(auth_user_id, another_id):
     listall_helper_create_multiple(auth_user_id, another_id, 2, True, False)
 
 # should not rause any error
 #
 # Test the behaviour of multiple user creating one
 # private channel each
-def test_channels_list_all_7(auth_user_id, another_id):
+def test_channels_list_all_multi_users_one_channel_each_private(auth_user_id, another_id):
     listall_helper_create_multiple(auth_user_id, another_id, 2, False, False)
 
 # should not raise any error
 #
 # Test the behaviour of 2 user one creating a public channel
 # and another one creates a private channel
-def test_channels_list_all_8(auth_user_id, another_id):
+def test_channels_list_all_multi_users_pub_and_priv_channels_respectively(auth_user_id, another_id):
     listall_helper_create_multiple(auth_user_id, another_id, 2, False, True)
 
 # should not raise any error
 #
-# Test the behaviour of multiple user one creating 
+# Test the behaviour of multiple user creating 
 # multiple public channels
-def test_channels_list_all_9(auth_user_id, another_id):
+def test_channels_list_all_multi_user_multi_channels_public(auth_user_id, another_id):
     listall_helper_create_multiple(auth_user_id, another_id, len(NAMES_LIST), True, False)
 
 # should not raise any error
 #
-# Test the behaviour of multiple user one creating 
+# Test the behaviour of multiple user creating 
 # multiple private channels
-def test_channels_list_all_10(auth_user_id, another_id):
+def test_channels_list_all_multi_user_multi_channels_private(auth_user_id, another_id):
     listall_helper_create_multiple(auth_user_id, another_id, len(NAMES_LIST), False, False)
 
 # should not raise any error
 #
 # Test the behaviour of multiple user creating
 # multiple public and private channels
-def test_channels_list_all_11(auth_user_id, another_id):
+def test_channels_list_all_multi_user_pub_and_priv_channels(auth_user_id, another_id):
     listall_helper_create_multiple(auth_user_id, another_id, len(NAMES_LIST), False, True)
 
 # Should raise access error
@@ -365,7 +365,7 @@ def test_channels_list_all_11(auth_user_id, another_id):
 # When:     auth_user_id is invalid
 #
 # Test for passing in invalid user id
-def test_channels_list_all_12():
+def test_channels_list_all_access_error():
     with pytest.raises(AccessError):
         chnl.channels_listall_v1(INVALID_ID)
 
