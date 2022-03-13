@@ -35,7 +35,7 @@ def test_persistent():
 
 def test_inconsistent():
     # Add user to data
-    usr1 = auth_register_v1('email@gmail.com', '123456', 'joe', 'bidome')['auth_user_id']
+    auth_register_v1('email@gmail.com', '123456', 'joe', 'bidome')['auth_user_id']
 
     # change user data without saving
     data_store.get()['users'][0].name_first = "another"
