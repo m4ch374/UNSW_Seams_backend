@@ -26,5 +26,25 @@ def test_persistent():
     data = new_datastore.get()
 
     # check if both users and channels have the same attributes
-    assert [usr.__dict__ for usr in data_store.get()['users']] == [usr.__dict__ for usr in data['users']]
-    assert [chnl.__dict__ for chnl in data_store.get()['channel']] == [chnl.__dict__ for chnl in data['channel']]
+    assert [usr.to_dict() for usr in data_store.get()['users']] == [usr.to_dict() for usr in data['users']]
+    assert ([chnl.channel_details_dict() for chnl in data_store.get()['channel']] == 
+        [chnl.channel_details_dict() for chnl in data['channel']])
+
+    # Ensure they are not objects with the same pointer
+    assert new_datastore != data_store
+
+def test_inconsistent():
+    # Add user to data
+    usr1 = auth_register_v1('email@gmail.com', '123456', 'joe', 'bidome')['auth_user_id']
+
+    # change user data without saving
+    data_store.get()['users'][0].name_first = "another"
+
+    # get data from file
+    new_datastore = Datastore()
+    data = new_datastore.get()
+
+    assert data['users'][0].name_first != "another"
+
+    # Ensure they are not objects with the same pointer
+    assert new_datastore != data_store
