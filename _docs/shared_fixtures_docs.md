@@ -1,8 +1,8 @@
-# :hot_face: Docs on Shared Fixtures - Iteration 2
+# :bowling: Docs on Shared Fixtures - Iteration 2
 
 This is a quick doc to explain how shared fixtures was done
 
-## :pinched_fingers: Sharing Fixtures between different files
+## :dollar: Sharing Fixtures between different files
 
 So what I've seen in the test files for `iteration 1` is that fixtures like `first_user_and_channel()` was used in both `channel_test.py` and `messages_test.py`.
 
