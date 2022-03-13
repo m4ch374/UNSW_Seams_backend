@@ -54,11 +54,13 @@ class Datastore:
 
     # Get data and fill it to __store
     def __get_store(self):
-        file_content = open(DATA_PATH, "wb+")
         try:
+            file_content = open(DATA_PATH, "rb")
             data = pickle.load(file_content)
-        except EOFError:
+        except Exception:   # if file is not found or file is empty, return initial obj
+            file_content = open(DATA_PATH, "wb+")
             data = initial_object
+            pickle.dump(data, file_content)
         
         file_content.close()
         return data
