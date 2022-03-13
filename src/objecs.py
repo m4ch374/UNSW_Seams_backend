@@ -200,6 +200,7 @@ class Channel:
     def add_member(self, usr):
         self.members.append(usr)
         usr.channels.append(self)
+        data_store.set_store()
 
     '''
         Argument:

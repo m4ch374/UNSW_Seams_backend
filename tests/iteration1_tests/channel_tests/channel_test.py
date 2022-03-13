@@ -5,19 +5,6 @@ from src.channel import channel_invite_v1, channel_details_v1, channel_join_v1
 from src.channels import channels_create_v1, channels_list_v1, channels_list_v1
 from src.auth import auth_register_v1
 
-from src.other import clear_v1
-
-
-# Registers user 1 and has them create channel 1
-@pytest.fixture
-def first_user_and_channel():
-    clear_v1()
-    first_user_id = auth_register_v1('z5555555@ad.unsw.edu.au', '123456a', 'Anthony', 'Smith')['auth_user_id']
-    first_channel_id = channels_create_v1(first_user_id, 'Ant', True)['channel_id']
-
-    return {'first_user_id': first_user_id, 'first_channel_id': first_channel_id}
-    
-
 ####################################################
 ##          Tests for channel_details_v1          ##
 ####################################################
@@ -131,7 +118,6 @@ def create_first_channel(auth_user_id, is_public):
 # note: while the invalid channel id passed should raise
 #       InputError on their own, the AccessError takes precedent
 def test_invalid_user_id_for_channel_join():
-    clear_v1()
     # Since no channels or id's have been created yet, any arbritary integer 
     # passed to the function should be considered invalid
     invalid_channel_id = -100
@@ -143,7 +129,6 @@ def test_invalid_user_id_for_channel_join():
 #
 # note: this is because no valid channels have been created
 def test_invalid_channel_id_for_channel_join():
-    clear_v1()
     auth_user_id = create_new_user_z1234567()
     invalid_channel_id = -100
     with pytest.raises(InputError):
@@ -151,7 +136,6 @@ def test_invalid_channel_id_for_channel_join():
 
 # add an authorised user to a created channel with no errors
 def test_channel_join_valid_1():
-    clear_v1()
     auth_user_id = create_new_user_z1234567()
     channel_id = create_first_channel(auth_user_id, True)
     auth_user_id2 = create_new_user_z1111111()
@@ -162,7 +146,6 @@ def test_channel_join_valid_1():
     
 # add several authorised users to a created channel with no errors
 def test_channel_join_valid_2():
-    clear_v1()
     auth_user_id = create_new_user_z1234567()
     channel_id = create_first_channel(auth_user_id, True)
     
@@ -180,7 +163,6 @@ def test_channel_join_valid_2():
 # raise InputError since the auth user being joined is already the only
 # member of the channel
 def test_channel_join_user_already_member():
-    clear_v1()
     auth_user_id = create_new_user_z1234567()
     channel_id = create_first_channel(auth_user_id, True)
     with pytest.raises(InputError):
@@ -189,7 +171,6 @@ def test_channel_join_user_already_member():
 # raise AccessError since channel_id refers to private channel, auth 
 # user is not part of channel and member is not global owner
 def test_channel_raise_access_error():
-    clear_v1()
     auth_user_id = create_new_user_z1234567()
     channel_id = create_first_channel(auth_user_id, False)
     auth_user_id2 = create_new_user_z1111111()
@@ -216,7 +197,6 @@ def test_channel_raise_access_error():
 # note: while the invalid u_id & channel id's passed should raise
 #       InputErrors on their own, the AccessError takes precedent
 def test_invalid_auth_user_id_for_channel_invite():
-    clear_v1()
     invalid_channel_id = -100
     invalid_auth_user_id = -100
     invalid_u_id = -100
@@ -226,7 +206,6 @@ def test_invalid_auth_user_id_for_channel_invite():
 
 # raise InputError since invalid channel_id and invalid_u_id passed
 def test_invalid_channel_and_u_id_for_channel_invite():
-    clear_v1()
     auth_user_id = create_new_user_z1234567()
     invalid_u_id = -100  
     invalid_channel_id = -100
@@ -238,7 +217,6 @@ def test_invalid_channel_and_u_id_for_channel_invite():
 #
 # note: the auth_ser_id and u_id passed are both valid
 def test_invalid_channel_id_for_channel_invite():
-    clear_v1()
     auth_user_id = create_new_user_z1234567()
     u_id = create_new_user_z1111111()
     invalid_channel_id = -100
@@ -250,7 +228,6 @@ def test_invalid_channel_id_for_channel_invite():
 #
 # note: the auth_user_id and channel_id passed are both valid
 def test_invalid_u_id_for_channel_invite():
-    clear_v1()
     auth_user_id = create_new_user_z1234567()
     channel_id = create_first_channel(auth_user_id, True)
     invalid_u_id = -100
@@ -260,7 +237,6 @@ def test_invalid_u_id_for_channel_invite():
 
 # raise InputError since u_id refers to user already a member of the channel
 def test_already_a_member_channel_invite_1():
-    clear_v1()
     auth_user_id = create_new_user_z1234567()
     channel_id = create_first_channel(auth_user_id, True)
     u_id = create_new_user_z1111111()
@@ -274,7 +250,6 @@ def test_already_a_member_channel_invite_1():
 
 # raise AccessError since authorised user is not a member of the channel
 def test_auth_user_not_in_channel_for_channel_invite():
-    clear_v1()
     auth_user_id = create_new_user_z1234567()
     channel_id = create_first_channel(auth_user_id, True)
     auth_user_id2 = create_new_user_z3141592()
@@ -286,7 +261,6 @@ def test_auth_user_not_in_channel_for_channel_invite():
 
 # invite a user to a public channel with no errors
 def test_public_channel_for_channel_invite():
-    clear_v1()
     auth_user_id = create_new_user_z1234567()
     channel_id = create_first_channel(auth_user_id, True)
     u_id = create_new_user_z1111111()
@@ -299,7 +273,6 @@ def test_public_channel_for_channel_invite():
 
 # invite a user to a private channel with no errors
 def test_private_channel_for_channel_invite():
-    clear_v1()
     auth_user_id = create_new_user_z1234567()
     channel_id = create_first_channel(auth_user_id, False)
     u_id = create_new_user_z1111111()

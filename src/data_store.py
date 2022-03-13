@@ -33,18 +33,43 @@ Example usage:
     NOTE: assumes id is valid, returns None if there are no entries in users list
 '''
 
-## YOU SHOULD MODIFY THIS OBJECT BELOW
+# Imports
+import pickle
+import os
+
+# Initial object
 initial_object = {
     'users' : [], 
     'channel' : [],
 } # credit to Hanqi for this placeholder love you <3
 
-## YOU SHOULD MODIFY THIS OBJECT ABOVE
+# Definitions
+CURRENT_DIR = os.path.dirname(os.path.realpath(__file__)) + '/'
+DATA_PATH = CURRENT_DIR + '_data.bin'
 
 ## YOU ARE ALLOWED TO CHANGE THE BELOW IF YOU WISH
 class Datastore:
     def __init__(self):
-        self.__store = initial_object
+        self.__store = self.__get_store()
+
+    # Get data and fill it to __store
+    def __get_store(self):
+        try:
+            file_content = open(DATA_PATH, "rb")
+            data = pickle.load(file_content)
+        except Exception:   # if file is not found or file is empty, return initial obj
+            file_content = open(DATA_PATH, "wb+")
+            data = initial_object
+            pickle.dump(data, file_content)
+        
+        file_content.close()
+        return data
+
+    # Store everything in __store to `_data.bin`
+    def set_store(self):
+        file_handler = open(DATA_PATH, "wb")
+        pickle.dump(self.__store, file_handler)
+        file_handler.close()
 
     def get(self):
         return self.__store
@@ -53,6 +78,7 @@ class Datastore:
         if not isinstance(store, dict):
             raise TypeError('store must be of type dictionary')
         self.__store = store
+        self.set_store()
 
     def get_user(self, id):
         if len(self.__store['users']) == 0:

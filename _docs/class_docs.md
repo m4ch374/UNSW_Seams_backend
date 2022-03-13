@@ -1,4 +1,4 @@
-# :book: Docs on Classes - Iteration 1
+# :book: Docs on Classes - Iteration 1 **(DEPRECIATED)**
 
 This is a quick doc on the classes that we currently have and how we use them in general.
 
