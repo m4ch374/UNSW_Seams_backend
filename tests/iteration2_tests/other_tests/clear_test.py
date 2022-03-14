@@ -6,6 +6,7 @@ Stubbed for now until other necessary funtions are implemented
 
 import requests
 from src.config import url
+from tests.iteration2_tests.endpoints import *
 
 def test_clear():
     '''# Register detail for 2 users
@@ -24,8 +25,8 @@ def test_clear():
     }
 
     # Register using register detail
-    tok1 = requests.post(f"{url}auth/register/v2", data=reg1).json()['token']
-    tok2 = requests.post(f"{url}auth/register/v2", data=reg2).json()['token']
+    tok1 = requests.post(ENDPOINT_REGISTER_USR, data=reg1).json()['token']
+    tok2 = requests.post(ENDPOINT_REGISTER_USR, data=reg2).json()['token']
 
     # channel data
     data1 = {
@@ -41,11 +42,11 @@ def test_clear():
     }
 
     # Create channel
-    chnl1 = requests.post(f"{url}channels/create/v2", data=data1).json()['channel_id']
-    chnl2 = requests.post(f"{url}channels/create/v2", data=data2).json()['channel_id']
+    chnl1 = requests.post(ENDPOINT_CREATE_CHNL, data=data1).json()['channel_id']
+    chnl2 = requests.post(ENDPOINT_CREATE_CHNL, data=data2).json()['channel_id']
 
-    chnl_list1 = requests.get(f"{url}channels/listall/v2", data={'token': tok1})['channels']
-    chnl_list2 = requests.get(f"{url}channels/listall/v2", data={'token': tok2})['channles']
+    chnl_list1 = requests.get(ENDPOINT_LISTALL, data={'token': tok1})['channels']
+    chnl_list2 = requests.get(ENDPOINT_LISTALL, data={'token': tok2})['channles']
 
     expected_out = [
         {
@@ -61,7 +62,7 @@ def test_clear():
     assert chnl_list1 == expected_out
     assert chnl_list2 == expected_out
 
-    resp = requests.delete(f"{url}clear/v1")
+    resp = requests.delete(ENDPOINT_CLEAR)
 
     assert resp.json() == {}'''
     assert True
