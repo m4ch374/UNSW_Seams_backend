@@ -5,6 +5,16 @@ BASE_PORT = '8080'
 BASE_URL = f'{BASE_ADDRESS}:{BASE_PORT}'
 
 def test_channel_details_invalid_channel_id():
-    response = requests.get(f'{BASE_URL}/channel/details/v2') # How to pass in token/channel_id for autotest?
+    response = requests.get(f'{BASE_URL}/channel/details/v2?token=1?channel_id=1') # How to pass in token/channel_id for autotest?
+    response_code = response.status_code
+    assert response_code == 403
+
+def test_channel_details_invalid_channel_id():
+    response = requests.get(f'{BASE_URL}/channel/details/v2?token=1?channel_id=1') # How to pass in token/channel_id for autotest?
+    response_code = response.status_code
+    assert response_code == 403
+
+def test_channel_details_invalid_channel_id():
+    response = requests.get(f'{BASE_URL}/channel/details/v2?token=1?channel_id=1') # How to pass in token/channel_id for autotest?
     response_code = response.status_code
     assert response_code == 403
