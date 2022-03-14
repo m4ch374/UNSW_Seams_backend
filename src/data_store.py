@@ -36,11 +36,16 @@ Example usage:
 # Imports
 import pickle
 import os
+import jwt
+from datetime import datetime
+from src.config import TOKEN_SECRET
+from src.error import AccessError
 
 # Initial object
 initial_object = {
     'users' : [], 
     'channel' : [],
+    'tokens' : [],
 } # credit to Hanqi for this placeholder love you <3
 
 # Definitions
@@ -97,6 +102,40 @@ class Datastore:
     
     def has_user_id(self, id):
         return any(id == usr.id for usr in self.__store['users'])
+
+    # Check if token is valid
+    def is_valid_token(self, token):
+        return token in self.__store['tokens']
+
+    # Generates token, add it to data_store and returns it
+    # takes in user_id
+    def generate_token(self, auth_user_id):
+        encode_msg = {
+            'id': auth_user_id,
+            'logged_in_at': str(datetime.now())  # so that it supports multi-instances
+        }
+        tok = jwt.encode(encode_msg, TOKEN_SECRET, "HS256")
+        self.__store['tokens'].append(tok)
+        self.set_store()
+        return tok
+
+    # Gets user id from token
+    # Throws an exception if token is invalid
+    def get_id_from_token(self, token):
+        if not self.is_valid_token(token):
+            raise AccessError(description='error: Invalid Token')
+
+        decoded_data = jwt.decode(token, TOKEN_SECRET, "HS256")
+        return decoded_data['id']
+
+    # Invalidates a token by removing it
+    # Throws an exception if token is invalid
+    def remove_token(self, token):
+        if not self.is_valid_token(token):
+            raise AccessError(description='error: Invalid Token')
+
+        self.__store['tokens'].remove(token)
+        self.set_store()
         
 print('Loading Datastore...')
 
