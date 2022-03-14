@@ -44,10 +44,10 @@ def test_combined_3():
         assert auth_login_v1('z1234567@ed.unsw.edu.au', 'xxxxxxx')
     assert user_id == auth_login_v1('z1234567@ed.unsw.edu.au', '123456')
 
-def test_register_handle_number():
+def test_handle_is_number():
     auth_register_v1('z1234567@ed.unsw.edu.au', '1234567', '123$123', '456%456')
     assert auth_login_v1('z1234567@ed.unsw.edu.au', '1234567') == {'auth_user_id': 1}
 
-def test_register_handle_mix():
+def test_handle_is_mix():
     auth_register_v1('z1234567@ed.unsw.edu.au', '1234567', '123$qwe', '456%ASD')
     assert auth_login_v1('z1234567@ed.unsw.edu.au', '1234567') == {'auth_user_id': 1}
