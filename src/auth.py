@@ -3,6 +3,7 @@ from src.data_store import data_store
 from src.error import InputError
 from src.objecs import User
 
+
 '''
 Arguments:
     email (string)    - user's email
@@ -60,7 +61,17 @@ Return Value:
     token (string)  Encrypted user id and time
 '''
 def auth_login_v2(email, password):
-    pass
+    state = login_account_check(email, password)
+    if state == -1:
+        raise InputError("Account does not exist")
+    elif state == 0:
+        raise InputError("Password incorrect")
+    else:
+        user_id = state
+        store = data_store.get()
+        token = data_store.generate_token(user_id)
+        data_store.set(store)
+        return {'token': token, 'auth_user_id': user_id}
 
 
 '''
@@ -68,7 +79,9 @@ Arguments:
     token (string)  Encrypted user id and time
 '''
 def auth_logout_v1(token):
-    pass
+    data_store.remove_token(token)
+    return {}
+
 
 '''
 Arguments:
@@ -127,13 +140,9 @@ def auth_register_v1(email, password, name_first, name_last):
             name_first = name_first,
             name_last = name_last,
         )
-        
         store = data_store.get()
-        
-        # if user created is first user, grant globl permissions
         if len(store['users']) == 0:
             new_user.owner = True
-        
         store['users'].append(new_user)
         data_store.set(store)
         return {'auth_user_id': new_user.id}         # return user's id
@@ -157,7 +166,28 @@ Return Value:
     token (string)  Encrypted user id and time
 '''
 def auth_register_v2(email, password, name_first, name_last):
-    pass
+    if not check_email_valid(email):                        # email not valid
+        raise InputError("Email address not valid")
+    elif not email_is_new(email):                           # email exists
+        raise InputError("Email address already exists")
+    elif len(password) < 6:                                 # password less than 6 characters
+        raise InputError("Length of password should more than 6 characters")
+    elif len(name_first) > 50 or len(name_first) < 1 or len(name_last) > 50 or len(name_last) < 1:
+        raise InputError("Length of first/last name should between 1 to 50 characters (inclusive)")
+    else:
+        new_user = User(
+            email = email,
+            password = password,
+            name_first = name_first,
+            name_last = name_last,
+        )
+        store = data_store.get()
+        if len(store['users']) == 0:
+            new_user.owner = True
+        store['users'].append(new_user)
+        token = data_store.generate_token(new_user.id)
+        data_store.set(store)
+        return {'token': token, 'auth_user_id': new_user.id}         # return user's id
 
 
 '''
@@ -168,7 +198,23 @@ Return Value:
     users (list)    A list of all user's detail
 '''
 def users_all_v1(token):
-    pass
+    if not data_store.is_valid_token(token):
+        return None
+    users = {}
+    index = 1
+    for item in data_store.get()['users']:
+        user = {}
+        user['email'] = item.email
+        user['password'] = item.password
+        user['name_first'] = item.name_first
+        user['name_last'] = item.name_last
+        user['id'] = item.id
+        user['handle'] = item.handle
+        user['channels'] = item.channels
+        user['owner'] = item.owner
+        users[f"user {index}"] = user
+        index += 1
+    return users
 
 
 '''
@@ -183,7 +229,22 @@ Return Value:
     user's detail (dirt)    user's email, name, handle, id....
 '''
 def user_profile_v1(token, u_id):
-    pass
+    if not data_store.is_valid_token(token):
+        return None
+    user = data_store.get_user(u_id)
+    if user == None:
+        raise InputError("u_id does not refer to a valid user")
+    else:
+        detail = {}
+        detail['email'] = user.email
+        detail['password'] = user.password
+        detail['name_first'] = user.name_first
+        detail['name_last'] = user.name_last
+        detail['id'] = user.id
+        detail['handle'] = user.handle
+        detail['channels'] = user.channels
+        detail['owner'] = user.owner
+        return detail
 
 
 '''
@@ -200,7 +261,20 @@ Return Value:
     An empty dirt {}
 '''
 def user_profile_setname_v1(token, name_first, name_last):
-    pass
+    if not data_store.is_valid_token(token):
+        return None
+    if len(name_first) > 50 or len(name_first) < 1 or len(name_last) > 50 or len(name_last) < 1:
+        raise InputError("Length of first/last name should between 1 to 50 characters (inclusive)")
+    else:
+        store = data_store.get()
+        User_id = data_store.get_id_from_token(token)
+        for user in store['users']:
+            if user.id == User_id:
+                user.name_first = name_first
+                user.name_last = name_last
+                break
+        data_store.set(store)
+        return {}
 
 
 '''
@@ -216,7 +290,45 @@ Return Value:
     An empty dirt {}
 '''
 def user_profile_setemail_v1(token, email):
-    pass
+    if not data_store.is_valid_token(token):
+        return None
+    User_id = data_store.get_id_from_token(token)
+    if not check_email_valid(email):
+        raise InputError("Email address not valid")
+    elif not email_is_new(email):
+        raise InputError("Email address already exists")
+    else:
+        store = data_store.get()
+        for user in store['users']:
+            if user.id == User_id:
+                user.email = email
+                break
+        data_store.set(store)
+        return {}
+
+
+'''
+Arguments:
+    handle (string)  new handle
+
+Return Value:
+    True    if handle is alphanumeric
+    False   if handle is not alphanumeric
+'''
+def handle_valid(handle_str):
+    return handle_str.isalnum()
+
+
+'''
+Arguments:
+    handle (string)  new handle
+
+Return Value:
+    True    if handle is exist
+    False   if handle is new
+'''
+def handle_exist(handle):
+    return any(handle == user.handle for user in data_store.get()['users'])
 
 
 '''
@@ -233,4 +345,21 @@ Return Value:
     An empty dirt {}
 '''
 def user_profile_sethandle_v1(token, handle_str):
-    pass
+    if not data_store.is_valid_token(token):
+        return None
+    User_id = data_store.get_id_from_token(token)
+    if len(handle_str) < 3 or len(handle_str) > 20:
+        raise InputError("Length of handle should between 3 and 20 characters")
+    elif not handle_valid(handle_str):
+        raise InputError("Handle contains characters that are not alphanumeric")
+    elif handle_exist(handle_str):
+        raise InputError("Handle is already used by another user")
+    else:
+        store = data_store.get()
+        for user in store['users']:
+            if user.id == User_id:
+                user.handle = handle_str
+                break
+        data_store.set(store)
+        return {}
+
