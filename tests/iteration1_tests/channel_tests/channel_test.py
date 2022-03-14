@@ -178,6 +178,16 @@ def test_channel_raise_access_error():
     with pytest.raises(AccessError):
         channel_join_v1(auth_user_id2['auth_user_id'], channel_id['channel_id'])
 
+# add an global user to a private channel with no errors
+def test_channel_join_global_user_to_private():
+    auth_user_id = create_new_user_z1234567()
+    auth_user_id2 = create_new_user_z1111111()
+    channel_id = create_first_channel(auth_user_id2, False)
+    
+    channel_join_v1(auth_user_id['auth_user_id'], channel_id['channel_id'])
+    correct_output = {'channels': [{'channel_id': channel_id['channel_id'],
+                                    'name': 'First Channel'}]}
+    assert channels_list_v1(auth_user_id['auth_user_id']) == correct_output
 ####################################################
 ##          Tests for channel_invite_v1           ##
 ####################################################
