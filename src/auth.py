@@ -127,7 +127,13 @@ def auth_register_v1(email, password, name_first, name_last):
             name_first = name_first,
             name_last = name_last,
         )
+        
         store = data_store.get()
+        
+        # if user created is first user, grant globl permissions
+        if len(store['users']) == 0:
+            new_user.owner = True
+        
         store['users'].append(new_user)
         data_store.set(store)
         return {'auth_user_id': new_user.id}         # return user's id
