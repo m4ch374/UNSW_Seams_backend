@@ -8,10 +8,12 @@ or its just that im not smart enough
 
 from src.auth import auth_register_v1
 from src.channels import channels_create_v1
+from src.other import clear_v1
 
 from src.data_store import Datastore, data_store
 
 def test_persistent():
+    clear_v1()
     # Add user to data
     usr1 = auth_register_v1('email@gmail.com', '123456', 'joe', 'bidome')['auth_user_id']
     usr2 = auth_register_v1('another@gmail.com', '132435', 'obama', 'prism')['auth_user_id']
@@ -34,6 +36,7 @@ def test_persistent():
     assert new_datastore != data_store
 
 def test_inconsistent():
+    clear_v1()
     # Add user to data
     auth_register_v1('email@gmail.com', '123456', 'joe', 'bidome')['auth_user_id']
 
