@@ -228,4 +228,3 @@ Return Value:
 '''
 def user_profile_sethandle_v1(token, handle_str):
     pass
-
