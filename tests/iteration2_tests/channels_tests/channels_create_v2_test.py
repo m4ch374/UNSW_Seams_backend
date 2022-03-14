@@ -5,7 +5,7 @@
 # ==================================================
 """
 
-# Stubbed until necessary funtion is finished
+# # Stubbed until necessary funtion is finished
 
 # # Imports
 # import requests
@@ -14,11 +14,9 @@
 # from src.error import InputError, AccessError
 
 # # Import definitions
-# from tests.iteration2_tests.channels_tests.definitions import ERROR_LIST, NAMES_LIST, INVALID_TOKEN
-# from src.config import url
-
-# # Local definitions
-# ENDPOINT = f"{url}channels/create/v2"
+# from tests.iteration2_tests.channels_tests.definitions import ERROR_LIST, NAMES_LIST
+# from tests.iteration2_tests.channels_tests.definitions import INVALID_TOKEN
+# from tests.iteration2_tests.endpoints import ENDPOINT_CREATE_CHNL
 
 # def generate_channel_input_json(tok, name, is_public):
 #     return {
@@ -36,7 +34,7 @@
 # def test_channels_create_error_public(get_token_1):
 #     for s in ERROR_LIST:
 #         data = generate_channel_input_json(get_token_1, s, True)
-#         resp = requests.post(ENDPOINT, data=data)
+#         resp = requests.post(ENDPOINT_CREATE_CHNL, data=data)
 
 #         assert resp.status_code == InputError.code
 
@@ -49,7 +47,7 @@
 # def test_channels_create_error_private(get_token_1):
 #     for s in ERROR_LIST:
 #         data = generate_channel_input_json(get_token_1, s, False)
-#         resp = requests.post(ENDPOINT, data=data)
+#         resp = requests.post(ENDPOINT_CREATE_CHNL, data=data)
 
 #         assert resp.status_code == InputError.code
 
@@ -63,8 +61,8 @@
 #     for s in ERROR_LIST:
 #         data1 = generate_channel_input_json(get_token_1, s, True)
 #         data2 = generate_channel_input_json(get_token_1, s, False)
-#         resp1 = requests.post(ENDPOINT, data=data1)
-#         resp2 = requests.post(ENDPOINT, data=data2)
+#         resp1 = requests.post(ENDPOINT_CREATE_CHNL, data=data1)
+#         resp2 = requests.post(ENDPOINT_CREATE_CHNL, data=data2)
 
 #         assert resp1.status_code == InputError.code
 #         assert resp2.status_code == InputError.code
@@ -76,7 +74,7 @@
 # # Test passing in invalid token
 # def test_channels_create_error_invalid_token():
 #     data = generate_channel_input_json(INVALID_TOKEN, 'dummy', True)
-#     resp = requests.post(ENDPOINT, data=data)
+#     resp = requests.post(ENDPOINT_CREATE_CHNL, data=data)
 
 #     assert resp.status_code == AccessError.code
 
@@ -86,7 +84,7 @@
 # def test_channels_create_public(get_token_1):
 #     for i, name in enumerate(NAMES_LIST):
 #         data = generate_channel_input_json(get_token_1, name, True)
-#         val = requests.post(ENDPOINT, data=data).json()
+#         val = requests.post(ENDPOINT_CREATE_CHNL, data=data).json()
 
 #         assert val == { 'channel_id': i + 1 }
 
@@ -96,7 +94,7 @@
 # def test_channels_create_private(get_token_1):
 #     for i, name in enumerate(NAMES_LIST):
 #         data = generate_channel_input_json(get_token_1, name, False)
-#         val = requests.post(ENDPOINT, data=data).json()
+#         val = requests.post(ENDPOINT_CREATE_CHNL, data=data).json()
 
 #         assert val == { 'channel_id': i + 1 }
 
@@ -107,8 +105,8 @@
 #     for i, name in enumerate(NAMES_LIST):
 #         data = generate_channel_input_json(get_token_1, name, True)
 #         data_1 = generate_channel_input_json(get_token_1, name, False)
-#         val = requests.post(ENDPOINT, data=data).json()
-#         val_1 = requests.post(ENDPOINT, data=data_1).json()
+#         val = requests.post(ENDPOINT_CREATE_CHNL, data=data).json()
+#         val_1 = requests.post(ENDPOINT_CREATE_CHNL, data=data_1).json()
 
 #         assert val == { 'channel_id': i * 2 + 1 }
 #         assert val_1 == { 'channel_id': i * 2 + 2 }
