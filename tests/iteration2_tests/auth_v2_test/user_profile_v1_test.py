@@ -11,7 +11,7 @@ def test_invalid_token():
 
 def test_self_detail():
     user = auth_register_v2('z8888888@ed.unsw.edu.au', '321321321', 'Russell', 'Wang')
-    assert user_profile_v1(user['token'], user['auth_user_id']) == {'email': 'z8888888@ed.unsw.edu.au', 'password': '321321321', 'name_first': 'Russell', 'name_last': 'Wang', 'id': 1, 'handle': 'russellwang', 'channels': [], 'owner': False}
+    assert user_profile_v1(user['token'], user['auth_user_id']) == {'email': 'z8888888@ed.unsw.edu.au', 'password': '321321321', 'name_first': 'Russell', 'name_last': 'Wang', 'id': 1, 'handle': 'russellwang', 'channels': [], 'owner': True}
 
 def test_other_detail():
     user_1 = auth_register_v2('z8888888@ed.unsw.edu.au', '321321321', 'Russell', 'Wang')
