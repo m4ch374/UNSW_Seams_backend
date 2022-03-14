@@ -18,12 +18,8 @@
 # from tests.iteration2_tests.channels_tests.definitions import INVALID_TOKEN
 # from tests.iteration2_tests.endpoints import ENDPOINT_CREATE_CHNL
 
-# def generate_channel_input_json(tok, name, is_public):
-#     return {
-#         'token': tok,
-#         'name': name,
-#         'is_public': is_public,
-#     }
+# # Import helpers
+# from tests.iteration2_tests.helper import generate_channel_input_json
 
 # # Should raise input error
 # #
@@ -69,7 +65,7 @@
 
 # # Should raise access error
 # #
-# # When:     auth_user_id is invalid
+# # When:     token is invalid
 # #
 # # Test passing in invalid token
 # def test_channels_create_error_invalid_token():

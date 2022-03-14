@@ -7,9 +7,7 @@ import pytest
 import requests
 
 # Import definitions
-from src.config import url
-
-REGISTER_URL = f"{url}auth/register/v2"
+from tests.iteration2_tests.endpoints import ENDPOINT_REGISTER_USR
 
 REGISTER_DETAILS_1 = { 
     'email': 'randomemail@gmail.com',
@@ -27,10 +25,10 @@ REGISTER_DETAILS_2 = {
 
 @pytest.fixture
 def get_token_1():
-    resp = requests.post(REGISTER_URL, data=REGISTER_DETAILS_1).json()
+    resp = requests.post(ENDPOINT_REGISTER_USR, data=REGISTER_DETAILS_1).json()
     return resp['token']
 
 @pytest.fixture
 def get_token_2():
-    resp = requests.post(REGISTER_URL, data=REGISTER_DETAILS_2).json()
+    resp = requests.post(ENDPOINT_REGISTER_USR, data=REGISTER_DETAILS_2).json()
     return resp['token']
