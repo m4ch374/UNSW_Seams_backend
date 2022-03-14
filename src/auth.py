@@ -200,20 +200,15 @@ Return Value:
 def users_all_v1(token):
     if not data_store.is_valid_token(token):
         return None
-    users = {}
-    index = 1
+    users = []
     for item in data_store.get()['users']:
         user = {}
+        user['id'] = item.id
         user['email'] = item.email
-        user['password'] = item.password
         user['name_first'] = item.name_first
         user['name_last'] = item.name_last
-        user['id'] = item.id
         user['handle'] = item.handle
-        user['channels'] = item.channels
-        user['owner'] = item.owner
-        users[f"user {index}"] = user
-        index += 1
+        users.append(user)
     return users
 
 
@@ -236,14 +231,11 @@ def user_profile_v1(token, u_id):
         raise InputError("u_id does not refer to a valid user")
     else:
         detail = {}
+        detail['id'] = user.id
         detail['email'] = user.email
-        detail['password'] = user.password
         detail['name_first'] = user.name_first
         detail['name_last'] = user.name_last
-        detail['id'] = user.id
         detail['handle'] = user.handle
-        detail['channels'] = user.channels
-        detail['owner'] = user.owner
         return detail
 
 
