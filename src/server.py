@@ -1,3 +1,4 @@
+# Default Imports
 import sys
 import signal
 from json import dumps
@@ -5,6 +6,11 @@ from flask import Flask, request
 from flask_cors import CORS
 from src.error import InputError
 from src import config
+
+# Our own imports
+import src.channels as chnls
+from src.other import clear_v1
+from src.data_store import data_store
 
 def quit_gracefully(*args):
     '''For coverage'''
@@ -34,13 +40,45 @@ APP.register_error_handler(Exception, defaultHandler)
 def echo():
     data = request.args.get('data')
     if data == 'echo':
-   	    raise InputError(description='Cannot echo "echo"')
+        raise InputError(description='Cannot echo "echo"')
     return dumps({
         'data': data
     })
+
+# =============== /channels domain =================
+@APP.route("/channels/create/v2", methods=['POST'])
+def channels_create_v2():
+    body = request.get_json(force=True)
+
+    usr_id = data_store.get_id_from_token(body['token'])
+    response = chnls.channels_create_v1(usr_id, body['name'], body['is_public'])
+
+    return dumps(response)
+
+@APP.route("/channels/list/v2", methods=['GET'])
+def channels_list_v2():
+    tok = request.args.get('token')
+    usr_id = data_store.get_id_from_token(tok)
+    response = chnls.channels_list_v1(usr_id)
+    return dumps(response)
+
+@APP.route("/channels/listall/v2", methods=['GET'])
+def channels_listall_v2():
+    tok = request.args.get('token')
+    usr_id = data_store.get_id_from_token(tok)
+    response = chnls.channels_listall_v1(usr_id)
+    return dumps(response)
+# ==================================================
+
+# ================ /clear domain ===================
+@APP.route("/clear/v1", methods=['DELETE'])
+def clear():
+    clear_v1()
+    return dumps({})
+# ==================================================
 
 #### NO NEED TO MODIFY BELOW THIS POINT
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, quit_gracefully) # For coverage
-    APP.run(port=config.port) # Do not edit this port
+    APP.run(port=config.port, debug=True) # Do not edit this port
