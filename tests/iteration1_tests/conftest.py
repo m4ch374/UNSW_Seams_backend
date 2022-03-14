@@ -6,6 +6,12 @@ Fixtures that (may or may not) shared across test files
 import pytest
 import src.auth as auth
 import src.channels as chnls
+from src.other import clear_v1
+
+# Runs clean_v1() before all tests
+@pytest.fixture(autouse=True)
+def clean():
+    clear_v1()
 
 # A dummy user id
 @pytest.fixture

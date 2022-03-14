@@ -1,5 +1,5 @@
 """
-Fixtures for /channels domain
+Fixtures for iteration 2
 """
 
 # Imports
@@ -7,8 +7,9 @@ import pytest
 import requests
 
 # Import definitions
-from tests.iteration2_tests.endpoints import ENDPOINT_REGISTER_USR
+from tests.iteration2_tests.endpoints import ENDPOINT_REGISTER_USR, ENDPOINT_CLEAR
 
+# =============== Local Definitions ================
 REGISTER_DETAILS_1 = { 
     'email': 'randomemail@gmail.com',
     'password': 'thisisapassword', 
@@ -22,6 +23,11 @@ REGISTER_DETAILS_2 = {
     'name_first': 'Obama',
     'name_last': 'Prism',
 }
+# ==================================================
+
+@pytest.fixture(autouse=True)
+def clear():
+    requests.delete(ENDPOINT_CLEAR)
 
 @pytest.fixture
 def get_token_1():
