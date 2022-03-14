@@ -5,6 +5,8 @@ from flask import Flask, request
 from flask_cors import CORS
 from src.error import InputError
 from src import config
+from src import channel
+
 
 def quit_gracefully(*args):
     '''For coverage'''
@@ -38,6 +40,17 @@ def echo():
     return dumps({
         'data': data
     })
+
+
+@APP.route("/channel/details/v2", methods=['GET'])
+def channel_details_v2():
+    token = request.args.get('token')
+    channel_id = request.args.get('channel_id')
+    details = channel.channel_details_v1(token, channel_id) # have to rewrite channel details for use with tokens > u_id
+    return dumps(details)
+    
+
+
 
 #### NO NEED TO MODIFY BELOW THIS POINT
 
