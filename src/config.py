@@ -1,5 +1,8 @@
-port = 8080
+port = 30000
 
+'''
+<user_test> import <url> as BASE_URL
+'''
 url = f"http://localhost:{port}/"
 
 # A random 64 byte secret 
