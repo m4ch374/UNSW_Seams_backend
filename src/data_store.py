@@ -86,10 +86,10 @@ class Datastore:
         self.set_store()
 
     def get_user(self, id):
-        if len(self.__store['users']) == 0:
-            return None
-        else:
-            return [usr for usr in self.__store['users'] if usr.id == id][0]
+        for user in self.__store['users']:
+            if user.id == id:
+                return user
+        return None
 
     def get_channel(self, id):
         if len(self.__store['channel']) == 0:
