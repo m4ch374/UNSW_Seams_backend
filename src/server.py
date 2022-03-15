@@ -47,18 +47,24 @@ def echo():
         'data': data
     })
 
-<<<<<<< HEAD
 
 @APP.route("/channel/details/v2", methods=['GET'])
 def channel_details_v2():
     token = request.args.get('token')
     channel_id = request.args.get('channel_id')
-    details = channel.channel_details_v1(token, channel_id) # have to rewrite channel details for use with tokens > u_id
-    return dumps(details)
+    response = channel.channel_details_v1(token, channel_id)
+    return dumps(response)
+
+@APP.route("/channel/messages/v2", methods=['POST'])
+def channel_details_v2():
+    token = request.args.get('token')
+    channel_id = request.args.get('channel_id')
+    start = request.args.get('start')
+    response = channel.channel_details_v1(token, channel_id, start)
+    return dumps(response)
     
 
 
-=======
 # =============== /channels domain =================
 @APP.route("/channels/create/v2", methods=['POST'])
 def channels_create_v2():
@@ -90,7 +96,6 @@ def clear():
     clear_v1()
     return dumps({})
 # ==================================================
->>>>>>> master
 
 #### NO NEED TO MODIFY BELOW THIS POINT
 
