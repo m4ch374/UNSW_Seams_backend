@@ -1,45 +1,52 @@
-import pytest
-from src.error import InputError
-from src.auth import auth_register_v2
-from src.auth import user_profile_sethandle_v1
-from src.auth import user_profile_v1
-from src.other import clear_v1
+# import requests
 
-def test_invalid_token():
-    clear_v1()
-    auth_register_v2('z5555555@ed.unsw.edu.au', '123123123', 'William', 'Wu')
-    token = '123123123123'
-    assert user_profile_sethandle_v1(token, 'jamesbond') == None
+# BASE_ADDRESS = 'http://localhost:'
+# BASE_PORT = '20000'
+# BASE_URL = BASE_ADDRESS + BASE_PORT
+# REQUEST = "/user/profile/sethandle/v1"
+# URL = BASE_URL + REQUEST
+# REGISTER = BASE_URL + "/auth/register/v2"
 
-def test_long_handle():
-    clear_v1()
-    user = auth_register_v2('z5555555@ed.unsw.edu.au', '123123123', 'William', 'Wu')
-    long_handle = 'xxxxxxxxxxxxxxxxxxxxxx'
-    with pytest.raises(InputError):
-        assert user_profile_sethandle_v1(user['token'], long_handle)
+# def test_invalid_token():
+#     response = requests.post(URL, json = {'token': '123123123123123', 'handle_str': '123123123123'})
+#     assert response.status_code == 200
+#     response_data = response.json()
+#     assert response_data == None
 
-def test_short_handle():
-    clear_v1()
-    user = auth_register_v2('z5555555@ed.unsw.edu.au', '123123123', 'William', 'Wu')
-    short_handle = 'x'
-    with pytest.raises(InputError):
-        assert user_profile_sethandle_v1(user['token'], short_handle)
+# def test_long_handle():
+#     long_handle = 'x' * 21
+#     user = requests.post(REGISTER, json = {'email': 'z5555555@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'William', 'name_last': 'Wu'})
+#     user_data = user.json()
+#     response = requests.post(URL, json = {'token': user_data['token'], 'handle_str': long_handle})
+#     assert response.status_code == 400
 
-def test_invalid_handle():
-    clear_v1()
-    user = auth_register_v2('z5555555@ed.unsw.edu.au', '123123123', 'William', 'Wu')
-    with pytest.raises(InputError):
-        assert user_profile_sethandle_v1(user['token'], '@#$%AS123')
+# def test_short_handle():
+#     short_handle = 'x'
+#     user = requests.post(REGISTER, json = {'email': 'z5555555@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'William', 'name_last': 'Wu'})
+#     user_data = user.json()
+#     response = requests.post(URL, json = {'token': user_data['token'], 'handle_str': short_handle})
+#     assert response.status_code == 400
 
-def test_exist_handle():
-    clear_v1()
-    user = auth_register_v2('z5555555@ed.unsw.edu.au', '123123123', 'William', 'Wu')
-    with pytest.raises(InputError):
-        assert user_profile_sethandle_v1(user['token'], 'williamwu')
+# def test_invalid_handle():
+#     invalid_handle = 'asd123!@#'
+#     user = requests.post(REGISTER, json = {'email': 'z5555555@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'William', 'name_last': 'Wu'})
+#     user_data = user.json()
+#     response = requests.post(URL, json = {'token': user_data['token'], 'handle_str': invalid_handle})
+#     assert response.status_code == 400
 
-def test_valid_input():
-    clear_v1()
-    user = auth_register_v2('z5555555@ed.unsw.edu.au', '123123123', 'William', 'Wu')
-    assert user_profile_sethandle_v1(user['token'], 'jamesbond') == {}
-    assert user_profile_v1(user['token'], user['auth_user_id']) == {'id': 1, 'email': 'z5555555@ed.unsw.edu.au', 'name_first': 'William', 'name_last': 'Wu', 'handle': 'jamesbond'}
+# def test_exist_handle():
+#     exist_handle = 'williamwu'
+#     user = requests.post(REGISTER, json = {'email': 'z5555555@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'William', 'name_last': 'Wu'})
+#     user_data = user.json()
+#     response = requests.post(URL, json = {'token': user_data['token'], 'handle_str': exist_handle})
+#     assert response.status_code == 400
+
+# def test_valid_input():
+#     new_handle = 'asdasdasd'
+#     user = requests.post(REGISTER, json = {'email': 'z5555555@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'William', 'name_last': 'Wu'})
+#     user_data = user.json()
+#     response = requests.post(URL, json = {'token': user_data['token'], 'handle_str': new_handle})
+#     assert response.status_code == 200
+#     response_data = response.json()
+#     assert response_data == {}
 

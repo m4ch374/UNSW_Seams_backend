@@ -1,17 +1,29 @@
-from src.auth import auth_logout_v1
-from src.auth import auth_register_v2
-from src.auth import auth_login_v2
-from src.other import clear_v1
+# import requests
 
-def test_register_logout():
-    clear_v1()
-    user = auth_register_v2('z5555555@ed.unsw.edu.au', '123123123', 'William', 'Wu')
-    assert auth_logout_v1(user['token']) == {}
+# BASE_ADDRESS = 'http://localhost:'
+# BASE_PORT = '20000'
+# BASE_URL = BASE_ADDRESS + BASE_PORT
+# REQUEST = "/auth/logout/v1"
+# URL = BASE_URL + REQUEST
+# REGISTER = BASE_URL + "/auth/register/v2"
+# LOGIN = BASE_URL + "/auth/login/v2"
 
-def test_login_logout():
-    clear_v1()
-    user = auth_register_v2('z5555555@ed.unsw.edu.au', '123123123', 'William', 'Wu')
-    auth_logout_v1(user['token'])
-    user = auth_login_v2('z5555555@ed.unsw.edu.au', '123123123')
-    assert auth_logout_v1(user['token']) == {}
+# def test_register_logout():
+#     user = requests.post(REGISTER, json = {'email': 'z1234567@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'Donald', 'name_last': 'Trump'})
+#     user_data = user.json()
+#     response = requests.post(URL, json = {'token': user_data['token']})
+#     assert response.status_code == 200
+#     response_data = response.json()
+#     assert response_data == {}
+
+# def test_login_logout():
+#     user = requests.post(REGISTER, json = {'email': 'z1234567@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'Donald', 'name_last': 'Trump'})
+#     user_data = user.json()
+#     requests.post(URL, json = {'token': user_data['token']})
+#     user = requests.post(LOGIN, json = {'email': 'z1234567@ed.unsw.edu.au', 'password': '123123123'})
+#     user_data = user.json()
+#     response = requests.post(URL, json = {'token': user_data['token']})
+#     assert response.status_code == 200
+#     response_data = response.json()
+#     assert response_data == {}
 

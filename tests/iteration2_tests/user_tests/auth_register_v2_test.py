@@ -1,69 +1,54 @@
-import pytest
-from src.error import InputError
-from src.auth import auth_register_v2
-from src.other import clear_v1
+import requests
 
-def test_email_unvalid_1():
-    clear_v1()
-    with pytest.raises(InputError):
-        assert auth_register_v2('z1234567', '1234567', 'Donald', 'Trump')
+BASE_ADDRESS = 'http://localhost:'
+BASE_PORT = '20000'
+BASE_URL = BASE_ADDRESS + BASE_PORT
+REQUEST = "/auth/register/v2"
+URL = BASE_URL + REQUEST
 
-def test_email_unvalid_2():
-    clear_v1()
-    with pytest.raises(InputError):
-        assert auth_register_v2('z1234567ed.unsw.edu.au', '1234567', 'Donald', 'Trump')
+user_1 = {'email': 'z1234567@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'Donald', 'name_last': 'Trump'}
 
-def test_email_unvalid_3():
-    clear_v1()
-    with pytest.raises(InputError):
-        assert auth_register_v2('z1234567@ed', '1234567', 'Donald', 'Trump')
-
-def test_email_unvalid_4():
-    clear_v1()
-    with pytest.raises(InputError):
-        assert auth_register_v2('z1234567@ed.$%^com', '1234567', 'Donald', 'Trump')
+def test_email_unvalid():
+    response = requests.post(URL, json = {'email': 'z1234567', 'password': '1234567', 'name_first': 'Donald', 'name_last': 'Trump'})
+    assert response.status_code == 400
 
 def test_email_exist():
-    clear_v1()
-    auth_register_v2('z7654321@ed.unsw.edu.au', '1234567', 'Jason', 'Smith')
-    with pytest.raises(InputError):
-        assert auth_register_v2('z7654321@ed.unsw.edu.au', '1234567', 'Donald', 'Trump')
+    requests.post(URL, json = {'email': 'z1234567@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'Donald', 'name_last': 'Trump'})
+    response = requests.post(URL, json = {'email': 'z1234567@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'Donald', 'name_last': 'Trump'})
+    assert response.status_code == 400
 
-def test_register_password_too_short():
-    clear_v1()
-    with pytest.raises(InputError):
-        assert auth_register_v2('z1234567@ed.unsw.edu.au', '', 'Donald', 'Trump')
+def test_password_too_short():
+    response = requests.post(URL, json = {'email': 'z1234567@ed.unsw.edu.au', 'password': '123', 'name_first': 'Donald', 'name_last': 'Trump'})
+    assert response.status_code == 400
 
-def test_register_password_too_short_2():
-    clear_v1()
-    with pytest.raises(InputError):
-        assert auth_register_v2('z1234567@ed.unsw.edu.au', '12345', 'Donald', 'Trump')
+def test_firstname_too_short():
+    response = requests.post(URL, json = {'email': 'z1234567@ed.unsw.edu.au', 'password': '1234567', 'name_first': '', 'name_last': 'Trump'})
+    assert response.status_code == 400
 
-def test_register_firstname_too_short():
-    clear_v1()
-    with pytest.raises(InputError):
-        assert auth_register_v2('z1234567@ed.unsw.edu.au', '1234567', '', 'Trump')
-
-def test_register_firstname_too_long():
-    clear_v1()
+def test_firstname_too_long():
     first_name_long = 'q' * 51
-    with pytest.raises(InputError):
-        assert auth_register_v2('z1234567@ed.unsw.edu.au', '1234567', first_name_long, 'Trump')
+    response = requests.post(URL, json = {'email': 'z1234567@ed.unsw.edu.au', 'password': '1234567', 'name_first': first_name_long, 'name_last': 'Trump'})
+    assert response.status_code == 400
 
-def test_register_lastname_too_short():
-    clear_v1()
-    with pytest.raises(InputError):
-        assert auth_register_v2('z1234567@ed.unsw.edu.au', '1234567', 'Donald', '')
+def test_lastname_too_short():
+    response = requests.post(URL, json = {'email': 'z1234567@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'Donald', 'name_last': ''})
+    assert response.status_code == 400
 
-def test_register_lastname_too_long():
-    clear_v1()
+def test_lastname_too_long():
     last_name_long = 'q' * 51
-    with pytest.raises(InputError):
-        assert auth_register_v2('z1234567@ed.unsw.edu.au', '1234567', 'Donald', last_name_long)
+    response = requests.post(URL, json = {'email': 'z1234567@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'Donald', 'name_last': last_name_long})
+    assert response.status_code == 400
 
 def test_valid_input():
-    clear_v1()
-    user = auth_register_v2('z5555555@ed.unsw.edu.au', '123123123', 'William', 'Wu')
-    assert user['auth_user_id'] == 1
-    assert str(type(user['token'])) == "<class 'str'>"
+    response = requests.post(URL, json = {'email': 'z1234567@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'Donald', 'name_last': 'Trump'})
+    assert response.status_code == 200
+    response_data = response.json()
+    assert str(type(response_data['token'])) == "<class 'str'>"
+    assert response_data['auth_user_id'] == 1
+
+    response = requests.post(URL, json = {'email': 'z7654321@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'Jason', 'name_last': 'Smith'})
+    assert response.status_code == 200
+    response_data = response.json()
+    assert str(type(response_data['token'])) == "<class 'str'>"
+    assert response_data['auth_user_id'] == 2
 

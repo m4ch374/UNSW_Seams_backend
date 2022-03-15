@@ -1,37 +1,41 @@
-import pytest
-from src.error import InputError
-from src.auth import auth_register_v2
-from src.auth import user_profile_setname_v1
-from src.auth import user_profile_v1
-from src.other import clear_v1
+# import requests
 
-def test_invalid_token():
-    clear_v1()
-    auth_register_v2('z5555555@ed.unsw.edu.au', '123123123', 'William', 'Wu')
-    token = '123123123123'
-    assert user_profile_setname_v1(token, 'James', 'Bond') == None
+# BASE_ADDRESS = 'http://localhost:'
+# BASE_PORT = '20000'
+# BASE_URL = BASE_ADDRESS + BASE_PORT
+# REQUEST = "/user/profile/setname/v1"
+# URL = BASE_URL + REQUEST
+# REGISTER = BASE_URL + "/auth/register/v2"
 
-def test_long_name():
-    clear_v1()
-    user = auth_register_v2('z5555555@ed.unsw.edu.au', '123123123', 'William', 'Wu')
-    long_name = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-    with pytest.raises(InputError):
-        assert user_profile_setname_v1(user['token'], long_name, 'Bond')
-    with pytest.raises(InputError):
-        assert user_profile_setname_v1(user['token'], 'James', long_name)
+# def test_invalid_token():
+#     response = requests.post(URL, json = {'token': '123123123123123', 'name_first': 'James', 'name_last': 'Bond'})
+#     assert response.status_code == 200
+#     response_data = response.json()
+#     assert response_data == None
 
-def test_short_name():
-    clear_v1()
-    user = auth_register_v2('z5555555@ed.unsw.edu.au', '123123123', 'William', 'Wu')
-    short_name = ''
-    with pytest.raises(InputError):
-        assert user_profile_setname_v1(user['token'], short_name, 'Bond')
-    with pytest.raises(InputError):
-        assert user_profile_setname_v1(user['token'], 'James', short_name)
+# def test_long_name():
+#     long_name = 'x' * 51
+#     user = requests.post(REGISTER, json = {'email': 'z5555555@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'William', 'name_last': 'Wu'})
+#     user_data = user.json()
+#     response = requests.post(URL, json = {'token': user_data['token'], 'name_first': long_name, 'name_last': 'Bond'})
+#     assert response.status_code == 400
+#     response = requests.post(URL, json = {'token': user_data['token'], 'name_first': 'James', 'name_last': long_name})
+#     assert response.status_code == 400
 
-def test_valid_input():
-    clear_v1()
-    user = auth_register_v2('z5555555@ed.unsw.edu.au', '123123123', 'William', 'Wu')
-    assert user_profile_setname_v1(user['token'], 'James', 'Bond') == {}
-    assert user_profile_v1(user['token'], user['auth_user_id']) == {'id': 1, 'email': 'z5555555@ed.unsw.edu.au', 'name_first': 'James', 'name_last': 'Bond', 'handle': 'williamwu'}
+# def test_short_name():
+#     short_name = ''
+#     user = requests.post(REGISTER, json = {'email': 'z5555555@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'William', 'name_last': 'Wu'})
+#     user_data = user.json()
+#     response = requests.post(URL, json = {'token': user_data['token'], 'name_first': short_name, 'name_last': 'Bond'})
+#     assert response.status_code == 400
+#     response = requests.post(URL, json = {'token': user_data['token'], 'name_first': 'James', 'name_last': short_name})
+#     assert response.status_code == 400
+
+# def test_valid_input():
+#     user = requests.post(REGISTER, json = {'email': 'z5555555@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'William', 'name_last': 'Wu'})
+#     user_data = user.json()
+#     response = requests.post(URL, json = {'token': user_data['token'], 'name_first': 'James', 'name_last': 'Bond'})
+#     assert response.status_code == 200
+#     response_data = response.json()
+#     assert response_data == {}
 
