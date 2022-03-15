@@ -1,4 +1,5 @@
 # Default Imports
+import email
 import sys
 import signal
 from json import dumps
@@ -9,6 +10,7 @@ from src import config
 
 # Our own imports
 import src.channels as chnls
+import src.auth as auth
 from src.other import clear_v1
 from src.data_store import data_store
 
@@ -44,6 +46,64 @@ def echo():
     return dumps({
         'data': data
     })
+
+# =============== /user domain =================
+@APP.route("/auth/login/v2", methods=['POST'])
+def login_v2():
+    data = request.get_json()
+    email = data['email']
+    password = data['password']
+    return dumps(auth.auth_login_v2(email, password))
+
+@APP.route("/auth/logout/v1", methods=['POST'])
+def logout_v1():
+    data = request.get_json()
+    token = data['token']
+    return dumps(auth.auth_logout_v1(token))
+
+@APP.route("/auth/register/v2", methods=['POST'])
+def register_v2():
+    data = request.get_json()
+    email = data['email']
+    password = data['password']
+    name_first = data['name_first']
+    name_last = data['name_last']
+    return dumps(auth.auth_register_v2(email, password, name_first, name_last))
+
+@APP.route("/users/all/v1", methods=['GET'])
+def all_v1():
+    token = request.args.get('token')
+    return dumps(auth.users_all_v1(token))
+
+@APP.route("/user/profile/v1", methods=['GET'])
+def profile_v1():
+    token = request.args.get('token')
+    id = request.args.get('id')
+    u_id = int(id)
+    return dumps(auth.user_profile_v1(token, u_id))
+
+@APP.route("/user/profile/setname/v1", methods=['PUT'])
+def profile_setname_v1():
+    data = request.get_json()
+    token = data['token']
+    name_first = data['name_first']
+    name_last = data['name_last']
+    return dumps(auth.user_profile_setname_v1(token, name_first, name_last))
+
+@APP.route("/user/profile/setemail/v1", methods=['PUT'])
+def profile_setemail_v1():
+    data = request.get_json()
+    token = data['token']
+    email = data['email']
+    return dumps(auth.user_profile_setemail_v1(token, email))
+
+@APP.route("/user/profile/sethandle/v1", methods=['PUT'])
+def profile_sethandle_v1():
+    data = request.get_json()
+    token = data['token']
+    handle_str = data['handle_str']
+    return dumps(auth.user_profile_sethandle_v1(token, handle_str))
+
 
 # =============== /channels domain =================
 @APP.route("/channels/create/v2", methods=['POST'])
