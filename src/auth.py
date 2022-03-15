@@ -184,8 +184,8 @@ def auth_register_v2(email, password, name_first, name_last):
         store = data_store.get()
         if len(store['users']) == 0:
             new_user.owner = True
-        store['users'].append(new_user)
         token = data_store.generate_token(new_user.id)
+        store['users'].append(new_user)
         data_store.set(store)
         return {'token': token, 'auth_user_id': new_user.id}         # return user's id
 

@@ -5,9 +5,7 @@ from tests.iteration2_tests.user_tests.definitions import LOGIN_V2, LOGOUT_V1, R
 def test_invalid_token():
     token = 'xxxxxxxxxxxx'
     response = requests.post(LOGOUT_V1, json = {'token': token})
-    assert response.status_code == 200
-    response_data = response.json()
-    assert response_data == None
+    assert response.status_code == 403
 
 def test_register_logout():
     user = requests.post(REGISTER_V2, json = {'email': 'z1234567@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'Donald', 'name_last': 'Trump'})
