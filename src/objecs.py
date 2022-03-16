@@ -3,6 +3,7 @@ besides the given ones """
 
 # Imports
 from src.data_store import data_store
+from src.encrypt import hashing_password
 
 '''
 User Class, store information of each user
@@ -36,9 +37,12 @@ To represent User in dict
 usr_in_dict = new_user.to_dict()
 '''
 class User:
-    def __init__(self, email, password, name_first, name_last):
+    def __init__(self, email, password, name_first, name_last, iteration):
         self.email = email
-        self.password = password
+        if iteration == 1:
+            self.password = password
+        elif iteration == 2:
+            self.password = hashing_password(password)
         self.name_first = name_first
         self.name_last = name_last
         self.id = self.__generate_id()
