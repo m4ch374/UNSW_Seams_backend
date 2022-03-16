@@ -36,8 +36,8 @@
 
 - Return value of <login_v2> and <register_v2> is {'token': 'a string', 'auth_user_id' = integer}
 
-- Return value of <user_profile_v1> is {'id': 'integer', 'email': 'string', 'name_first': 'string', 'name_last': 'string', 'handle': 'string'}
+- Return value of <user_profile_v1> is {'user': {'id': 'integer', 'email': 'string', 'name_first': 'string', 'name_last': 'string', 'handle': 'string'}}
 
-- Return value of <users_all_v1> is [{'id': 'integer', 'email': 'string', 'name_first': 'string'....},
-                                    'user 2': {'id': 'integer', 'email': 'string', 'name_first': 'string'....},
-                                    'user 3': {'id': 'integer', 'email': 'string', 'name_first': 'string'....}]
+- Return value of <users_all_v1> is {'users': [{'id': 'integer', 'email': 'string', 'name_first': 'string'....},
+                                              {'id': 'integer', 'email': 'string', 'name_first': 'string'....},
+                                              {'id': 'integer', 'email': 'string', 'name_first': 'string'....}]}
