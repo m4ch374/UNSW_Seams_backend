@@ -31,10 +31,10 @@ def clear():
 
 @pytest.fixture
 def get_token_1():
-    resp = requests.post(ENDPOINT_REGISTER_USR, data=REGISTER_DETAILS_1).json()
+    resp = requests.post(ENDPOINT_REGISTER_USR, json=REGISTER_DETAILS_1).json()
     return resp['token']
 
 @pytest.fixture
 def get_token_2():
-    resp = requests.post(ENDPOINT_REGISTER_USR, data=REGISTER_DETAILS_2).json()
+    resp = requests.post(ENDPOINT_REGISTER_USR, json=REGISTER_DETAILS_2).json()
     return resp['token']
