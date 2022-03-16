@@ -1,9 +1,8 @@
 import re
-import jwt
 from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.objecs import User
-from src.config import PASSWORD_SECRET
+from src.encrypt import hashing_password
 
 '''
 Arguments:
@@ -40,20 +39,19 @@ Return Value:
 def auth_login_v1(email, password):
     state = login_account_check(email, password)
     if state == -1:
-        raise InputError("Account does not exist")
+        raise InputError(description="Account does not exist")
     elif state == 0:
-        raise InputError("Password incorrect")
+        raise InputError(description="Password incorrect")
     else:
         user_id = state
         return {'auth_user_id': user_id}
 
 
 '''
-    Get password from encoded password
+    Compare two passwords
 '''
-def decode_password(password):
-    decoded_data = jwt.decode(password, PASSWORD_SECRET, "HS256")
-    return decoded_data['password']
+def compare_password(password, user_password):
+    return user_password == hashing_password(password)
 
 
 '''
@@ -70,7 +68,7 @@ def login_account_check_v2(email, password):
     users = data_store.get()['users']
     for user in users:
         if email == user.email:
-            if  password == decode_password(user.password):
+            if compare_password(password, user.password):
                 return user.id
             return 0
     return -1
@@ -92,9 +90,9 @@ Return Value:
 def auth_login_v2(email, password):
     state = login_account_check_v2(email, password)
     if state == -1:
-        raise InputError("Account does not exist")
+        raise InputError(description="Account does not exist")
     elif state == 0:
-        raise InputError("Password incorrect")
+        raise InputError(description="Password incorrect")
     else:
         user_id = state
         store = data_store.get()
@@ -155,13 +153,13 @@ Return Value:
 '''
 def auth_register_v1(email, password, name_first, name_last):
     if not check_email_valid(email):                        # email not valid
-        raise InputError("Email address not valid")
+        raise InputError(description="Email address not valid")
     elif not email_is_new(email):                           # email exists
-        raise InputError("Email address already exists")
+        raise InputError(description="Email address already exists")
     elif len(password) < 6:                                 # password less than 6 characters
-        raise InputError("Length of password should more than 6 characters")
+        raise InputError(description="Length of password should more than 6 characters")
     elif len(name_first) > 50 or len(name_first) < 1 or len(name_last) > 50 or len(name_last) < 1:
-        raise InputError("Length of first/last name should between 1 to 50 characters (inclusive)")
+        raise InputError(description="Length of first/last name should between 1 to 50 characters (inclusive)")
     else:
         new_user = User(
             email = email,
@@ -197,13 +195,13 @@ Return Value:
 '''
 def auth_register_v2(email, password, name_first, name_last):
     if not check_email_valid(email):                        # email not valid
-        raise InputError("Email address not valid")
+        raise InputError(description="Email address not valid")
     elif not email_is_new(email):                           # email exists
-        raise InputError("Email address already exists")
+        raise InputError(description="Email address already exists")
     elif len(password) < 6:                                 # password less than 6 characters
-        raise InputError("Length of password should more than 6 characters")
+        raise InputError(description="Length of password should more than 6 characters")
     elif len(name_first) > 50 or len(name_first) < 1 or len(name_last) > 50 or len(name_last) < 1:
-        raise InputError("Length of first/last name should between 1 to 50 characters (inclusive)")
+        raise InputError(description="Length of first/last name should between 1 to 50 characters (inclusive)")
     else:
         new_user = User(
             email = email,
@@ -230,7 +228,7 @@ Return Value:
 '''
 def users_all_v1(token):
     if not data_store.is_valid_token(token):
-        raise AccessError("Token is invalid!")
+        raise AccessError(description="Token is invalid!")
     else:
         users = []
         for item in data_store.get()['users']:
@@ -257,11 +255,11 @@ Return Value:
 '''
 def user_profile_v1(token, u_id):
     if not data_store.is_valid_token(token):
-        raise AccessError("Token is invalid!")
+        raise AccessError(description="Token is invalid!")
     else:
         user = data_store.get_user(u_id)
         if user == None:
-            raise InputError("u_id does not refer to a valid user")
+            raise InputError(description="u_id does not refer to a valid user")
         else:
             detail = {}
             detail['id'] = user.id
@@ -287,10 +285,10 @@ Return Value:
 '''
 def user_profile_setname_v1(token, name_first, name_last):
     if not data_store.is_valid_token(token):
-        raise AccessError("Token is invalid!")
+        raise AccessError(description="Token is invalid!")
     else:
         if len(name_first) > 50 or len(name_first) < 1 or len(name_last) > 50 or len(name_last) < 1:
-            raise InputError("Length of first/last name should between 1 to 50 characters (inclusive)")
+            raise InputError(description="Length of first/last name should between 1 to 50 characters (inclusive)")
         else:
             store = data_store.get()
             User_id = data_store.get_id_from_token(token)
@@ -317,13 +315,13 @@ Return Value:
 '''
 def user_profile_setemail_v1(token, email):
     if not data_store.is_valid_token(token):
-        raise AccessError("Token is invalid!")
+        raise AccessError(description="Token is invalid!")
     else:
         User_id = data_store.get_id_from_token(token)
         if not check_email_valid(email):
-            raise InputError("Email address not valid")
+            raise InputError(description="Email address not valid")
         elif not email_is_new(email):
-            raise InputError("Email address already exists")
+            raise InputError(description="Email address already exists")
         else:
             store = data_store.get()
             for user in store['users']:
@@ -373,15 +371,15 @@ Return Value:
 '''
 def user_profile_sethandle_v1(token, handle_str):
     if not data_store.is_valid_token(token):
-        raise AccessError("Token is invalid!")
+        raise AccessError(description="Token is invalid!")
     else:
         User_id = data_store.get_id_from_token(token)
         if len(handle_str) < 3 or len(handle_str) > 20:
-            raise InputError("Length of handle should between 3 and 20 characters")
+            raise InputError(description="Length of handle should between 3 and 20 characters")
         elif not handle_valid(handle_str):
-            raise InputError("Handle contains characters that are not alphanumeric")
+            raise InputError(description="Handle contains characters that are not alphanumeric")
         elif handle_exist(handle_str):
-            raise InputError("Handle is already used by another user")
+            raise InputError(description="Handle is already used by another user")
         else:
             store = data_store.get()
             for user in store['users']:
