@@ -1,6 +1,6 @@
 import re
 from src.data_store import data_store
-from src.error import InputError
+from src.error import InputError, AccessError
 from src.objecs import User
 
 
@@ -199,17 +199,18 @@ Return Value:
 '''
 def users_all_v1(token):
     if not data_store.is_valid_token(token):
-        return None
-    users = []
-    for item in data_store.get()['users']:
-        user = {}
-        user['id'] = item.id
-        user['email'] = item.email
-        user['name_first'] = item.name_first
-        user['name_last'] = item.name_last
-        user['handle'] = item.handle
-        users.append(user)
-    return users
+        raise AccessError("Token is invalid!")
+    else:
+        users = []
+        for item in data_store.get()['users']:
+            user = {}
+            user['id'] = item.id
+            user['email'] = item.email
+            user['name_first'] = item.name_first
+            user['name_last'] = item.name_last
+            user['handle'] = item.handle
+            users.append(user)
+        return users
 
 
 '''
@@ -225,18 +226,19 @@ Return Value:
 '''
 def user_profile_v1(token, u_id):
     if not data_store.is_valid_token(token):
-        return None
-    user = data_store.get_user(u_id)
-    if user == None:
-        raise InputError("u_id does not refer to a valid user")
+        raise AccessError("Token is invalid!")
     else:
-        detail = {}
-        detail['id'] = user.id
-        detail['email'] = user.email
-        detail['name_first'] = user.name_first
-        detail['name_last'] = user.name_last
-        detail['handle'] = user.handle
-        return detail
+        user = data_store.get_user(u_id)
+        if user == None:
+            raise InputError("u_id does not refer to a valid user")
+        else:
+            detail = {}
+            detail['id'] = user.id
+            detail['email'] = user.email
+            detail['name_first'] = user.name_first
+            detail['name_last'] = user.name_last
+            detail['handle'] = user.handle
+            return detail
 
 
 '''
@@ -254,19 +256,20 @@ Return Value:
 '''
 def user_profile_setname_v1(token, name_first, name_last):
     if not data_store.is_valid_token(token):
-        return None
-    if len(name_first) > 50 or len(name_first) < 1 or len(name_last) > 50 or len(name_last) < 1:
-        raise InputError("Length of first/last name should between 1 to 50 characters (inclusive)")
+        raise AccessError("Token is invalid!")
     else:
-        store = data_store.get()
-        User_id = data_store.get_id_from_token(token)
-        for user in store['users']:
-            if user.id == User_id:
-                user.name_first = name_first
-                user.name_last = name_last
-                break
-        data_store.set(store)
-        return {}
+        if len(name_first) > 50 or len(name_first) < 1 or len(name_last) > 50 or len(name_last) < 1:
+            raise InputError("Length of first/last name should between 1 to 50 characters (inclusive)")
+        else:
+            store = data_store.get()
+            User_id = data_store.get_id_from_token(token)
+            for user in store['users']:
+                if user.id == User_id:
+                    user.name_first = name_first
+                    user.name_last = name_last
+                    break
+            data_store.set(store)
+            return {}
 
 
 '''
@@ -283,20 +286,21 @@ Return Value:
 '''
 def user_profile_setemail_v1(token, email):
     if not data_store.is_valid_token(token):
-        return None
-    User_id = data_store.get_id_from_token(token)
-    if not check_email_valid(email):
-        raise InputError("Email address not valid")
-    elif not email_is_new(email):
-        raise InputError("Email address already exists")
+        raise AccessError("Token is invalid!")
     else:
-        store = data_store.get()
-        for user in store['users']:
-            if user.id == User_id:
-                user.email = email
-                break
-        data_store.set(store)
-        return {}
+        User_id = data_store.get_id_from_token(token)
+        if not check_email_valid(email):
+            raise InputError("Email address not valid")
+        elif not email_is_new(email):
+            raise InputError("Email address already exists")
+        else:
+            store = data_store.get()
+            for user in store['users']:
+                if user.id == User_id:
+                    user.email = email
+                    break
+            data_store.set(store)
+            return {}
 
 
 '''
@@ -338,20 +342,21 @@ Return Value:
 '''
 def user_profile_sethandle_v1(token, handle_str):
     if not data_store.is_valid_token(token):
-        return None
-    User_id = data_store.get_id_from_token(token)
-    if len(handle_str) < 3 or len(handle_str) > 20:
-        raise InputError("Length of handle should between 3 and 20 characters")
-    elif not handle_valid(handle_str):
-        raise InputError("Handle contains characters that are not alphanumeric")
-    elif handle_exist(handle_str):
-        raise InputError("Handle is already used by another user")
+        raise AccessError("Token is invalid!")
     else:
-        store = data_store.get()
-        for user in store['users']:
-            if user.id == User_id:
-                user.handle = handle_str
-                break
-        data_store.set(store)
-        return {}
+        User_id = data_store.get_id_from_token(token)
+        if len(handle_str) < 3 or len(handle_str) > 20:
+            raise InputError("Length of handle should between 3 and 20 characters")
+        elif not handle_valid(handle_str):
+            raise InputError("Handle contains characters that are not alphanumeric")
+        elif handle_exist(handle_str):
+            raise InputError("Handle is already used by another user")
+        else:
+            store = data_store.get()
+            for user in store['users']:
+                if user.id == User_id:
+                    user.handle = handle_str
+                    break
+            data_store.set(store)
+            return {}
 
