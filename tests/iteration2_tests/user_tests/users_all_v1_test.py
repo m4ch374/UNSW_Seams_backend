@@ -4,9 +4,7 @@ from tests.iteration2_tests.user_tests.definitions import REGISTER_V2, USERS_ALL
 
 def test_invalid_token():
     response = requests.get(USERS_ALL_V1, json = {'token': '123123123123123'})
-    assert response.status_code == 200
-    response_data = response.json()
-    assert response_data == None
+    assert response.status_code == 403
 
 def test_1_user():
     user = requests.post(REGISTER_V2, json = {'email': 'z1234567@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'Donald', 'name_last': 'Trump'})
