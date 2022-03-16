@@ -58,6 +58,7 @@ def test_multiple_person(get_usr_1, get_usr_2):
     handle1 = requests.get(ENDPOINT_USER_PROF, args).json()['user']['handle_str']
     handle2 = requests.get(ENDPOINT_USER_PROF, args2).json()['user']['handle_str']
     resp = requests.get(ENDPOINT_DM_LIST, {'token': get_usr_1['token']}).json()['dms']
+    resp1 = requests.get(ENDPOINT_DM_LIST, {'token': get_usr_2['token']}).json()['dms']
     expected_output = [
         {
             'dm_id': dm_id,
@@ -65,6 +66,7 @@ def test_multiple_person(get_usr_1, get_usr_2):
         }
     ]
     assert resp == expected_output
+    assert resp1 == expected_output
 
 def test_multiple_dms(get_usr_1, get_usr_2):
     data = generate_dm_input_json(get_usr_1['token'], [get_usr_2['auth_user_id']])
@@ -83,6 +85,7 @@ def test_multiple_dms(get_usr_1, get_usr_2):
     handle1 = requests.get(ENDPOINT_USER_PROF, args).json()['user']['handle_str']
     handle2 = requests.get(ENDPOINT_USER_PROF, args2).json()['user']['handle_str']
     resp = requests.get(ENDPOINT_DM_LIST, {'token': get_usr_1['token']}).json()['dms']
+    resp1 = requests.get(ENDPOINT_DM_LIST, {'token': get_usr_2['token']}).json()['dms']
     expected_output = [
         {
             'dm_id': dm_id,
@@ -94,3 +97,4 @@ def test_multiple_dms(get_usr_1, get_usr_2):
         }
     ]
     assert resp == expected_output
+    assert resp1 == expected_output
