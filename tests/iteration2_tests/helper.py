@@ -9,13 +9,13 @@ def generate_channel_input_json(tok, name, is_public):
         'is_public': is_public,
     }
 
-def generate_channel_join_input_json(token, channel_id):
+def create_chnl_join_input_json(token, channel_id):
     return {
         'token': token,
         'channel_id': channel_id,
     }
 
-def generate_channel_invite_input_json(token, channel_id, u_id):
+def create_chnl_invite_input_json(token, channel_id, u_id):
     return {
         'token': token,
         'channel_id': channel_id,
