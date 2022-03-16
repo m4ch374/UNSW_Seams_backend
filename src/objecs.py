@@ -62,13 +62,6 @@ class User:
         return encode
 
     '''
-        Get password from encoded password
-    '''
-    def decode_password(password):
-        decoded_data = jwt.decode(password, PASSWORD_SECRET, "HS256")
-        return decoded_data['password']
-
-    '''
         Generates id for user
     '''
     def __generate_id(self):

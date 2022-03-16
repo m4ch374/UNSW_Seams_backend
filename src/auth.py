@@ -1,8 +1,9 @@
 import re
+import jwt
 from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.objecs import User
-
+from src.config import PASSWORD_SECRET
 
 '''
 Arguments:
@@ -48,6 +49,14 @@ def auth_login_v1(email, password):
 
 
 '''
+    Get password from encoded password
+'''
+def decode_password(password):
+    decoded_data = jwt.decode(password, PASSWORD_SECRET, "HS256")
+    return decoded_data['password']
+
+
+'''
 Arguments:
     email (string)    - user's email
     password (string)    - password for login
@@ -61,7 +70,7 @@ def login_account_check_v2(email, password):
     users = data_store.get()['users']
     for user in users:
         if email == user.email:
-            if  password == User.decode_password(user.password):
+            if  password == decode_password(user.password):
                 return user.id
             return 0
     return -1
