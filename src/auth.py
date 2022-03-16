@@ -52,6 +52,26 @@ Arguments:
     email (string)    - user's email
     password (string)    - password for login
 
+Return Value:
+    Returns   -1      when the email is not matched
+              0       when the email matched but incorrect password
+           user_id    when email and password both matched
+'''
+def login_account_check_v2(email, password):
+    users = data_store.get()['users']
+    for user in users:
+        if email == user.email:
+            if  password == User.decode_password(user.password):
+                return user.id
+            return 0
+    return -1
+
+
+'''
+Arguments:
+    email (string)    - user's email
+    password (string)    - password for login
+
 Exceptions:
     InputError  - Occurs when email entered does not belong to a user.
                          when password is not correct.
@@ -61,7 +81,7 @@ Return Value:
     token (string)  Encrypted user id and time
 '''
 def auth_login_v2(email, password):
-    state = login_account_check(email, password)
+    state = login_account_check_v2(email, password)
     if state == -1:
         raise InputError("Account does not exist")
     elif state == 0:
@@ -139,6 +159,7 @@ def auth_register_v1(email, password, name_first, name_last):
             password = password,
             name_first = name_first,
             name_last = name_last,
+            iteration = 1,
         )
         store = data_store.get()
         if len(store['users']) == 0:
@@ -180,6 +201,7 @@ def auth_register_v2(email, password, name_first, name_last):
             password = password,
             name_first = name_first,
             name_last = name_last,
+            iteration = 2,
         )
         store = data_store.get()
         if len(store['users']) == 0:

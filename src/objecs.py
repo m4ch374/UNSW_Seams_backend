@@ -2,7 +2,9 @@
 besides the given ones """
 
 # Imports
+import jwt
 from src.data_store import data_store
+from src.config import PASSWORD_SECRET
 
 '''
 User Class, store information of each user
@@ -36,15 +38,35 @@ To represent User in dict
 usr_in_dict = new_user.to_dict()
 '''
 class User:
-    def __init__(self, email, password, name_first, name_last):
+    def __init__(self, email, password, name_first, name_last, iteration):
         self.email = email
-        self.password = password
+        if iteration == 1:
+            self.password = password
+        elif iteration == 2:
+            self.password = self.encoded_password(password)
         self.name_first = name_first
         self.name_last = name_last
         self.id = self.__generate_id()
         self.handle = self.__create_handle(name_first, name_last)
         self.channels = []
         self.owner = False
+
+    '''
+        Encode the user's password and return it
+    '''
+    def encoded_password(self, password):
+        encode_msg = {
+            'password': password,
+        }
+        encode = jwt.encode(encode_msg, PASSWORD_SECRET, "HS256")
+        return encode
+
+    '''
+        Get password from encoded password
+    '''
+    def decode_password(password):
+        decoded_data = jwt.decode(password, PASSWORD_SECRET, "HS256")
+        return decoded_data['password']
 
     '''
         Generates id for user
