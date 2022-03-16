@@ -239,7 +239,7 @@ def users_all_v1(token):
             user['name_last'] = item.name_last
             user['handle'] = item.handle
             users.append(user)
-        return users
+        return {'users': users}
 
 
 '''
@@ -262,12 +262,12 @@ def user_profile_v1(token, u_id):
             raise InputError(description="u_id does not refer to a valid user")
         else:
             detail = {}
-            detail['id'] = user.id
+            detail['u_id'] = user.id
             detail['email'] = user.email
             detail['name_first'] = user.name_first
             detail['name_last'] = user.name_last
             detail['handle'] = user.handle
-            return detail
+            return {'user': detail}
 
 
 '''
