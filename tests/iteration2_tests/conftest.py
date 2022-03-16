@@ -25,6 +25,8 @@ REGISTER_DETAILS_2 = {
 }
 # ==================================================
 
+from src.data_store import data_store
+
 @pytest.fixture(autouse=True)
 def clear():
     requests.delete(ENDPOINT_CLEAR)
@@ -38,3 +40,13 @@ def get_token_1():
 def get_token_2():
     resp = requests.post(ENDPOINT_REGISTER_USR, json=REGISTER_DETAILS_2).json()
     return resp['token']
+
+@pytest.fixture
+def get_usr_1():
+    resp = requests.post(ENDPOINT_REGISTER_USR, json=REGISTER_DETAILS_1).json()
+    return resp
+
+@pytest.fixture
+def get_usr_2():
+    resp = requests.post(ENDPOINT_REGISTER_USR, json=REGISTER_DETAILS_2).json()
+    return resp
