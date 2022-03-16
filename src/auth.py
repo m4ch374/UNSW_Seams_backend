@@ -261,13 +261,7 @@ def user_profile_v1(token, u_id):
         if user == None:
             raise InputError(description="u_id does not refer to a valid user")
         else:
-            detail = {}
-            detail['u_id'] = user.id
-            detail['email'] = user.email
-            detail['name_first'] = user.name_first
-            detail['name_last'] = user.name_last
-            detail['handle'] = user.handle
-            return {'user': detail}
+            return {'user': user.to_dict()}
 
 
 '''
