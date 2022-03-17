@@ -48,7 +48,7 @@ class User:
         self.name_last = name_last
         self.id = self.__generate_id()
         self.handle = self.__create_handle(name_first, name_last)
-        self.owner = False
+        self.owner = self.id == 1
 
     '''
         Generates id for user
