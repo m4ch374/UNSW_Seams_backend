@@ -25,8 +25,7 @@ Return value:
     Encrypted password (str)
 """
 def hashing_password(password):
-    if len(password) < 10:
-        password += RANDOM_STR
+    password += RANDOM_STR
     selted_password = ''
     idx = 0
     for i in range(len(password)):
