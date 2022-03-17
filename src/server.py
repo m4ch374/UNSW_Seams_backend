@@ -131,13 +131,22 @@ def channels_listall_v2():
     return dumps(response)
 
 # =============== /channel domain =================
-@APP.route("channel/join/v2", methods=['POST'])
+@APP.route("/channel/join/v2", methods=['POST'])
 def channel_join_v2():
-    pass
+    request_data = request.get_json()
+    auth_user_id = data_store.get_id_from_token(request_data['token'])
+    channel_id = request_data['channel_id']
+    chnl.channel_join_v1(auth_user_id, channel_id)
+    return jsonify({})
 
-@APP.route("channel/invite/v2", methods=['POST'])
+@APP.route("/channel/invite/v2", methods=['POST'])
 def channel_invite_v2():
-    pass
+    request_data = request.get_json()
+    auth_user_id = data_store.get_id_from_token(request_data['token'])
+    channel_id = request_data['channel_id']
+    u_id = request_data['u_id']
+    chnl.channel_invite_v1(auth_user_id, channel_id, u_id)
+    return jsonify({})
 # ==================================================
 
 # ================ /clear domain ===================
