@@ -4,6 +4,7 @@ besides the given ones """
 # Imports
 from src.data_store import data_store
 from src.encrypt import hashing_password
+from src.error import InputError
 
 '''
 User Class, store information of each user
@@ -47,7 +48,6 @@ class User:
         self.name_last = name_last
         self.id = self.__generate_id()
         self.handle = self.__create_handle(name_first, name_last)
-        self.channels = []
         self.owner = False
 
     '''
@@ -94,18 +94,6 @@ class User:
                 idx += 1
             handle = handle_temp
         return handle
-
-    '''
-    Function that determines if a user is in the channel
-    Arguments:
-        - channel_id (int)
-    Return Value:
-        - True - if user is in channel
-        - False - if user is not in channel
-    '''
-    def is_in_channel_id(self, chnl_id):
-        print([chnl.id for chnl in self.channels])
-        return any(chnl_id == chnl.id for chnl in self.channels)
 
     '''
         Output format following section 6.1. of the sepec
@@ -161,10 +149,6 @@ class Channel:
         self.owners = [owner]
         self.members = [owner]
         self.is_public = is_public
-        self.messages = []
-
-        # Add this channel to users channel list
-        owner.channels.append(self)
 
     '''
         Generates id for Channel
@@ -196,6 +180,17 @@ class Channel:
         return member_id in [mem.id for mem in self.members]
 
     '''
+        Arugument:
+            - owner_id: int
+
+        Returns:
+            True: owner_id was found in this channel
+            False: otherwise
+    '''
+    def has_owner_id(self, owner_id):
+        return owner_id in [owner.id for owner in self.owners]
+
+    '''
         Argument:
             - usr: User()
 
@@ -203,7 +198,6 @@ class Channel:
     '''
     def add_member(self, usr):
         self.members.append(usr)
-        usr.channels.append(self)
         data_store.set_store()
 
     '''
@@ -214,6 +208,32 @@ class Channel:
     '''
     def add_member_id(self, usr_id):
         self.add_member(data_store.get_user(usr_id))
+
+    '''
+        Argument:
+            -usr_id: int
+
+        Removes a usr from the current channel
+    '''
+    def remove_member(self, usr):
+        self.members.remove(usr)
+        data_store.set_store()
+
+    '''
+        Argument:
+            -usr_id: int
+
+        Removes a usr corresponding to the id from the current channel
+    '''
+    def remove_member_id(self, usr_id):
+        self.remove_member(data_store.get_user(usr_id))
+
+    '''
+        Gets all messages in the channel
+    '''
+    def get_messages(self):
+        msg_list = data_store.get()['messages']
+        return [msg for msg in msg_list if msg.chnl_id == self.id]
 
     '''
         Returns basic info of this channel in dictionary form (following docs)
@@ -240,3 +260,45 @@ class Channel:
             'all_members': [member.to_dict() for member in self.members],
         }
         return return_dict
+
+class DmChannel(Channel):
+    def __init__(self, owner, u_ids):
+        # Sanity check
+        if len(set(u_ids)) != len(u_ids):
+            raise InputError(description="error: Duplicates of ids are not allowed.")
+        
+        if not all(data_store.has_user_id(u_id) for u_id in u_ids):
+            raise InputError(description="error: Invalid user id")
+
+        # Initiate class
+        usr_list = [data_store.get_user(u_id) for u_id in u_ids]
+        super().__init__('', owner, False)
+        
+        # Set id
+        self.id = self.__generate_id()
+
+        # add members in channel
+        for usr in usr_list:
+            self.add_member(usr)
+
+        # Set name
+        self.name = ', '.join(sorted([mem.handle for mem in self.members]))
+
+    def __generate_id(self):
+        data = data_store.get()
+        return len(data['dm']) + 1
+
+    def channel_dict(self):
+        result = super().channel_dict()
+
+        # Replace key channel_id with dm_id
+        new_dict = {(key if key != 'channel_id' else 'dm_id'): val for key, val in result.items()}
+        return new_dict
+
+    # NOTE: Members include the owner
+    def channel_details_dict(self):
+        result = {
+            'name': self.name,
+            'members': [usr.to_dict() for usr in self.members]
+        }
+        return result

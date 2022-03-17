@@ -1,5 +1,4 @@
 # Default Imports
-import email
 import sys
 import signal
 from json import dumps
@@ -12,6 +11,7 @@ from src import config
 import src.channels as chnls
 import src.auth as auth
 import src.channel as chnl
+import src.dm as dm
 from src.other import clear_v1
 from src.data_store import data_store
 
@@ -129,6 +129,7 @@ def channels_listall_v2():
     usr_id = data_store.get_id_from_token(tok)
     response = chnls.channels_listall_v1(usr_id)
     return dumps(response)
+# ==================================================
 
 # =============== /channel domain =================
 @APP.route("/channel/join/v2", methods=['POST'])
@@ -147,6 +148,52 @@ def channel_invite_v2():
     u_id = request_data['u_id']
     chnl.channel_invite_v1(auth_user_id, channel_id, u_id)
     return dumps({})
+# ==================================================
+
+# ================== /dm domain ====================
+@APP.route("/dm/create/v1", methods=['POST'])
+def dm_create_v1():
+    # Create dm channel
+    data = request.get_json()
+    usr_id = data_store.get_id_from_token(data['token'])
+    response = dm.dm_create_v1(usr_id, data['u_ids'])
+    return dumps(response)
+
+@APP.route("/dm/list/v1", methods=['GET'])
+def dm_list_v1():
+    tok = request.args.get('token')
+    usr_id = data_store.get_id_from_token(tok)
+    response = dm.dm_list_v1(usr_id)
+    return dumps(response)
+
+@APP.route("/dm/remove/v1", methods=['DELETE'])
+def dm_remove_v1():
+    data = request.get_json()
+    usr_id = data_store.get_id_from_token(data['token'])
+    response = dm.dm_remove_v1(usr_id, data['dm_id'])
+    return dumps(response)
+
+@APP.route("/dm/details/v1", methods=['GET'])
+def dm_details_v1():
+    data = dict(request.args)
+    usr_id = data_store.get_id_from_token(data['token'])
+    response = dm.dm_details_v1(usr_id, int(data['dm_id']))
+    return dumps(response)
+
+@APP.route("/dm/leave/v1", methods=['POST'])
+def dm_leave_v1():
+    data = request.get_json()
+    u_id = data_store.get_id_from_token(data['token'])
+    response = dm.dm_leave_v1(u_id, data['dm_id'])
+    return dumps(response)
+
+# Commented for coverage
+# @APP.route("/dm/messages/v1", methods=['GET'])
+# def dm_messages_v1():
+#     data = dict(request.args)
+#     u_id = data_store.get_id_from_token(data['token'])
+#     response = dm.dm_messages_v1(u_id, int(data['dm_id'], int(data['start'])))
+#     return response
 # ==================================================
 
 # ================ /clear domain ===================
