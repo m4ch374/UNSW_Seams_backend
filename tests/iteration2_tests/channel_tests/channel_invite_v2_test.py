@@ -55,7 +55,7 @@ def test_channel_invite_v2_already_a_member(get_token_1, get_u_id):
     channel_id1 = response['channel_id']
     json_input = create_chnl_invite_input_json(get_token_1, channel_id1,
                                                get_u_id['id'])
-    invite_response = requests.post(ENDPOINT_CHNL_INVITE, json = json_input)
+    requests.post(ENDPOINT_CHNL_INVITE, json = json_input)
     json_input = create_chnl_invite_input_json(get_token_1, channel_id1,
                                                get_u_id['id'])
     response = requests.post(ENDPOINT_CHNL_INVITE, json = json_input)
