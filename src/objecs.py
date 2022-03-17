@@ -294,15 +294,6 @@ class DmChannel(Channel):
         data = data_store.get()
         return len(data['dm']) + 1
 
-# These will be removed once Channels method is fixed
-# ========================================================
-    def add_member(self, usr):
-        self.members.append(usr)
-        data_store.set_store()
-
-    
-# ========================================================
-
     def channel_dict(self):
         result = super().channel_dict()
 
