@@ -215,7 +215,7 @@ class Channel:
     '''
     def add_member(self, usr):
         self.members.append(usr)
-        # usr.channels.append(self)
+        usr.channels.append(self)
         data_store.set_store()
 
     '''
@@ -279,6 +279,23 @@ class DmChannel(Channel):
     def __generate_id(self):
         data = data_store.get()
         return len(data['dm']) + 1
+
+# These will be removed once Channels method is fixed
+# ========================================================
+    def add_member(self, usr):
+        self.members.append(usr)
+        data_store.set_store()
+
+    def remove_member(self, usr):
+        self.members.remove(usr)
+        data_store.set_store()
+
+    def add_member_id(self, usr_id):
+        self.add_member(data_store.get_user(usr_id))
+
+    def remove_member_id(self, usr_id):
+        self.remove_member(data_store.get_user(usr_id))
+# ========================================================
 
     def channel_dict(self):
         result = super().channel_dict()

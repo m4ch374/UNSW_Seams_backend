@@ -22,6 +22,8 @@ ENDPOINT_DM_REMOVE = f"{url}dm/remove/v1"
 
 ENDPOINT_DM_DETAILS = f"{url}dm/details/v1"
 
+ENDPOINT_DM_LEAVE = f"{url}dm/leave/v1"
+
 ENDPOINT_USER_PROF = f"{url}user/profile/v1"
 
 ENDPOINT_CHNL_INVITE = f"{url}channel/invite/v2"

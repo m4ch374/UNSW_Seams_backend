@@ -32,8 +32,6 @@ REGISTER_DETAILS_3 = {
 }
 # ==================================================
 
-from src.data_store import data_store
-
 @pytest.fixture(autouse=True)
 def clear():
     requests.delete(ENDPOINT_CLEAR)
@@ -57,6 +55,7 @@ def get_usr_1():
 def get_usr_2():
     resp = requests.post(ENDPOINT_REGISTER_USR, json=REGISTER_DETAILS_2).json()
     return resp
+
 def get_u_id():
     resp = requests.post(ENDPOINT_REGISTER_USR, json=REGISTER_DETAILS_3).json()
     return {"id": resp['auth_user_id'], "token": resp['token']}
