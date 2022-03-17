@@ -46,6 +46,7 @@ initial_object = {
     'users' : [], 
     'channel' : [],
     'dm': [],
+    'messages': [],
     'tokens' : [],
 } # credit to Hanqi for this placeholder love you <3
 

@@ -161,7 +161,6 @@ class Channel:
         self.owners = [owner]
         self.members = [owner]
         self.is_public = is_public
-        self.messages = []
 
     '''
         Generates id for Channel
@@ -240,6 +239,13 @@ class Channel:
     '''
     def remove_member_id(self, usr_id):
         self.remove_member(data_store.get_user(usr_id))
+
+    '''
+        Gets all messages in the channel
+    '''
+    def get_messages(self):
+        msg_list = data_store.get()['messages']
+        return [msg for msg in msg_list if msg.chnl_id == self.id]
 
     '''
         Returns basic info of this channel in dictionary form (following docs)

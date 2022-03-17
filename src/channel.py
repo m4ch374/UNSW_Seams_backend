@@ -114,18 +114,20 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     
     if channel.has_member_id(auth_user_id) == False:
         raise AccessError
-    if start > len(channel.messages) or start < 0:
+
+    chnl_messages = channel.get_messages()
+    if start > len(chnl_messages) or start < 0:
         raise InputError
     
     
 
     # Splitting the stored messages list to paginate returned messages
-    if start + 50 < len(channel.messages):
+    if start + 50 < len(chnl_messages):
         end = start + 50
         messages = channel.messages[start:start+50]
     else: 
         end = -1
-        messages = channel.messages[start:len(channel.messages)]
+        messages = chnl_messages[start:len(chnl_messages)]
 
     return {
         # 'messages': [
