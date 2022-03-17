@@ -24,10 +24,10 @@ from tests.iteration2_tests.helper import (
     create_chnl_join_input_json, generate_channel_input_json
 )
 from tests.iteration2_tests.channel_tests.definitions import (
-    INVALID_TOKEN, INVALID_CHNL_ID, INVALID_U_ID
+    INVALID_TOKEN, INVALID_CHNL_ID
 )
 
-# raise AccessError since invalid auth_user_id passed
+# raise AccessError since invalid token passed
 #
 # note: while the invalid channel id passed should raise
 #       InputError on their own, the AccessError takes precedent
