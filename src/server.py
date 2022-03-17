@@ -4,16 +4,16 @@ import signal
 from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
-from src.error import InputError, AccessError
+from src.error import InputError
 from src import config
 
 # Our own imports
 import src.channels as chnls
 import src.auth as auth
 import src.channel as chnl
+import src.dm as dm
 from src.other import clear_v1
 from src.data_store import data_store
-from src.objecs import DmChannel
 
 def quit_gracefully(*args):
     '''For coverage'''
@@ -129,6 +129,7 @@ def channels_listall_v2():
     usr_id = data_store.get_id_from_token(tok)
     response = chnls.channels_listall_v1(usr_id)
     return dumps(response)
+# ==================================================
 
 # =============== /channel domain =================
 @APP.route("/channel/join/v2", methods=['POST'])
@@ -155,68 +156,44 @@ def dm_create_v1():
     # Create dm channel
     data = request.get_json()
     usr_id = data_store.get_id_from_token(data['token'])
-    dm_chnl = DmChannel(data_store.get_user(usr_id), data['u_ids'])
-    data_store.add_dm(dm_chnl)
-
-    return dumps({'dm_id': dm_chnl.id})
+    response = dm.dm_create_v1(usr_id, data['u_ids'])
+    return dumps(response)
 
 @APP.route("/dm/list/v1", methods=['GET'])
 def dm_list_v1():
     tok = request.args.get('token')
     usr_id = data_store.get_id_from_token(tok)
-    dms = [dm.channel_dict() for dm in data_store.get()['dm'] if dm.has_member_id(usr_id)]
-
-    return dumps({
-        'dms': dms
-    })
+    response = dm.dm_list_v1(usr_id)
+    return dumps(response)
 
 @APP.route("/dm/remove/v1", methods=['DELETE'])
 def dm_remove_v1():
     data = request.get_json()
     usr_id = data_store.get_id_from_token(data['token'])
-    
-    if not data_store.has_dm_id(data['dm_id']):
-        raise InputError(description="error: Invalid dm id.")
-
-    dm_chnl = data_store.get_dm(data['dm_id'])
-    if not (dm_chnl.has_owner_id(usr_id) and dm_chnl.has_member_id(usr_id)):
-        raise AccessError(description="error: ID is not the creator or no longer in DM.")
-
-    data_store.remove_dm(dm_chnl)
-    return dumps({})
+    response = dm.dm_remove_v1(usr_id, data['dm_id'])
+    return dumps(response)
 
 @APP.route("/dm/details/v1", methods=['GET'])
 def dm_details_v1():
     data = dict(request.args)
     usr_id = data_store.get_id_from_token(data['token'])
-
-    if not data_store.has_dm_id(int(data['dm_id'])):
-        raise InputError(description="error: Invalid dm id")
-
-    dm_chnl = data_store.get_dm(int(data['dm_id']))
-    if not dm_chnl.has_member_id(usr_id):
-        raise AccessError(description="error: ID not a member of dm.")
-
-    return dumps(dm_chnl.channel_details_dict())
+    response = dm.dm_details_v1(usr_id, int(data['dm_id']))
+    return dumps(response)
 
 @APP.route("/dm/leave/v1", methods=['POST'])
 def dm_leave_v1():
     data = request.get_json()
     u_id = data_store.get_id_from_token(data['token'])
+    response = dm.dm_leave_v1(u_id, data['dm_id'])
+    return dumps(response)
 
-    if not data_store.has_dm_id(data['dm_id']):
-        raise InputError(description="error: Invalid dm id")
-    
-    dm_chnl = data_store.get_dm(data['dm_id'])
-    if not dm_chnl.has_member_id(u_id):
-        raise AccessError(description="error: ID not a member of dm.")
-
-    dm_chnl.remove_member_id(u_id)
-    return dumps({})
-
-@APP.route("/dm/messages/v1", methods=['GET'])
-def dm_messages_v1():
-    return dumps({})
+# Commented for coverage
+# @APP.route("/dm/messages/v1", methods=['GET'])
+# def dm_messages_v1():
+#     data = dict(request.args)
+#     u_id = data_store.get_id_from_token(data['token'])
+#     response = dm.dm_messages_v1(u_id, int(data['dm_id'], int(data['start'])))
+#     return response
 # ==================================================
 
 # ================ /clear domain ===================
