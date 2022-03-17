@@ -14,4 +14,6 @@ ENDPOINT_LISTALL = f"{url}channels/listall/v2"
 
 ENDPOINT_JOIN_CHNL = f"{url}channel/join/v2"
 
+ENDPOINT_CHNL_INVITE = f"{url}channel/invite/v2"
+
 ENDPOINT_CLEAR = f"{url}clear/v1"

@@ -11,6 +11,7 @@ from src import config
 # Our own imports
 import src.channels as chnls
 import src.auth as auth
+import src.channel as chnl
 from src.other import clear_v1
 from src.data_store import data_store
 
@@ -128,6 +129,24 @@ def channels_listall_v2():
     usr_id = data_store.get_id_from_token(tok)
     response = chnls.channels_listall_v1(usr_id)
     return dumps(response)
+
+# =============== /channel domain =================
+@APP.route("/channel/join/v2", methods=['POST'])
+def channel_join_v2():
+    request_data = request.get_json()
+    auth_user_id = data_store.get_id_from_token(request_data['token'])
+    channel_id = request_data['channel_id']
+    chnl.channel_join_v1(auth_user_id, channel_id)
+    return dumps({})
+
+@APP.route("/channel/invite/v2", methods=['POST'])
+def channel_invite_v2():
+    request_data = request.get_json()
+    auth_user_id = data_store.get_id_from_token(request_data['token'])
+    channel_id = request_data['channel_id']
+    u_id = request_data['u_id']
+    chnl.channel_invite_v1(auth_user_id, channel_id, u_id)
+    return dumps({})
 # ==================================================
 
 # ================ /clear domain ===================
