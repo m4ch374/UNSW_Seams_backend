@@ -15,8 +15,29 @@ def generate_channel_input_json(tok, name, is_public):
         'is_public': is_public,
     }
 
+# Used for create
 def generate_dm_input_json(tok, u_ids):
     return {
         'token': tok,
         'u_ids': u_ids,
+    }
+
+# Used for remove, details and leave
+def generate_dm_json(tok, dm_id):
+    return {
+        'token': tok,
+        'dm_id': dm_id
+    }
+
+def create_chnl_join_input_json(token, channel_id):
+    return {
+        'token': token,
+        'channel_id': channel_id,
+    }
+
+def create_chnl_invite_input_json(token, channel_id, u_id):
+    return {
+        'token': token,
+        'channel_id': channel_id,
+        'u_id': u_id,
     }

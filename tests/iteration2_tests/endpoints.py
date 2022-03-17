@@ -20,6 +20,10 @@ ENDPOINT_DM_LIST = f"{url}dm/list/v1"
 
 ENDPOINT_DM_REMOVE = f"{url}dm/remove/v1"
 
+ENDPOINT_DM_DETAILS = f"{url}dm/details/v1"
+
 ENDPOINT_USER_PROF = f"{url}user/profile/v1"
+
+ENDPOINT_CHNL_INVITE = f"{url}channel/invite/v2"
 
 ENDPOINT_CLEAR = f"{url}clear/v1"

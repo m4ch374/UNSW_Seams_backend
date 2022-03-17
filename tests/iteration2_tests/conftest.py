@@ -23,6 +23,13 @@ REGISTER_DETAILS_2 = {
     'name_first': 'Obama',
     'name_last': 'Prism',
 }
+
+REGISTER_DETAILS_3 = {
+    'email': 'yayayayayayayayaya@gmail.com',
+    'password': 'grassgrass',
+    'name_first': 'dogdogdog',
+    'name_last': 'catcatcat',
+}
 # ==================================================
 
 from src.data_store import data_store
@@ -50,3 +57,6 @@ def get_usr_1():
 def get_usr_2():
     resp = requests.post(ENDPOINT_REGISTER_USR, json=REGISTER_DETAILS_2).json()
     return resp
+def get_u_id():
+    resp = requests.post(ENDPOINT_REGISTER_USR, json=REGISTER_DETAILS_3).json()
+    return {"id": resp['auth_user_id'], "token": resp['token']}
