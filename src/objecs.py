@@ -48,7 +48,6 @@ class User:
         self.name_last = name_last
         self.id = self.__generate_id()
         self.handle = self.__create_handle(name_first, name_last)
-        self.channels = []
         self.owner = False
 
     '''
@@ -164,9 +163,6 @@ class Channel:
         self.is_public = is_public
         self.messages = []
 
-        # Add this channel to users channel list
-        owner.channels.append(self)
-
     '''
         Generates id for Channel
     '''
@@ -215,7 +211,6 @@ class Channel:
     '''
     def add_member(self, usr):
         self.members.append(usr)
-        usr.channels.append(self)
         data_store.set_store()
 
     '''
@@ -226,6 +221,25 @@ class Channel:
     '''
     def add_member_id(self, usr_id):
         self.add_member(data_store.get_user(usr_id))
+
+    '''
+        Argument:
+            -usr_id: int
+
+        Removes a usr from the current channel
+    '''
+    def remove_member(self, usr):
+        self.members.remove(usr)
+        data_store.set_store()
+
+    '''
+        Argument:
+            -usr_id: int
+
+        Removes a usr corresponding to the id from the current channel
+    '''
+    def remove_member_id(self, usr_id):
+        self.remove_member(data_store.get_user(usr_id))
 
     '''
         Returns basic info of this channel in dictionary form (following docs)
@@ -286,15 +300,7 @@ class DmChannel(Channel):
         self.members.append(usr)
         data_store.set_store()
 
-    def remove_member(self, usr):
-        self.members.remove(usr)
-        data_store.set_store()
-
-    def add_member_id(self, usr_id):
-        self.add_member(data_store.get_user(usr_id))
-
-    def remove_member_id(self, usr_id):
-        self.remove_member(data_store.get_user(usr_id))
+    
 # ========================================================
 
     def channel_dict(self):

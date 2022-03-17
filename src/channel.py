@@ -11,8 +11,8 @@ Return Value:
     - False - if user is not in channel
 '''
 def user_in_channel(auth_user_id, channel_id):
-    user = data_store.get_user(auth_user_id)
-    return user.is_in_channel_id(channel_id)
+    chnl = data_store.get_channel(channel_id)
+    return chnl.has_member_id(auth_user_id)
 
 '''
 Function: channel_invite_v1
