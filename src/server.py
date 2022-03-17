@@ -199,7 +199,7 @@ def dm_details_v1():
 
     return dumps(dm_chnl.channel_details_dict())
 
-@APP.route("/dm/leave/v1")
+@APP.route("/dm/leave/v1", methods=['POST'])
 def dm_leave_v1():
     data = request.get_json()
     u_id = data_store.get_id_from_token(data['token'])
@@ -211,7 +211,12 @@ def dm_leave_v1():
     if not dm_chnl.has_member_id(u_id):
         raise AccessError(description="error: ID not a member of dm.")
 
-    
+    dm_chnl.remove_member_id(u_id)
+    return dumps({})
+
+@APP.route("/dm/messages/v1", methods=['GET'])
+def dm_messages_v1():
+    return dumps({})
 # ==================================================
 
 # ================ /clear domain ===================
