@@ -79,9 +79,9 @@ def all_v1():
 @APP.route("/user/profile/v1", methods=['GET'])
 def profile_v1():
     token = request.args.get('token')
-    id = request.args.get('id')
-    u_id = int(id)
-    return dumps(auth.user_profile_v1(token, u_id))
+    u_id = request.args.get('u_id')
+    id = int(u_id)
+    return dumps(auth.user_profile_v1(token, id))
 
 @APP.route("/user/profile/setname/v1", methods=['PUT'])
 def profile_setname_v1():
