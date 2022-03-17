@@ -137,7 +137,7 @@ def channel_join_v2():
     auth_user_id = data_store.get_id_from_token(request_data['token'])
     channel_id = request_data['channel_id']
     chnl.channel_join_v1(auth_user_id, channel_id)
-    return jsonify({})
+    return dumps({})
 
 @APP.route("/channel/invite/v2", methods=['POST'])
 def channel_invite_v2():
@@ -146,7 +146,7 @@ def channel_invite_v2():
     channel_id = request_data['channel_id']
     u_id = request_data['u_id']
     chnl.channel_invite_v1(auth_user_id, channel_id, u_id)
-    return jsonify({})
+    return dumps({})
 # ==================================================
 
 # ================ /clear domain ===================
