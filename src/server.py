@@ -57,9 +57,9 @@ def channel_details_v2():
 
 @APP.route("/channel/messages/v2", methods=['POST'])
 def channel_details_v2():
-    token = request.args.get('token')
-    channel_id = request.args.get('channel_id')
-    start = request.args.get('start')
+    token = request.get_json('token')
+    channel_id = request.get_json('channel_id')
+    start = request.get_json('start')
     response = channel.channel_details_v1(token, channel_id, start)
     return dumps(response)
     
