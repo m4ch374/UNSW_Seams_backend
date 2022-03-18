@@ -169,8 +169,6 @@ def auth_register_v1(email, password, name_first, name_last):
             iteration = 1,
         )
         store = data_store.get()
-        if len(store['users']) == 0:
-            new_user.owner = True
         store['users'].append(new_user)
         data_store.set(store)
         return {'auth_user_id': new_user.id}         # return user's id
@@ -211,8 +209,6 @@ def auth_register_v2(email, password, name_first, name_last):
             iteration = 2,
         )
         store = data_store.get()
-        if len(store['users']) == 0:
-            new_user.owner = True
         token = data_store.generate_token(new_user.id)
         store['users'].append(new_user)
         data_store.set(store)
@@ -231,14 +227,8 @@ def users_all_v1(token):
         raise AccessError(description="Token is invalid!")
     else:
         users = []
-        for item in data_store.get()['users']:
-            user = {}
-            user['id'] = item.id
-            user['email'] = item.email
-            user['name_first'] = item.name_first
-            user['name_last'] = item.name_last
-            user['handle'] = item.handle
-            users.append(user)
+        for user in data_store.get()['users']:
+            users.append(user.to_dict())
         return {'users': users}
 
 
