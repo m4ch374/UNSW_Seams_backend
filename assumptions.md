@@ -29,3 +29,15 @@
 
 - Assuming that message id 0 will always be valid, for the sake of current autotests. Subject to change later once an add messages function is implemented.
 - Messages returned form `channel_messages_v1()` will always be an empty list as there are no function for adding messages implemented yet.
+
+# Iteration - 2
+
+## **1. Assumptions - `auth.py (v2)`**
+
+- Return value of <login_v2> and <register_v2> is {'token': 'a string', 'auth_user_id' = integer}
+
+- Return value of <user_profile_v1> is {'user': {'id': 'integer', 'email': 'string', 'name_first': 'string', 'name_last': 'string', 'handle': 'string'}}
+
+- Return value of <users_all_v1> is {'users': [{'id': 'integer', 'email': 'string', 'name_first': 'string'....},
+                                              {'id': 'integer', 'email': 'string', 'name_first': 'string'....},
+                                              {'id': 'integer', 'email': 'string', 'name_first': 'string'....}]}

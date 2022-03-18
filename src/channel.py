@@ -11,8 +11,8 @@ Return Value:
     - False - if user is not in channel
 '''
 def user_in_channel(auth_user_id, channel_id):
-    user = data_store.get_user(auth_user_id)
-    return user.is_in_channel_id(channel_id)
+    chnl = data_store.get_channel(channel_id)
+    return chnl.has_member_id(auth_user_id)
 
 '''
 Function: channel_invite_v1
@@ -114,18 +114,20 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     
     if channel.has_member_id(auth_user_id) == False:
         raise AccessError
-    if start > len(channel.messages) or start < 0:
+
+    chnl_messages = channel.get_messages()
+    if start > len(chnl_messages) or start < 0:
         raise InputError
     
     
 
     # Splitting the stored messages list to paginate returned messages
-    if start + 50 < len(channel.messages):
+    if start + 50 < len(chnl_messages):
         end = start + 50
         messages = channel.messages[start:start+50]
     else: 
         end = -1
-        messages = channel.messages[start:len(channel.messages)]
+        messages = chnl_messages[start:len(chnl_messages)]
 
     return {
         # 'messages': [

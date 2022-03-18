@@ -45,6 +45,8 @@ from src.error import AccessError
 initial_object = {
     'users' : [], 
     'channel' : [],
+    'dm': [],
+    'messages': [],
     'tokens' : [],
 } # credit to Hanqi for this placeholder love you <3
 
@@ -86,10 +88,10 @@ class Datastore:
         self.set_store()
 
     def get_user(self, id):
-        if len(self.__store['users']) == 0:
-            return None
-        else:
-            return [usr for usr in self.__store['users'] if usr.id == id][0]
+        for user in self.__store['users']:
+            if user.id == id:
+                return user
+        return None
 
     def get_channel(self, id):
         if len(self.__store['channel']) == 0:
@@ -137,6 +139,23 @@ class Datastore:
         self.__store['tokens'].remove(token)
         self.set_store()
         
+    def has_dm_id(self, dm_id):
+        return dm_id in [dm.id for dm in self.__store['dm']]
+
+    def add_dm(self, dm):
+        self.__store['dm'].append(dm)
+        data_store.set_store()
+
+    def get_dm(self, dm_id):
+        for dm in self.__store['dm']:
+            if dm.id == dm_id:
+                return dm
+        return None
+
+    def remove_dm(self, dm):
+        self.__store['dm'].remove(dm)
+        data_store.set_store()
+
 print('Loading Datastore...')
 
 global data_store
