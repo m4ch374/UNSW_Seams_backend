@@ -29,3 +29,5 @@ ENDPOINT_USER_PROF = f"{url}user/profile/v1"
 ENDPOINT_CHNL_INVITE = f"{url}channel/invite/v2"
 
 ENDPOINT_CLEAR = f"{url}clear/v1"
+
+ENDPOINT_CHANNEL_DETAILS = f"{url}/channel/details/v2"

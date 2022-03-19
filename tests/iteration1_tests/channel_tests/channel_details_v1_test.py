@@ -68,37 +68,3 @@ def test_channel_details_simple(first_user_and_channel):
                      'name_last': 'Smith',
                      'u_id': 1}],
     }
-
-# helper function that clears data already stored and initialises a user for
-# testing (returns id of created user)
-def create_new_user_z1234567():
-    auth_user_id = auth_register_v1('z1234567@ad.unsw.edu.au',
-                                    'password',
-                                    'firstname',
-                                    'lastname')
-    return auth_user_id
-
-# helper function that initialises 2nd user for testing
-def create_new_user_z1111111():
-    auth_user_id = auth_register_v1('z1111111@ad.unsw.edu.au',
-                                    'ypspspsp',
-                                    'firstname',
-                                    'lastname')
-    return auth_user_id
-# helper function that initialises 3rd user for testing
-def create_new_user_z3141592():
-    auth_user_id = auth_register_v1('z3141592@ad.unsw.edu.au',
-                                    'potatopotato',
-                                    'firstname',
-                                    'lastname')
-    return auth_user_id
-# helper function that creates a public channel called 'First channel '
-# Argument: auth_user_id (dictionary), is_public (boolean)
-# Returns the id (int) of created channel
-def create_first_channel(auth_user_id, is_public):
-    channel_id = channels_create_v1(auth_user_id['auth_user_id'],
-                                   'First Channel',
-                                    is_public)
-    return channel_id
-
-

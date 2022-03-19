@@ -209,7 +209,7 @@ def dm_leave_v1():
 
 # # =============== /messages domain =================
 @APP.route("/channel/messages/v2", methods=['POST'])
-def channel_details_v2():
+def channel_messages_v2():
     user_id = data_store.get_id_from_token(request.args.get('token'))
     channel_id = request.get_json('channel_id')
     start = request.get_json('start')
