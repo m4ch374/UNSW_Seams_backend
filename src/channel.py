@@ -107,40 +107,25 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     # Checking valid channel id, start id and user access
     if data_store.has_user_id(auth_user_id) == False:
         raise AccessError
-    
     if data_store.has_channel_id(channel_id) == False:
         raise InputError
     channel = data_store.get_channel(channel_id)
-    
     if channel.has_member_id(auth_user_id) == False:
         raise AccessError
-
     chnl_messages = channel.get_messages()
     if start > len(chnl_messages) or start < 0:
         raise InputError
-    
     
 
     # Splitting the stored messages list to paginate returned messages
     if start + 50 < len(chnl_messages):
         end = start + 50
         messages = channel.messages[start:start+50]
-    else: 
+    else:
         end = -1
         messages = chnl_messages[start:len(chnl_messages)]
 
     return {
-        # 'messages': [
-        #     {
-        #         'message_id': 1,
-        #         'u_id': 1,
-        #         'message': 'Hello world',
-        #         'time_sent': 1582426789,
-        #     }
-        # ],
-        # 'start': 0,
-        # 'end': 50,
-
         'messages': messages,
         'start': start,
         'end': end,

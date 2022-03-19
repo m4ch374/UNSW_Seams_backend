@@ -302,3 +302,16 @@ class DmChannel(Channel):
             'members': [usr.to_dict() for usr in self.members]
         }
         return result
+
+class Message:
+    def __init__(self, id, u_id, message, chnl_id, time_sent):
+        self.id = self.__generate_id()
+        self.u_id = u_id
+        self.message = message
+        self.chnl_id = chnl_id
+        self.time_sent = time_sent
+
+
+    def __generate_id(self):
+        data = data_store.get()
+        return len(data['message']) + 1

@@ -50,24 +50,7 @@ def echo():
         'data': data
     })
 
-<<<<<<< HEAD
-
-@APP.route("/channel/details/v2", methods=['GET'])
-def channel_details_v2():
-    token = request.args.get('token')
-    channel_id = request.args.get('channel_id')
-    response = channel.channel_details_v1(token, channel_id)
-    return dumps(response)
-
-@APP.route("/channel/messages/v2", methods=['POST'])
-def channel_details_v2():
-    token = request.get_json('token')
-    channel_id = request.get_json('channel_id')
-    start = request.get_json('start')
-    response = channel.channel_details_v1(token, channel_id, start)
-    return dumps(response)
     
-=======
 # =============== /user domain =================
 @APP.route("/auth/login/v2", methods=['POST'])
 def login_v2():
@@ -124,7 +107,6 @@ def profile_sethandle_v1():
     token = data['token']
     handle_str = data['handle_str']
     return dumps(auth.user_profile_sethandle_v1(token, handle_str))
->>>>>>> master
 
 
 # =============== /channels domain =================
@@ -169,6 +151,14 @@ def channel_invite_v2():
     u_id = request_data['u_id']
     chnl.channel_invite_v1(auth_user_id, channel_id, u_id)
     return dumps({})
+
+@APP.route("/channel/details/v2", methods=['GET'])
+def channel_details_v2():
+    user_id = data_store.get_id_from_token(request.args.get('token'))
+    channel_id = request.args.get('channel_id')
+    response = channel.channel_details_v1(user_id, channel_id)
+    return dumps(response)
+
 # ==================================================
 
 # ================== /dm domain ====================
@@ -215,6 +205,18 @@ def dm_leave_v1():
 #     u_id = data_store.get_id_from_token(data['token'])
 #     response = dm.dm_messages_v1(u_id, int(data['dm_id'], int(data['start'])))
 #     return response
+
+
+# # =============== /messages domain =================
+@APP.route("/channel/messages/v2", methods=['POST'])
+def channel_details_v2():
+    user_id = data_store.get_id_from_token(request.args.get('token'))
+    channel_id = request.get_json('channel_id')
+    start = request.get_json('start')
+    response = channel.channel_details_v1(user_id, channel_id, start)
+    return dumps(response)
+
+
 # ==================================================
 
 # ================ /clear domain ===================
