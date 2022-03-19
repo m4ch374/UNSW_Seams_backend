@@ -64,7 +64,7 @@ def get_u_id():
     return {"id": resp['auth_user_id'], "token": resp['token']}
 
 @pytest.fixture
-def user_made_channel():
+def user_1_made_channel():
     user = requests.post(ENDPOINT_REGISTER_USR, json=REGISTER_DETAILS_1).json()
     channel = requests.post(ENDPOINT_CREATE_CHNL, json ={'token':user['token'],
                                                         'name':"chnl_name",

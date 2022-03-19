@@ -155,7 +155,7 @@ def channel_invite_v2():
 @APP.route("/channel/details/v2", methods=['GET'])
 def channel_details_v2():
     user_id = data_store.get_id_from_token(request.args.get('token'))
-    channel_id = request.args.get('channel_id')
+    channel_id = int(request.args.get('channel_id'))
     response = channel.channel_details_v1(user_id, channel_id)
     return dumps(response)
 

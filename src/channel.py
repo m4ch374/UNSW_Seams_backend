@@ -71,14 +71,14 @@ Arguments:
 
 def channel_details_v1(auth_user_id, channel_id):
     
-    if data_store.has_user_id(auth_user_id) == False:
-        raise AccessError
-    if data_store.has_channel_id(channel_id) == False:
-        raise InputError
+    if not data_store.has_user_id(auth_user_id):
+        raise AccessError("Account does not exist valid")
+    if not data_store.has_channel_id(channel_id):
+        raise InputError("Channel does not exist")
     channel = data_store.get_channel(channel_id)
     
-    if channel.has_member_id(auth_user_id) == False:
-        raise AccessError
+    if not channel.has_member_id(auth_user_id):
+        raise AccessError("User not in channel")
 
     return channel.channel_details_dict()
 
@@ -169,7 +169,7 @@ def channel_join_v1(auth_user_id, channel_id):
         raise AccessError("Auth user id passed is invalid!")
 
     if not data_store.has_channel_id(channel_id):
-        raise InputError("Channel id invalid")
+        raise InputError("Channel does not exist valid")
     if user_in_channel(auth_user_id, channel_id):
         raise InputError("User is already a member of the channel")
     if not able_access(auth_user_id, channel_id):
