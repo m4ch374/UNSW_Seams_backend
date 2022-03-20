@@ -15,8 +15,10 @@ import src.channels as chnls
 import src.auth as auth
 import src.channel as chnl
 import src.dm as dm
+import src.message as msg
 from src.other import clear_v1
 from src.data_store import data_store
+
 
 def quit_gracefully(*args):
     '''For coverage'''
@@ -209,13 +211,56 @@ def dm_leave_v1():
 
 
 # # =============== /messages domain =================
-@APP.route("/channel/messages/v2", methods=['POST'])
+@APP.route("/channel/messages/v2", methods=['GET'])
 def channel_messages_v2():
     user_id = data_store.get_id_from_token(request.args.get('token'))
-    channel_id = request.get_json('channel_id')
-    start = request.get_json('start')
+    channel_id = request.request.args.get('channel_id')
+    start = request.args.get('start')
     response = channel.channel_messages_v1(user_id, channel_id, start)
     return dumps(response)
+
+@APP.route("dm/messages/v1", method = 'GET')
+def dm_messages_v1():
+    user_id = data_store.get_id_from_token(request.args.get('token'))
+    dm_id = request.request.args.get('channel_id')
+    start = request.args.get('start')
+    response = msg.dm_messages_v1(user_id, dm_id, start)
+    return dumps(response)
+
+@APP.route("message/send/v1", method = 'POST')
+def message_send_v1():
+    data = request.get_json()
+    user_id = data_store.get_id_from_token(data['token'])
+    channel_id = data['channel_id']
+    message = data['message']
+    response = msg.message_send_v1(user_id, channel_id, message)
+    return dumps(response)
+
+@APP.route("message/senddm/v1", method = 'POST')
+def message_senddm_v1():
+    data = request.get_json()
+    user_id = data_store.get_id_from_token(data['token'])
+    dm_id = data['channel_id']
+    message = data['message']
+    response = msg.message_senddm_v1(user_id, dm_id, message)
+    return dumps(response)
+
+@APP.route("message/edit/v1", method = 'PUT')
+def message_edit_v1():
+    data = request.get_json()
+    user_id = data_store.get_id_from_token(data['token'])
+    msg_id = data['message_id']
+    message = data['message']
+    response = msg.message_edit_v1(user_id, msg_id, message)
+    return dumps(response)
+
+@APP.route("message/remove/v1", method = 'DELETE')
+def message_remove_v1():
+    data = request.get_json()
+    user_id = data_store.get_id_from_token(data['token'])
+    msg_id = data['message_id']
+    response = msg.message_remove_v1(user_id, msg_id)
+    return dumps (response)
 
 
 # ==================================================

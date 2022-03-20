@@ -120,7 +120,7 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     # Splitting the stored messages list to paginate returned messages
     if start + 50 < len(chnl_messages):
         end = start + 50
-        messages = channel.messages[start:start+50]
+        messages = channel.get_messages()[start:start+50]
     else:
         end = -1
         messages = chnl_messages[start:len(chnl_messages)]
