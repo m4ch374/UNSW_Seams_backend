@@ -216,10 +216,10 @@ def channel_messages_v2():
     user_id = data_store.get_id_from_token(request.args.get('token'))
     channel_id = request.request.args.get('channel_id')
     start = request.args.get('start')
-    response = channel.channel_messages_v1(user_id, channel_id, start)
+    response = msg.channel_messages_v1(user_id, channel_id, start)
     return dumps(response)
 
-@APP.route("dm/messages/v1", method = 'GET')
+@APP.route("/dm/messages/v1", methods = ['GET'])
 def dm_messages_v1():
     user_id = data_store.get_id_from_token(request.args.get('token'))
     dm_id = request.request.args.get('channel_id')
@@ -227,7 +227,7 @@ def dm_messages_v1():
     response = msg.dm_messages_v1(user_id, dm_id, start)
     return dumps(response)
 
-@APP.route("message/send/v1", method = 'POST')
+@APP.route("/message/send/v1", methods = ['POST'])
 def message_send_v1():
     data = request.get_json()
     user_id = data_store.get_id_from_token(data['token'])
@@ -236,7 +236,7 @@ def message_send_v1():
     response = msg.message_send_v1(user_id, channel_id, message)
     return dumps(response)
 
-@APP.route("message/senddm/v1", method = 'POST')
+@APP.route("/message/senddm/v1", methods = ['POST'])
 def message_senddm_v1():
     data = request.get_json()
     user_id = data_store.get_id_from_token(data['token'])
@@ -245,7 +245,7 @@ def message_senddm_v1():
     response = msg.message_senddm_v1(user_id, dm_id, message)
     return dumps(response)
 
-@APP.route("message/edit/v1", method = 'PUT')
+@APP.route("/message/edit/v1", methods = ['PUT'])
 def message_edit_v1():
     data = request.get_json()
     user_id = data_store.get_id_from_token(data['token'])
@@ -254,7 +254,7 @@ def message_edit_v1():
     response = msg.message_edit_v1(user_id, msg_id, message)
     return dumps(response)
 
-@APP.route("message/remove/v1", method = 'DELETE')
+@APP.route("/message/remove/v1", methods = ['DELETE'])
 def message_remove_v1():
     data = request.get_json()
     user_id = data_store.get_id_from_token(data['token'])
