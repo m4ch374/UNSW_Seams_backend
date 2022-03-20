@@ -214,7 +214,7 @@ def channel_messages_v2():
     user_id = data_store.get_id_from_token(request.args.get('token'))
     channel_id = request.get_json('channel_id')
     start = request.get_json('start')
-    response = channel.channel_messages_v1(user_id, channel_id)
+    response = channel.channel_messages_v1(user_id, channel_id, start)
     return dumps(response)
 
 
