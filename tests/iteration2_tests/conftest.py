@@ -7,7 +7,7 @@ import pytest
 import requests
 
 # Import definitions
-from tests.iteration2_tests.endpoints import ENDPOINT_REGISTER_USR, ENDPOINT_CLEAR
+from tests.iteration2_tests.endpoints import ENDPOINT_REGISTER_USR, ENDPOINT_CLEAR, ENDPOINT_CREATE_CHNL
 
 # =============== Local Definitions ================
 REGISTER_DETAILS_1 = { 
@@ -30,6 +30,8 @@ REGISTER_DETAILS_3 = {
     'name_first': 'dogdogdog',
     'name_last': 'catcatcat',
 }
+
+
 # ==================================================
 
 @pytest.fixture(autouse=True)
@@ -60,3 +62,14 @@ def get_usr_2():
 def get_u_id():
     resp = requests.post(ENDPOINT_REGISTER_USR, json=REGISTER_DETAILS_3).json()
     return {"id": resp['auth_user_id'], "token": resp['token']}
+
+@pytest.fixture
+def user_1_made_channel():
+    user = requests.post(ENDPOINT_REGISTER_USR, json=REGISTER_DETAILS_1).json()
+    channel = requests.post(ENDPOINT_CREATE_CHNL, json ={'token':user['token'],
+                                                        'name':"chnl_name",
+                                                        'is_public':True}).json()
+
+    return {'channel': channel['channel_id'], 'token':user['token']}
+
+

@@ -1,19 +1,24 @@
 # Default Imports
 import sys
+sys.path.append('/Users/ellahuang/Documents/COMP1531/project-backend')
 import signal
 from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
 from src.error import InputError
 from src import config
+from src import channel
+
 
 # Our own imports
 import src.channels as chnls
 import src.auth as auth
 import src.channel as chnl
 import src.dm as dm
+import src.message as msg
 from src.other import clear_v1
 from src.data_store import data_store
+
 
 def quit_gracefully(*args):
     '''For coverage'''
@@ -48,6 +53,7 @@ def echo():
         'data': data
     })
 
+    
 # =============== /user domain =================
 @APP.route("/auth/login/v2", methods=['POST'])
 def login_v2():
@@ -148,6 +154,14 @@ def channel_invite_v2():
     u_id = request_data['u_id']
     chnl.channel_invite_v1(auth_user_id, channel_id, u_id)
     return dumps({})
+
+@APP.route("/channel/details/v2", methods=['GET'])
+def channel_details_v2():
+    user_id = data_store.get_id_from_token(request.args.get('token'))
+    channel_id = int(request.args.get('channel_id'))
+    response = channel.channel_details_v1(user_id, channel_id)
+    return dumps(response)
+
 # ==================================================
 
 # ================== /dm domain ====================
@@ -194,6 +208,61 @@ def dm_leave_v1():
 #     u_id = data_store.get_id_from_token(data['token'])
 #     response = dm.dm_messages_v1(u_id, int(data['dm_id'], int(data['start'])))
 #     return response
+
+
+# # =============== /messages domain =================
+@APP.route("/channel/messages/v2", methods=['GET'])
+def channel_messages_v2():
+    user_id = data_store.get_id_from_token(request.args.get('token'))
+    channel_id = request.request.args.get('channel_id')
+    start = request.args.get('start')
+    response = msg.channel_messages_v1(user_id, channel_id, start)
+    return dumps(response)
+
+@APP.route("/dm/messages/v1", methods = ['GET'])
+def dm_messages_v1():
+    user_id = data_store.get_id_from_token(request.args.get('token'))
+    dm_id = request.request.args.get('channel_id')
+    start = request.args.get('start')
+    response = msg.dm_messages_v1(user_id, dm_id, start)
+    return dumps(response)
+
+@APP.route("/message/send/v1", methods = ['POST'])
+def message_send_v1():
+    data = request.get_json()
+    user_id = data_store.get_id_from_token(data['token'])
+    channel_id = data['channel_id']
+    message = data['message']
+    response = msg.message_send_v1(user_id, channel_id, message)
+    return dumps(response)
+
+@APP.route("/message/senddm/v1", methods = ['POST'])
+def message_senddm_v1():
+    data = request.get_json()
+    user_id = data_store.get_id_from_token(data['token'])
+    dm_id = data['channel_id']
+    message = data['message']
+    response = msg.message_senddm_v1(user_id, dm_id, message)
+    return dumps(response)
+
+@APP.route("/message/edit/v1", methods = ['PUT'])
+def message_edit_v1():
+    data = request.get_json()
+    user_id = data_store.get_id_from_token(data['token'])
+    msg_id = data['message_id']
+    message = data['message']
+    response = msg.message_edit_v1(user_id, msg_id, message)
+    return dumps(response)
+
+@APP.route("/message/remove/v1", methods = ['DELETE'])
+def message_remove_v1():
+    data = request.get_json()
+    user_id = data_store.get_id_from_token(data['token'])
+    msg_id = data['message_id']
+    response = msg.message_remove_v1(user_id, msg_id)
+    return dumps (response)
+
+
 # ==================================================
 
 # ================ /clear domain ===================
