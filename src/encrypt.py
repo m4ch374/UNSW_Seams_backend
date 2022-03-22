@@ -31,12 +31,10 @@ def hashing_password(password):
     for i in range(len(password)):
         if i % PERIOD == 0:
             selted_password += SALT[idx]
-            if idx == len(SALT) - 1:
-                idx = 0
-            else:
-                idx += 1
+            if i == len(password) - 1 or idx == len(SALT) - 1:
+                break
         selted_password += password[i]
-    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+    hashed_password = hashlib.sha256(selted_password.encode()).hexdigest()
     dubl_hashed_password = hashlib.sha256(hashed_password.encode()).hexdigest()
     return dubl_hashed_password
 
