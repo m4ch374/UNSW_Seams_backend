@@ -3,6 +3,7 @@ This file contains all helper function for testing
 """
 
 # Imports
+from secrets import token_bytes
 import requests
 
 # Import definitions
@@ -40,4 +41,11 @@ def create_chnl_invite_input_json(token, channel_id, u_id):
         'token': token,
         'channel_id': channel_id,
         'u_id': u_id,
+    }
+
+def send_msg_json(token, channel_id, message):
+    return {
+        'token': token,
+        'channel_id': channel_id,
+        'message': message,
     }

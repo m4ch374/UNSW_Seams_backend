@@ -319,4 +319,4 @@ class Message:
 
     def __generate_id(self):
         data = data_store.get()
-        return len(data['message']) + 1
+        return len(data['messages']) + 1

@@ -13,6 +13,7 @@
 # ==================================================
 '''
 # Imports
+from ast import In
 import requests
 
 # Import errors
@@ -50,6 +51,17 @@ def test_message_send_invalid_user_access(user_1_made_channel, get_usr_2):
     response = requests.post(ENDPOINT_MESSAGE_SEND, json=send_msg_json(invalid_token, channel_id, 'a'))
     assert response.status_code == AccessError.code
 
+def test_message_send_missing_message(user_1_made_channel, ):
+    channel_id = user_1_made_channel['channel']
+    token = user_1_made_channel['token']
 
+    response = requests.post(ENDPOINT_MESSAGE_SEND, json=send_msg_json(token, channel_id, ''))
+    assert response.status_code == InputError.code
 
+def test_message_send_message_too_long(user_1_made_channel):
+    channel_id = user_1_made_channel['channel']
+    token = user_1_made_channel['token']
+
+    response = requests.post(ENDPOINT_MESSAGE_SEND, json=send_msg_json(token, channel_id, 'a'*1001))
+    assert response.status_code == InputError.code
 
