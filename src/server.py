@@ -1,6 +1,4 @@
 # Default Imports
-import sys
-sys.path.append('/Users/ellahuang/Documents/COMP1531/project-backend')
 import signal
 from json import dumps
 from flask import Flask, request
