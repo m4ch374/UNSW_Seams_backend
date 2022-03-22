@@ -19,7 +19,12 @@ import requests
 from src.error import InputError, AccessError
 
 # Import definitions
-from tests.iteration2_tests.endpoints import ENDPOINT_DM_MESSAGE
+from tests.iteration2_tests.endpoints import ENDPOINT_DM_MESSAGE, ENDPOINT_DM_SEND
+
+# Import helper
+from tests.iteration2_tests.helper import send_msg_json
+
+OK = 200
 
 def generate_url(token, dm, start):
     url = f'{ENDPOINT_DM_MESSAGE}?token={token}&dm_id={str(dm)}&start={start}'
@@ -86,3 +91,61 @@ def test_dm_messages_invalid_user_access(user_1_made_dm, get_usr_3):
     response = requests.get(generate_url(invalid_token, dm, 0))
     response_code = response.status_code
     assert response_code == AccessError.code
+
+#############################################################
+# tests below can't test exact response as msg timestamp is constantly changing
+
+def test_dm_messages_simple(user_1_made_dm):
+    token = user_1_made_dm['creator_token']
+    dm_id = user_1_made_dm['dm']
+    for _ in range(2):
+        requests.post(ENDPOINT_DM_SEND, json=send_msg_json(token, dm_id, 'a'))
+
+    response = requests.get(generate_url(token, dm_id, 0))
+    assert response.status_code == OK
+    assert len(response.json()['messages']) == 2
+    assert response.json()['end'] == -1
+    assert response.json()['start'] == 0
+    
+def test_dm_messages_edge_50(user_1_made_dm):
+    token = user_1_made_dm['creator_token']
+    dm_id = user_1_made_dm['dm']
+    for _ in range(50):
+        requests.post(ENDPOINT_DM_SEND, json=send_msg_json(token, dm_id, 'a'))
+
+    response = requests.get(generate_url(token, dm_id, 0))
+    assert response.status_code == OK
+    assert len(response.json()['messages']) == 50
+    assert response.json()['end'] == -1
+    assert response.json()['start'] == 0
+
+def test_dm_messages_edge_51(user_1_made_dm):
+    token = user_1_made_dm['creator_token']
+    dm_id = user_1_made_dm['dm']
+    for _ in range(51):
+        requests.post(ENDPOINT_DM_SEND, json=send_msg_json(token, dm_id, 'a'))
+
+    response = requests.get(generate_url(token, dm_id, 0))
+    assert response.status_code == OK
+    assert len(response.json()['messages']) == 50
+    assert response.json()['end'] == 50
+    assert response.json()['start'] == 0
+    
+def test_dm_messages_many(user_1_made_dm):
+    token = user_1_made_dm['creator_token']
+    dm_id = user_1_made_dm['dm']
+    for _ in range(75):
+        requests.post(ENDPOINT_DM_SEND, json=send_msg_json(token, dm_id, 'a'))
+
+    response = requests.get(generate_url(token, dm_id, 0))
+    assert response.status_code == OK
+    assert len(response.json()['messages']) == 50
+    assert response.json()['end'] == 50
+    assert response.json()['start'] == 0
+
+    response = requests.get(generate_url(token, dm_id, 50))
+    assert response.status_code == OK
+    assert len(response.json()['messages']) == 25
+    assert response.json()['end'] == -1
+    assert response.json()['start'] == 50
+
