@@ -214,16 +214,16 @@ def dm_leave_v1():
 @APP.route("/channel/messages/v2", methods=['GET'])
 def channel_messages_v2():
     user_id = data_store.get_id_from_token(request.args.get('token'))
-    channel_id = request.request.args.get('channel_id')
-    start = request.args.get('start')
+    channel_id = int(request.args.get('channel_id'))
+    start = int(request.args.get('start'))
     response = msg.channel_messages_v1(user_id, channel_id, start)
     return dumps(response)
 
 @APP.route("/dm/messages/v1", methods = ['GET'])
 def dm_messages_v1():
     user_id = data_store.get_id_from_token(request.args.get('token'))
-    dm_id = request.request.args.get('channel_id')
-    start = request.args.get('start')
+    dm_id = int(request.args.get('dm_id'))
+    start = int(request.args.get('start'))
     response = msg.dm_messages_v1(user_id, dm_id, start)
     return dumps(response)
 

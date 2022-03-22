@@ -1,7 +1,7 @@
 import pytest
 from src.error import InputError, AccessError
 
-from src.channel import channel_messages_v1
+from src.message import channel_messages_v1
 from src.auth import auth_register_v1
    
 # Test for invalid channel id where id doesn't exist yet
