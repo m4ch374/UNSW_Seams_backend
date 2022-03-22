@@ -46,3 +46,15 @@ def test_valid_input():
     assert str(type(response_data['token'])) == "<class 'str'>"
     assert response_data['auth_user_id'] == 2
 
+def test_valid_input_1():
+    response = requests.post(REGISTER_V2, json = {'email': 'z1234567@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'q' * 10, 'name_last': 'q' * 11})
+    assert response.status_code == 200
+    response_data = response.json()
+    assert str(type(response_data['token'])) == "<class 'str'>"
+    assert response_data['auth_user_id'] == 1
+
+    response = requests.post(REGISTER_V2, json = {'email': 'z7654321@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'q' * 10, 'name_last': 'q' * 11})
+    assert response.status_code == 200
+    response_data = response.json()
+    assert str(type(response_data['token'])) == "<class 'str'>"
+    assert response_data['auth_user_id'] == 2
