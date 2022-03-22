@@ -7,4 +7,5 @@ def clear_v1():
     store['channel'] = []
     store['dm'] = []
     store['tokens'] = []
+    store['messages'] = []
     data_store.set(store)

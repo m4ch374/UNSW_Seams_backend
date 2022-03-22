@@ -7,7 +7,7 @@ import pytest
 import requests
 
 # Import definitions
-from tests.iteration2_tests.endpoints import ENDPOINT_REGISTER_USR, ENDPOINT_CLEAR, ENDPOINT_CREATE_CHNL
+from tests.iteration2_tests.endpoints import ENDPOINT_REGISTER_USR, ENDPOINT_CLEAR, ENDPOINT_CREATE_CHNL, ENDPOINT_DM_CREATE
 
 # =============== Local Definitions ================
 REGISTER_DETAILS_1 = { 
@@ -59,6 +59,11 @@ def get_usr_2():
     return resp
 
 @pytest.fixture
+def get_usr_3():
+    resp = requests.post(ENDPOINT_REGISTER_USR, json=REGISTER_DETAILS_3).json()
+    return resp
+
+@pytest.fixture
 def get_u_id():
     resp = requests.post(ENDPOINT_REGISTER_USR, json=REGISTER_DETAILS_3).json()
     return {"id": resp['auth_user_id'], "token": resp['token']}
@@ -71,5 +76,17 @@ def user_1_made_channel():
                                                         'is_public':True}).json()
 
     return {'channel': channel['channel_id'], 'token':user['token']}
+
+@pytest.fixture
+def user_1_made_dm():
+    dm_creator = requests.post(ENDPOINT_REGISTER_USR, json=REGISTER_DETAILS_1).json()
+    dm_member = requests.post(ENDPOINT_REGISTER_USR, json=REGISTER_DETAILS_2).json()
+    dm = requests.post(ENDPOINT_DM_CREATE, json ={'token':dm_creator['token'],
+                                                  'u_ids':[dm_member['auth_user_id'],]}).json()
+
+    return {'dm': dm['dm_id'], 
+            'creator_token':dm_creator['token'],
+            'member_token':dm_member['token'],
+            }
 
 

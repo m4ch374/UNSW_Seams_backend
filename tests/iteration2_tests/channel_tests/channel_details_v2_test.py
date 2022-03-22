@@ -21,14 +21,6 @@ from src.error import InputError, AccessError
 # Import definitions
 from tests.iteration2_tests.endpoints import ENDPOINT_CHANNEL_DETAILS
 
-
-# test that error is thrown when channel id does not extis
-# When a valid user but invalid channel is sent  should return 403 code
-# create valid user
-# create valid channel
-# send valid user and invalid channel
-# assert
-
 # Test invalid channel
 def test_channel_details_invalid_channel_id(user_1_made_channel):
     token = user_1_made_channel['token']

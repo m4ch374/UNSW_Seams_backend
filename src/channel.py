@@ -82,54 +82,6 @@ def channel_details_v1(auth_user_id, channel_id):
 
     return channel.channel_details_dict()
 
-'''
-Function: channel_messages_v1
-Given a channel with ID channel_id that the authorised user is a member of, 
-returns up to 50 messages starting from given start position.
-
-Arguments:
-   - auth_user_id - id of the user requesting messages
-   - channel_id - id of the channel messages are being requested from
-   - start - the id of first message that is required
- Exceptions:
-   - InputError - Occurs when channel_id does not refer to valid channel or start does not 
-                  refer to a valid message id
-   - AccessError -> Occurs when the user id is invalid or when the ids are valid the 
-                    user is not a member of the channel. Takes priority over InputError
- Returns:
-   - messages (list of dictionaries) when no errors raised
-   - start (integer) when no errors raised
-   - end (integer) when no errors raised
-'''
-
-def channel_messages_v1(auth_user_id, channel_id, start):
-    
-    # Checking valid channel id, start id and user access
-    if data_store.has_user_id(auth_user_id) == False:
-        raise AccessError
-    if data_store.has_channel_id(channel_id) == False:
-        raise InputError
-    channel = data_store.get_channel(channel_id)
-    if channel.has_member_id(auth_user_id) == False:
-        raise AccessError
-    chnl_messages = channel.get_messages()
-    if start > len(chnl_messages) or start < 0:
-        raise InputError
-    
-
-    # Splitting the stored messages list to paginate returned messages
-    if start + 50 < len(chnl_messages):
-        end = start + 50
-        messages = channel.get_messages()[start:start+50]
-    else:
-        end = -1
-        messages = chnl_messages[start:len(chnl_messages)]
-
-    return {
-        'messages': messages,
-        'start': start,
-        'end': end,
-    }
 
 '''
 Function that determines if a user is allowed to access the channel
@@ -166,14 +118,14 @@ Return Value:{}
 '''
 def channel_join_v1(auth_user_id, channel_id):
     if data_store.has_user_id(auth_user_id) == False:
-        raise AccessError("Auth user id passed is invalid!")
+        raise AccessError(description="Auth user id passed is invalid!")
 
     if not data_store.has_channel_id(channel_id):
-        raise InputError("Channel does not exist valid")
+        raise InputError(description="Channel does not exist valid")
     if user_in_channel(auth_user_id, channel_id):
-        raise InputError("User is already a member of the channel")
+        raise InputError(description="User is already a member of the channel")
     if not able_access(auth_user_id, channel_id):
-        raise AccessError("Channel is private")
+        raise AccessError(description="Channel is private")
     
     # now that no errors have been detected, join the user to the channel
     chnl = data_store.get_channel(channel_id)
