@@ -263,11 +263,11 @@ def message_remove_v1():
     return dumps (response)
 
 # ================ /admin domain ===================
-@APP.route("admin/user/remove/v1", methods=['DELETE'])
+@APP.route("/admin/user/remove/v1", methods=['DELETE'])
 def admin_user_remove_v1():
     return dumps({})
 
-@APP.route("admin/userpermission/change/v1", methods=['POST'])
+@APP.route("/admin/userpermission/change/v1", methods=['POST'])
 def admin_userpermission_change_v1():
     return dumps({})
 
