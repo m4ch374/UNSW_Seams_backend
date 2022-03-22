@@ -23,12 +23,6 @@ from src.error import InputError, AccessError
 from tests.iteration2_tests.endpoints import ENDPOINT_MESSAGE_SEND
 from tests.iteration2_tests.helper import send_msg_json
 
-# test error cases
-# bad user_id/token
-# bad channel_id
-# user not in channel
-# message length (0 or >1000)
-
 
 def test_message_send_invalid_user(user_1_made_channel):
     channel_id = user_1_made_channel['channel']
