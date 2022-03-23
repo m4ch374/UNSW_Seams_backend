@@ -29,8 +29,6 @@ Arguments:
 def channel_messages_v1(auth_user_id, channel_id, start):
     
     # Checking valid channel id, start id and user access
-    if data_store.has_user_id(auth_user_id) == False:
-        raise AccessError(description='Invalid user')
     if data_store.has_channel_id(channel_id) == False:
         raise InputError(description='Invalid channel')
     channel = data_store.get_channel(channel_id)
@@ -67,8 +65,6 @@ def channel_messages_v1(auth_user_id, channel_id, start):
 def dm_messages_v1(user_id, dm_id, start):
 
     # Checking valid channel id, start id and user access
-    if data_store.has_user_id(user_id) == False:
-        raise AccessError(description='Invalid user')
     if data_store.has_dm_id(dm_id) == False:
         raise InputError(description='Invalid channel')
     dm = data_store.get_dm(dm_id)
@@ -104,8 +100,6 @@ def dm_messages_v1(user_id, dm_id, start):
 def message_send_v1(user_id, channel_id, message):
     
     # Checking valid ids, access, and message length
-    if not data_store.has_user_id(user_id):
-        raise AccessError(description='error: Invalid user id')
     if data_store.has_channel_id(channel_id) == False:
         raise InputError(description='Invalid channel')
     channel = data_store.get_channel(channel_id)
@@ -131,8 +125,6 @@ def message_send_v1(user_id, channel_id, message):
 def message_senddm_v1(user_id, dm_id, message):
 
     # Checking valid ids, access, and message length
-    if not data_store.has_user_id(user_id):
-        raise AccessError(description='error: Invalid user id')
     if data_store.has_dm_id(dm_id) == False:
         raise InputError(description='Invalid channel')
     dm = data_store.get_dm(dm_id)
@@ -157,7 +149,10 @@ def message_senddm_v1(user_id, dm_id, message):
 
 
 def message_edit_v1(user_id, msg_id, message):
-    return {}
+
+    if data_store.has_dm_id(dm_id) == False:
+        raise InputError(description='Invalid channel')
+
 
 def message_remove_v1(user_id, msg_id):
     return {}

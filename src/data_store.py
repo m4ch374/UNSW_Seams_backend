@@ -105,6 +105,9 @@ class Datastore:
     def has_user_id(self, id):
         return any(id == usr.id for usr in self.__store['users'])
 
+    def has_msg_id(self, id):
+        return  any(id == msg.id for msg in self.__store['messages'])
+        
     # Check if token is valid
     def is_valid_token(self, token):
         return token in self.__store['tokens']

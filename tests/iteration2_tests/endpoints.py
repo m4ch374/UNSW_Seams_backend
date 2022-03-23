@@ -39,3 +39,5 @@ ENDPOINT_DM_MESSAGE = f"{url}/dm/messages/v1"
 ENDPOINT_MESSAGE_SEND = f"{url}/message/send/v1"
 
 ENDPOINT_DM_SEND = f"{url}/message/senddm/v1"
+
+ENDPOINT_MESSAGE_EDIT = f"{url}/message/edit/v1"
