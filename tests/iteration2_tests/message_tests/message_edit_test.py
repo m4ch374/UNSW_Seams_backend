@@ -69,7 +69,7 @@ def test_message_edit_invalid_message_access(user_1_made_channel, get_usr_2):
     assert response.status_code == AccessError.code
 
 # Case where user did not send the message but is a local owner
-def test_message_edit_invalid_message_access(user_1_made_channel, get_usr_2):
+def test_message_edit_by_local_owner(user_1_made_channel, get_usr_2):
     channel_id = user_1_made_channel['channel']
     token_1 = user_1_made_channel['token']
     token_2 = get_usr_2['token']
