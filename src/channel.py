@@ -33,8 +33,11 @@ Exceptions:
 Return Value:{}
 '''
 def channel_invite_v1(auth_user_id, channel_id, u_id):
+    '''
+    note: commented out section since this error handled by token system
     if data_store.has_user_id(auth_user_id) == False:
-        raise AccessError("Auth user id passed is invalid!")
+        raise AccessError(description="Auth user id passed is invalid!")
+    '''
     if not data_store.has_channel_id(channel_id):
         raise InputError("Channel id invalid")
     if not user_in_channel(auth_user_id, channel_id):
@@ -117,9 +120,11 @@ Exceptions:
 Return Value:{}
 '''
 def channel_join_v1(auth_user_id, channel_id):
+    '''
+    note: commented out section since this error handled by token 
     if data_store.has_user_id(auth_user_id) == False:
         raise AccessError(description="Auth user id passed is invalid!")
-
+    '''
     if not data_store.has_channel_id(channel_id):
         raise InputError(description="Channel does not exist valid")
     if user_in_channel(auth_user_id, channel_id):
