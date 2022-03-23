@@ -66,8 +66,6 @@ Return Value:{}
 '''
 def admin_userpermission_change_v1(auth_user_id, u_id, permission_id):
     # checking for input and access errors
-    if data_store.has_user_id(auth_user_id) == False:
-        raise AccessError(description='Invalid auth user')
     if data_store.has_user_id(u_id) == False:
         raise InputError(description='Invalid user')
     # check that the auth user has global owner permissions
