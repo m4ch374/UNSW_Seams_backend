@@ -86,7 +86,7 @@ def test_message_edit_by_local_owner(user_1_made_channel, get_usr_2):
 
 # Case where user did not send the message or create channel but is a global owner 
 # (user 2 is created first)
-def test_message_edit_invalid_message_access(get_usr_2, user_1_made_channel):
+def test_message_edit_by_global_owner(get_usr_2, user_1_made_channel):
     token_2 = get_usr_2['token']
     channel_id = user_1_made_channel['channel']
     token_1 = user_1_made_channel['token']
