@@ -14,6 +14,7 @@
 '''
 # Imports
 import requests
+from http.client import OK
 
 # Import errors
 from src.error import InputError, AccessError
@@ -23,10 +24,6 @@ from tests.iteration2_tests.endpoints import ENDPOINT_DM_SEND
 
 # Import helper
 from tests.iteration2_tests.helper import send_msg_json, generate_get_dm_message_url
-
-OK = 200
-
-
 
 # Test invalid dm
 def test_dm_messages_invalid_dm_id(user_1_made_dm):

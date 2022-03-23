@@ -9,11 +9,11 @@ from src import channel
 
 
 # Our own imports
-import src.channels as chnls
-import src.auth as auth
 import src.channel as chnl
-import src.dm as dm
+import src.channels as chnls
 import src.message as msg
+from src import dm
+from src import auth
 from src.other import clear_v1
 from src.data_store import data_store
 

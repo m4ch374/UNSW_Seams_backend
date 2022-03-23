@@ -14,6 +14,7 @@
 '''
 # Imports
 import requests
+from http.client import OK
 
 # Import errors
 from src.error import InputError, AccessError
@@ -23,9 +24,6 @@ from tests.iteration2_tests.endpoints import ENDPOINT_CHANNEL_MESSAGE, ENDPOINT_
 
 # Import helper
 from tests.iteration2_tests.helper import send_msg_json, generate_get_channel_message_url
-
-# Response code
-OK = 200
 
 
 # Test invalid channel
