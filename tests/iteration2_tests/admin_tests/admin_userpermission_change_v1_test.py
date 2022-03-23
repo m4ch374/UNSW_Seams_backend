@@ -34,15 +34,16 @@ from tests.iteration2_tests.admin_tests.definitions import (
 # note: while the invalid channel id passed should raise
 #       InputError on their own, the AccessError takes precedent
 def test_admin_perm_change_invalid_token():
-    json_input = create_admin_perm_change_input_json(INVALID_TOKEN, 
-                                                     INVALID_U_ID, 
+    json_input = create_admin_perm_change_input_json(INVALID_TOKEN,
+                                                     INVALID_U_ID,
                                                      INVALID_PERM_ID)
     response = requests.post(ENDPOINT_ADMIN_PERM_CHANGE, json = json_input)
     assert response.status_code == AccessError.code
 
 # raise InputError since invalid u_id passed
 def test_admin_perm_change_invalid_user_id(get_token_1):
-    json_input = create_admin_perm_change_input_json(get_token_1, INVALID_U_ID, 
+    json_input = create_admin_perm_change_input_json(get_token_1,
+                                                     INVALID_U_ID,
                                                      OWNER_PERM_ID)
     response = requests.post(ENDPOINT_ADMIN_PERM_CHANGE, json = json_input)
     assert response.status_code == InputError.code
@@ -58,7 +59,7 @@ def test_admin_perm_change_demote_only_global_owner(get_u_id):
 
 # raise InputError since permission already = permission_id
 def test_admin_perm_change_perm_already_set(get_token_1, get_u_id):
-    json_input = create_admin_perm_change_input_json(get_token_1, 
+    json_input = create_admin_perm_change_input_json(get_token_1,
                                                      get_u_id['id'], 
                                                      USER_PERM_ID)
     response = requests.post(ENDPOINT_ADMIN_PERM_CHANGE, json = json_input)
