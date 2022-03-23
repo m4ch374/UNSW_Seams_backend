@@ -16,6 +16,7 @@ import src.auth as auth
 import src.channel as chnl
 import src.dm as dm
 import src.message as msg
+import src.admin as admin
 from src.other import clear_v1
 from src.data_store import data_store
 
@@ -263,13 +264,20 @@ def message_remove_v1():
     return dumps (response)
 
 # ================ /admin domain ===================
+'''
 @APP.route("/admin/user/remove/v1", methods=['DELETE'])
 def admin_user_remove_v1():
     return dumps({})
-
+'''
 @APP.route("/admin/userpermission/change/v1", methods=['POST'])
 def admin_userpermission_change_v1():
-    return dumps({})
+    request_data = request.get_json()
+    auth_user_id = data_store.get_id_from_token(request_data['token'])
+    u_id = request_data['u_id']
+    permission_id = request_data['permission_id']
+    response = admin.admin_userpermission_change_v1(auth_user_id, u_id,
+                                                    permission_id)
+    return dumps(response)
 
 # ==================================================
 
