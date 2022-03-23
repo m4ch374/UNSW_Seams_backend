@@ -19,10 +19,11 @@ import requests
 from src.error import InputError, AccessError
 from tests.iteration2_tests.endpoints import (
     ENDPOINT_ADMIN_PERM_CHANGE, ENDPOINT_JOIN_CHNL, ENDPOINT_CREATE_CHNL,
-    ENDPOINT_JOIN_CHNL, 
+    ENDPOINT_JOIN_CHNL, ENDPOINT_LIST_CHNL,
 )
 from tests.iteration2_tests.helper import (
-    create_admin_perm_change_input_json, generate_channel_input_json
+    create_admin_perm_change_input_json, generate_channel_input_json,
+    create_chnl_join_input_json,
 )
 from tests.iteration2_tests.admin_tests.definitions import (
     INVALID_TOKEN, INVALID_U_ID, INVALID_PERM_ID, OWNER_PERM_ID, USER_PERM_ID
@@ -96,7 +97,7 @@ def test_admin_perm_change_promote_to_owner_2(get_token_1, get_u_id):
                                                      OWNER_PERM_ID)
     response = requests.post(ENDPOINT_ADMIN_PERM_CHANGE, json = json_input)
     # join the newly promoted user to a private chnl
-    data1 = generate_channel_input_json(get_token_2, "First Chnl", False)
+    data1 = generate_channel_input_json(get_token_1, "First Chnl", False)
     response = requests.post(ENDPOINT_CREATE_CHNL, json=data1).json()
     channel_id1 = response['channel_id']
     json_input = create_chnl_join_input_json(get_token_1, channel_id1)
@@ -120,9 +121,9 @@ def test_admin_perm_change_promote_then_demote(get_token_1, get_u_id):
                                                      USER_PERM_ID)
     response = requests.post(ENDPOINT_ADMIN_PERM_CHANGE, json = json_input)
     # join the newly promoted user to a private chnl
-    data1 = generate_channel_input_json(get_token_2, "First Chnl", False)
+    data1 = generate_channel_input_json(get_token_1, "First Chnl", False)
     response = requests.post(ENDPOINT_CREATE_CHNL, json=data1).json()
     channel_id1 = response['channel_id']
-    json_input = create_chnl_join_input_json(get_token_1, channel_id1)
+    json_input = create_chnl_join_input_json(get_u_id['token'], channel_id1)
     join_response = requests.post(ENDPOINT_JOIN_CHNL, json = json_input)
     assert join_response.status_code == AccessError.code
