@@ -40,9 +40,7 @@ usr_in_dict = new_user.to_dict()
 class User:
     def __init__(self, email, password, name_first, name_last, iteration):
         self.email = email
-        if iteration == 1:
-            self.password = password
-        elif iteration == 2:
+        if iteration == 2:
             self.password = hashing_password(password)
         self.name_first = name_first
         self.name_last = name_last
@@ -155,7 +153,7 @@ class Channel:
     '''
     def __generate_id(self):
         data = data_store.get()
-        return len(data['channel']) + 1
+        return len(data['channel']) + len(data['dm']) + 1
 
     '''
         Argument:
@@ -286,14 +284,19 @@ class DmChannel(Channel):
 
     def __generate_id(self):
         data = data_store.get()
-        return len(data['dm']) + 1
-
+        return len(data['channel']) + len(data['dm']) + 1
+    
     def channel_dict(self):
         result = super().channel_dict()
 
         # Replace key channel_id with dm_id
         new_dict = {(key if key != 'channel_id' else 'dm_id'): val for key, val in result.items()}
         return new_dict
+    
+    # get all messages from a channel OR dm
+    def get_messages(self):
+        msg_list = data_store.get()['messages']
+        return [msg for msg in msg_list if msg.chnl_id == self.id]
 
     # NOTE: Members include the owner
     def channel_details_dict(self):
@@ -304,7 +307,7 @@ class DmChannel(Channel):
         return result
 
 class Message:
-    def __init__(self, id, u_id, message, chnl_id, time_sent):
+    def __init__(self, u_id, message, chnl_id, time_sent):
         self.id = self.__generate_id()
         self.u_id = u_id
         self.message = message
@@ -314,4 +317,4 @@ class Message:
 
     def __generate_id(self):
         data = data_store.get()
-        return len(data['message']) + 1
+        return len(data['messages']) + 1

@@ -35,3 +35,11 @@ ENDPOINT_ADMIN_PERM_CHANGE = f"{url}admin/userpermission/change/v1"
 ENDPOINT_CLEAR = f"{url}clear/v1"
 
 ENDPOINT_CHANNEL_DETAILS = f"{url}/channel/details/v2"
+
+ENDPOINT_CHANNEL_MESSAGE = f"{url}/channel/messages/v2"
+
+ENDPOINT_DM_MESSAGE = f"{url}/dm/messages/v1"
+
+ENDPOINT_MESSAGE_SEND = f"{url}/message/send/v1"
+
+ENDPOINT_DM_SEND = f"{url}/message/senddm/v1"
