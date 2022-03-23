@@ -54,6 +54,7 @@ def create_admin_perm_change_input_json(token, u_id, permission_id):
         'token': token,
         'u_id': u_id,
         'permission_id': permission_id,
+    }
 def send_msg_json(token, channel_id, message):
     return {
         'token': token,
