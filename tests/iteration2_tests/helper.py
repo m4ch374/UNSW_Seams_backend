@@ -43,9 +43,27 @@ def create_chnl_invite_input_json(token, channel_id, u_id):
         'u_id': u_id,
     }
 
+def generate_get_dm_message_url(token, dm, start):
+    url = f'{ENDPOINT_DM_MESSAGE}?token={token}&dm_id={str(dm)}&start={start}'
+    return url
+
+
+def generate_get_channel_message_url(token, channel, start):
+    url = f'{ENDPOINT_CHANNEL_MESSAGE}?token={token}&channel_id={str(channel)}&start={start}'
+    return url
+
+
+# used for both dm and channel send tests
 def send_msg_json(token, channel_id, message):
     return {
         'token': token,
         'channel_id': channel_id,
+        'message': message,
+    }
+
+def edit_msg_json(token, msg_id, message):
+    return {
+        'token': token,
+        'message_id': msg_id,
         'message': message,
     }

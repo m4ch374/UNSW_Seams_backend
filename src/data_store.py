@@ -99,6 +99,12 @@ class Datastore:
         else:
             return [chnl for chnl in self.__store['channel'] if chnl.id == id][0]
 
+    def get_msg(self, id):
+        if len(self.__store['messages']) == 0:
+            return None
+        else:
+            return [msg for msg in self.__store['messages'] if msg.id == id][0]
+
     def has_channel_id(self, id):
         return any(id == chnl.id for chnl in self.__store['channel'])
     

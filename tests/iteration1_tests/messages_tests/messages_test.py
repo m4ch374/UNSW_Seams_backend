@@ -33,33 +33,6 @@
 #     user = first_user_and_channel['first_user_id']
 #     channel = first_user_and_channel['first_channel_id']
 
-<<<<<<< HEAD
-# Test that AccessError is raised when both user and channel id are invalid
-# commented out since functionality is now covered by token tests
-#def test_invalid_user_and_channel(first_user_and_channel):
-#    user = first_user_and_channel['first_user_id']
-#    channel = first_user_and_channel['first_channel_id']
-#
-#    with pytest.raises(AccessError):
-#        assert channel_messages_v1(user + 1, channel + 1, 0)
-
-# Test that AccessError is raised when both user and start id are invalid
-# commented out since functionality is now covered by token tests
-#def test_invalid_user_and_start(first_user_and_channel):
-#    user = first_user_and_channel['first_user_id']
-#    channel = first_user_and_channel['first_channel_id']
-#
-#    with pytest.raises(AccessError):
-#        assert channel_messages_v1(user + 1, channel, -1)
-
-# Test that AccessError is raised when both user, channel and start id are invalid
-# commented out since functionality is now covered by token tests
-#def test_invalid_user_channel_start(first_user_and_channel):
-#    user = first_user_and_channel['first_user_id']
-#    channel = first_user_and_channel['first_channel_id']
-#    with pytest.raises(AccessError):
-#       assert channel_messages_v1(user + 1, channel + 1, 1)
-=======
 #     with pytest.raises(AccessError):
 #         assert channel_messages_v1(user + 1, channel, 0)
 
@@ -83,7 +56,6 @@
 # def test_invalid_user_channel_start(first_user_and_channel):
 #     user = first_user_and_channel['first_user_id']
 #     channel = first_user_and_channel['first_channel_id']
->>>>>>> master
 
 #     with pytest.raises(AccessError):
 #         assert channel_messages_v1(user + 1, channel + 1, 1)
