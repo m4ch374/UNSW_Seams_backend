@@ -40,9 +40,7 @@ usr_in_dict = new_user.to_dict()
 class User:
     def __init__(self, email, password, name_first, name_last, iteration):
         self.email = email
-        if iteration == 1:
-            self.password = password
-        elif iteration == 2:
+        if iteration == 2:
             self.password = hashing_password(password)
         self.name_first = name_first
         self.name_last = name_last
