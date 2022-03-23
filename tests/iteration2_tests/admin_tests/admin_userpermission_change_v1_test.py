@@ -110,7 +110,8 @@ def test_admin_perm_change_promote_to_owner_2(get_token_1, get_u_id):
     assert channel_list == expected_output
 
 # promote a user to global owner, then demote again (and test chnl join)
-def test_admin_perm_change_promote_then_demote(get_token_1, get_u_id):
+def test_admin_perm_change_promote_then_demote(get_token_1, get_token_2,
+                                               get_u_id):
     # promote user to global owner
     json_input = create_admin_perm_change_input_json(get_token_1, 
                                                      get_u_id['id'], 
@@ -128,3 +129,4 @@ def test_admin_perm_change_promote_then_demote(get_token_1, get_u_id):
     json_input = create_chnl_join_input_json(get_u_id['token'], channel_id1)
     join_response = requests.post(ENDPOINT_JOIN_CHNL, json = json_input)
     assert join_response.status_code == AccessError.code
+
