@@ -67,3 +67,10 @@ def edit_msg_json(token, msg_id, message):
         'message_id': msg_id,
         'message': message,
     }
+
+def remove_msg_json(token, msg_id):
+    return {
+        'token': token,
+        'message_id': msg_id,
+    }
+

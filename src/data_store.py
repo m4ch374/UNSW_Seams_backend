@@ -164,6 +164,13 @@ class Datastore:
     def remove_dm(self, dm):
         self.__store['dm'].remove(dm)
         data_store.set_store()
+    
+    def remove_msg(self, msg):
+        data = self.get()
+        for message in data['messages']:
+            if message == msg:
+                message == None
+        data_store.set(data)
 
 print('Loading Datastore...')
 
