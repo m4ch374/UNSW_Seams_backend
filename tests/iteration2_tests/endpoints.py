@@ -28,6 +28,12 @@ ENDPOINT_USER_PROF = f"{url}user/profile/v1"
 
 ENDPOINT_CHNL_INVITE = f"{url}channel/invite/v2"
 
+ENDPOINT_CHNL_LEAVE = f"{url}channel/leave/v1"
+
+ENDPOINT_CHNL_ADDOWNER = f"{url}channel/addowner/v1"
+
+EDNPOINT_CHNL_REMOVEOWNER = f"{url}channel/removeowner/v1"
+
 ENDPOINT_ADMIN_REMOVE = f"{url}admin/user/remove/v1"
 
 ENDPOINT_ADMIN_PERM_CHANGE = f"{url}admin/userpermission/change/v1"
