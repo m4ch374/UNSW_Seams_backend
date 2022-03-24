@@ -14,7 +14,7 @@
 # ==================================================
 
 '''
-'''
+
 # imports used
 import requests
 from src.error import InputError, AccessError
@@ -27,13 +27,7 @@ from tests.iteration2_tests.helper import (
 from tests.iteration2_tests.channel_tests.definitions import (
     INVALID_TOKEN, INVALID_CHNL_ID
 )
-'''
-# imports used
-import requests
-from src.error import InputError, AccessError
-from tests.iteration2_tests.endpoints import ENDPOINT_JOIN_CHNL, ENDPOINT_CREATE_CHNL, ENDPOINT_LIST_CHNL
-from tests.iteration2_tests.helper import create_chnl_join_input_json, generate_channel_input_json
-from tests.iteration2_tests.channel_tests.definitions import INVALID_TOKEN, INVALID_CHNL_ID
+
 # raise AccessError since invalid token passed
 #
 # note: while the invalid channel id passed should raise
