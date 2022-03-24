@@ -52,8 +52,6 @@ def generate_get_channel_message_url(token, channel, start):
     url = f'{ENDPOINT_CHANNEL_MESSAGE}?token={token}&channel_id={str(channel)}&start={start}'
     return url
 
-
-# used for both dm and channel send tests
 '''
 def create_admin_remove_user_input_json(token, u_id):
     return {
@@ -74,6 +72,7 @@ def send_msg_json(token, channel_id, message):
         'message': message,
     }
 
+# used for both dm and channel send tests
 def edit_msg_json(token, msg_id, message):
     return {
         'token': token,
