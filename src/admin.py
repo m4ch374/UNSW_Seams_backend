@@ -5,6 +5,7 @@ File containing admin remove user and change permission functions
 # imports
 from src.data_store import data_store
 from src.error import InputError, AccessError
+from src.objecs import User
 
 # helper functions
 '''
@@ -44,6 +45,17 @@ Return Value:{}
 CURRENTLY COMMENTED OUT AS NOT YET IMPLEMENTED OR CALLED :D
 def admin_user_remove_v1():
 '''
+# def admin_user_remove_v1(token, u_id):
+#     if not User.is_owner(token):
+#         raise AccessError(description='the authorised user is not a global owner')
+#     elif not data_store.has_user_id(u_id):
+#         raise InputError(description='u_id does not refer to a valid user')
+#     elif len(data_store.all_owners()) == 1:
+#          raise InputError(description='u_id refers to a user who is the only global owner')
+#     else:
+#         # TODO remove the user's messages
+#         User.set_removed_user_profile(u_id)
+#         return {}
 
 '''
 Function: admin_userpermission_change_v1

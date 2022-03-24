@@ -115,6 +115,23 @@ class User:
         user = data_store.get_user(id)
         return user.owner
 
+    """
+        for a removed user:
+            Their profile must still be retrievable with user/profile.
+            however name_first should be 'Removed'.
+            name_last should be 'user'.
+            The user's email and handle should be reusable.
+    """
+    def set_removed_user_profile(self, id):
+        for user in data_store.get()['users']:
+            if user.id == id:
+                user.email = ''
+                user.name_first = 'Removed'
+                user.name_last = 'user'
+                user.handle = ''
+                user.owner = False
+                break
+
 '''
 Channel class, stores info of a channel
 Contains:
