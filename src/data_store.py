@@ -172,6 +172,12 @@ class Datastore:
                 message == None
         data_store.set(data)
 
+    """
+        return a list of user who is owner
+    """
+    def all_owners(self):
+        return [user for user in data_store.get()['users'] if user.owner]
+
 print('Loading Datastore...')
 
 global data_store

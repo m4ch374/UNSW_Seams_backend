@@ -206,7 +206,6 @@ def auth_register_v2(email, password, name_first, name_last):
             password = password,
             name_first = name_first,
             name_last = name_last,
-            iteration = 2,
         )
         store = data_store.get()
         token = data_store.generate_token(new_user.id)
