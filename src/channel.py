@@ -154,9 +154,22 @@ Exceptions:
 Return Value:{}
 '''
 def channel_leave_v1(auth_user_id, channel_id):
+    if not data_store.has_channel_id(channel_id):
+        raise InputError(description="Channel does not exist")
+    if not user_in_channel(auth_user_id, channel_id):
+        raise AccessError(description="User is not a member of the channel")
+    
+    chnl = data_store.get_channel(channel_id)
+    user = data_store.get_user(auth_user_id)
+    chnl.remove_member(user)
+    # remove them if they are an owner
+    if user in chnl.owners:
+        chnl.owners.remove(user)
+        data_store.set_store()
+
     return {}
 '''
-Function : channel_leave_v1
+Function : channel_addowner_v1
 Make user with user id u_id an owner of the channel.
 
 Arguments:
@@ -174,8 +187,10 @@ Exceptions:
                     owner permissions in the channel
 Return Value:{}
 '''
+'''
 def channel_addowner_v1(auth_user_id, channel_id, u_id):
     return {}
+'''
 '''
 Function : channel_removeowner_v1
 Remove user with user id u_id as an owner of the channel.
@@ -195,5 +210,7 @@ Exceptions:
                     not have owner permissions in the channel
 Return Value:{}
 '''
+'''
 def channel_removeowner_v1(auth_user_id, channel_id, u_id):
     return {}
+'''
