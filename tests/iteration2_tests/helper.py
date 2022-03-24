@@ -42,6 +42,14 @@ def create_chnl_invite_input_json(token, channel_id, u_id):
         'channel_id': channel_id,
         'u_id': u_id,
     }
+
+def generate_chnl_func_input_json(token, channel_id, u_id):
+    return {
+        'token': token,
+        'channel_id': channel_id,
+        'u_id': u_id,
+    }
+
 '''
 def create_admin_remove_user_input_json(token, u_id):
     return {
