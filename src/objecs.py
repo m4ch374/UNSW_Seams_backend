@@ -38,10 +38,9 @@ To represent User in dict
 usr_in_dict = new_user.to_dict()
 '''
 class User:
-    def __init__(self, email, password, name_first, name_last, iteration):
+    def __init__(self, email, password, name_first, name_last):
         self.email = email
-        if iteration == 2:
-            self.password = hashing_password(password)
+        self.password = hashing_password(password)
         self.name_first = name_first
         self.name_last = name_last
         self.id = self.__generate_id()
@@ -105,6 +104,33 @@ class User:
             'handle_str': str(self.handle),
         }
         return return_dict
+
+    """
+        return True if token is owner
+        False if not
+        assume token is valid
+    """
+    def is_owner(self, token):
+        id = data_store.get_id_from_token(token)
+        user = data_store.get_user(id)
+        return user.owner
+
+    """
+        for a removed user:
+            Their profile must still be retrievable with user/profile.
+            however name_first should be 'Removed'.
+            name_last should be 'user'.
+            The user's email and handle should be reusable.
+    """
+    def set_removed_user_profile(self, id):
+        for user in data_store.get()['users']:
+            if user.id == id:
+                user.email = ''
+                user.name_first = 'Removed'
+                user.name_last = 'user'
+                user.handle = ''
+                user.owner = False
+                break
 
 '''
 Channel class, stores info of a channel

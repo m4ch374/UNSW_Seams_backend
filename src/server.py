@@ -260,6 +260,21 @@ def message_remove_v1():
     response = msg.message_remove_v1(user_id, msg_id)
     return dumps (response)
 
+# ================ /admin domain ===================
+'''
+@APP.route("/admin/user/remove/v1", methods=['DELETE'])
+def admin_user_remove_v1():
+    return dumps({})
+'''
+@APP.route("/admin/userpermission/change/v1", methods=['POST'])
+def admin_userpermission_change_v1():
+    request_data = request.get_json()
+    auth_user_id = data_store.get_id_from_token(request_data['token'])
+    u_id = request_data['u_id']
+    permission_id = request_data['permission_id']
+    response = admin.admin_userpermission_change_v1(auth_user_id, u_id,
+                                                    permission_id)
+    return dumps(response)
 
 # ==================================================
 
@@ -268,6 +283,7 @@ def message_remove_v1():
 def clear():
     clear_v1()
     return dumps({})
+
 # ==================================================
 
 #### NO NEED TO MODIFY BELOW THIS POINT

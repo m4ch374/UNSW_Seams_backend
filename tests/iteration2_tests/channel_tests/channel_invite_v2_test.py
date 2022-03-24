@@ -44,7 +44,6 @@ def test_channel_invite_v2_invalid_u_id(get_token_1):
     channel_id1 = response['channel_id']
     json_input = create_chnl_invite_input_json(get_token_1, channel_id1,
                                                INVALID_U_ID)
-    print(json_input)
     response = requests.post(ENDPOINT_CHNL_INVITE, json = json_input)
     assert response.status_code == InputError.code
 
@@ -59,7 +58,15 @@ def test_channel_invite_v2_already_a_member(get_token_1, get_u_id):
     json_input = create_chnl_invite_input_json(get_token_1, channel_id1,
                                                get_u_id['id'])
     response = requests.post(ENDPOINT_CHNL_INVITE, json = json_input)
-    print(f"the response status code is {response.status_code}")
+    assert response.status_code == InputError.code
+
+# raise InputError since invalid channel id
+def test_channel_invite_v2_invalid_channel_id(get_token_1, get_u_id):
+    data1 = generate_channel_input_json(get_token_1, "First Chnl", True)
+    response = requests.post(ENDPOINT_CREATE_CHNL, json=data1).json()
+    json_input = create_chnl_invite_input_json(get_token_1, INVALID_CHNL_ID,
+                                               get_u_id['id'])
+    response = requests.post(ENDPOINT_CHNL_INVITE, json = json_input)
     assert response.status_code == InputError.code
 
 # raise AccessError since authorised user is not a member of the channel
