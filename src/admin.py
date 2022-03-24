@@ -41,22 +41,25 @@ Exceptions:
     - AccessError - Occurs when the authorised user is not a global owner
 Return Value:{}
 '''
-'''
-CURRENTLY COMMENTED OUT AS NOT YET IMPLEMENTED OR CALLED :D
-def admin_user_remove_v1():
-'''
-# def admin_user_remove_v1(token, u_id):
-#     if not User.is_owner(token):
-#         raise AccessError(description='the authorised user is not a global owner')
-#     elif not data_store.has_user_id(u_id):
-#         raise InputError(description='u_id does not refer to a valid user')
-#     elif len(data_store.all_owners()) == 1:
-#          raise InputError(description='u_id refers to a user who is the only global owner')
-#     else:
-#         # TODO remove the user's messages
-#         User.set_removed_user_profile(u_id)
-#         return {}
 
+def admin_user_remove_v1(auth_user_id, u_id, token):
+    # permission_status = User.is_owner(token)
+    
+    
+    return {}
+'''
+def admin_user_remove_v1(token, u_id):
+    if not User.is_owner(token):
+        raise AccessError(description='the authorised user is not a global owner')
+    elif not data_store.has_user_id(u_id):
+        raise InputError(description='u_id does not refer to a valid user')
+    elif len(data_store.all_owners()) == 1:
+         raise InputError(description='u_id refers to a user who is the only global owner')
+    #else:
+        # TODO remove the user's messages
+        #User.set_removed_user_profile(u_id)
+    return {}
+'''
 '''
 Function: admin_userpermission_change_v1
 Given a user by their user ID, set their permissions to new permissions 
