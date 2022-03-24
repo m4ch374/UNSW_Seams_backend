@@ -138,3 +138,62 @@ def channel_join_v1(auth_user_id, channel_id):
     
     return {}
 
+'''
+Function : channel_leave_v1
+Given a channel with ID channel_id that the authorised user is a member of, 
+remove them as a member of the channel. Their messages should remain in the 
+channel. If the only channel owner leaves, the channel will remain.
+
+Arguments:
+    - auth_user_id (int) 
+    - channel_id (int)
+Exceptions:
+    - InputError - Occurs when channel_id does not refer to a valid channel
+    - AccessError - Occurs when channel_id is valid and the authorised user is 
+                    not a member of the channel
+Return Value:{}
+'''
+def channel_leave_v1(auth_user_id, channel_id):
+    return {}
+'''
+Function : channel_leave_v1
+Make user with user id u_id an owner of the channel.
+
+Arguments:
+    - auth_user_id (int) 
+    - channel_id (int)
+    - u_id (int)
+Exceptions:
+    - InputError - Occurs when channel_id does not refer to a valid channel
+    - InputError - Occurs when u_id does not refer to a valid user
+    - InputError - Occurs when u_id refers to a user who is not a member of the 
+                   channel
+    - InputError - Occurs when u_id refers to a user who is already an owner of 
+                   the channel
+    - AccessError - channel_id is valid and the authorised user does not have 
+                    owner permissions in the channel
+Return Value:{}
+'''
+def channel_addowner_v1(auth_user_id, channel_id, u_id):
+    return {}
+'''
+Function : channel_removeowner_v1
+Remove user with user id u_id as an owner of the channel.
+
+Arguments:
+    - auth_user_id (int) 
+    - channel_id (int)
+    - u_id (int)
+Exceptions:
+    - InputError - Occurs when channel_id does not refer to a valid channel
+    - InputError - Occurs when u_id does not refer to a valid user
+    - InputError - Occurs when u_id refers to a user who is not a member of the 
+                   channel
+    - InputError - Occurs when u_id refers to a user who is currently the only 
+                   owner of the channel
+    - AccessError - Occurs when channel_id is valid and the authorised user does
+                    not have owner permissions in the channel
+Return Value:{}
+'''
+def channel_removeowner_v1(auth_user_id, channel_id, u_id):
+    return {}
