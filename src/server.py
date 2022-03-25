@@ -1,6 +1,4 @@
 # Default Imports
-import sys
-sys.path.append('/Users/ellahuang/Documents/COMP1531/project-backend')
 import signal
 from json import dumps
 from flask import Flask, request
@@ -11,12 +9,12 @@ from src import channel
 
 
 # Our own imports
-import src.channels as chnls
-import src.auth as auth
 import src.channel as chnl
-import src.dm as dm
+import src.channels as chnls
 import src.message as msg
-import src.admin as admin
+from src import dm
+from src import auth
+from src import admin
 from src.other import clear_v1
 from src.data_store import data_store
 
