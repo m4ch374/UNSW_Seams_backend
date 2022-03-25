@@ -20,18 +20,6 @@ from src.auth import auth_register_v1
 #     channel
 # ==================================================
 
-# raise AccessError since invalid auth_user_id passed
-#
-# note: while the invalid u_id & channel id's passed should raise
-#       InputErrors on their own, the AccessError takes precedent
-# def test_invalid_auth_user_id_for_channel_invite():
-#     invalid_channel_id = -100
-#     invalid_auth_user_id = -100
-#     invalid_u_id = -100
-#     with pytest.raises(AccessError):
-#         channel_invite_v1(invalid_auth_user_id, invalid_channel_id,
-#                           invalid_u_id)
-
 # raise InputError since invalid channel_id and invalid_u_id passed
 def test_invalid_channel_and_u_id_for_channel_invite():
     auth_user_id = create_new_user_z1234567()

@@ -51,18 +51,6 @@ def create_first_channel(auth_user_id, is_public):
 #
 # ==================================================
 
-# raise AccessError since invalid auth_user_id passed
-#
-# note: while the invalid channel id passed should raise
-#       InputError on their own, the AccessError takes precedent
-# def test_invalid_user_id_for_channel_join():
-#     # Since no channels or id's have been created yet, any arbritary integer 
-#     # passed to the function should be considered invalid
-#     invalid_channel_id = -100
-#     invalid_auth_user_id = -100
-#     with pytest.raises(AccessError):
-#         channel_join_v1(invalid_auth_user_id, invalid_channel_id)
-
 # raise InputError since channel_id does not refer to a valid channel
 #
 # note: this is because no valid channels have been created
