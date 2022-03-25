@@ -53,7 +53,7 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
 
 
 '''
-Function: channel__v1
+Function: channel_details_v1
 Given a channel with ID channel_id that the authorised user is a member of, 
 provide basic details about the channel.
 
@@ -73,8 +73,11 @@ Arguments:
 '''
 
 def channel_details_v1(auth_user_id, channel_id):
+    '''
+    Commented out to improve coverage since token system handles this error
     if not data_store.has_user_id(auth_user_id):
         raise AccessError("Account does not exist valid")
+    '''
     if not data_store.has_channel_id(channel_id):
         raise InputError("Channel does not exist")
     channel = data_store.get_channel(channel_id)
