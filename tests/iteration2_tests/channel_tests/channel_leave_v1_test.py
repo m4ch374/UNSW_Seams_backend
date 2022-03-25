@@ -15,12 +15,11 @@
 import requests
 from src.error import InputError, AccessError
 from tests.iteration2_tests.endpoints import (
-    ENDPOINT_JOIN_CHNL, ENDPOINT_CREATE_CHNL, ENDPOINT_LIST_CHNL, 
+    ENDPOINT_JOIN_CHNL, ENDPOINT_CREATE_CHNL, ENDPOINT_LIST_CHNL,
     ENDPOINT_CHNL_LEAVE,
 )
 from tests.iteration2_tests.helper import (
-    create_chnl_join_input_json, generate_channel_input_json, 
-    generate_chnl_func_json,
+    create_chnl_join_input_json, generate_channel_input_json,
 )
 from tests.iteration2_tests.channel_tests.definitions import (
     INVALID_TOKEN, INVALID_CHNL_ID,
@@ -41,7 +40,7 @@ def test_channel_leave_v1_invalid_channel_id(get_token_1):
     response = requests.post(ENDPOINT_CHNL_LEAVE, json = json_input)
     assert response.status_code == InputError.code
 
-# raise AccessError since channel_id is valid & auth user is not a chnl member 
+# raise AccessError since channel_id is valid & auth user is not a chnl member
 def test_channel_leave_v1_user_not_chnl_member(get_token_1, get_token_2):
     # create a chnl
     data1 = generate_channel_input_json(get_token_1, "First Chnl", True)

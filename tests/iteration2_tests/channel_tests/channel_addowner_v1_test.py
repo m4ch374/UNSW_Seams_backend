@@ -10,7 +10,7 @@
     - u_id refers to a user who is not a member of the channel
     - u_id refers to a user who is already an owner of the channel
 # AccessError when:
-#   - channel_id is valid and the authorised user does not have owner 
+#   - channel_id is valid and the authorised user does not have owner
 #     permissions in the channelchannel_id is valid and the authorised user does
 #     not have owner permissions in the channel
 #
@@ -20,11 +20,10 @@
 import requests
 from src.error import InputError, AccessError
 from tests.iteration2_tests.endpoints import (
-    ENDPOINT_JOIN_CHNL, ENDPOINT_CREATE_CHNL, ENDPOINT_LIST_CHNL, 
-    ENDPOINT_CHNL_LEAVE, ENDPOINT_CHNL_ADDOWNER,
+    ENDPOINT_JOIN_CHNL, ENDPOINT_CREATE_CHNL, ENDPOINT_CHNL_ADDOWNER,
 )
 from tests.iteration2_tests.helper import (
-    create_chnl_join_input_json, generate_channel_input_json, 
+    create_chnl_join_input_json, generate_channel_input_json,
     generate_chnl_func_json,
 )
 from tests.iteration2_tests.channel_tests.definitions import (
@@ -86,7 +85,7 @@ def test_channel_addowner_v1_already_owner(user_1_made_channel, get_u_id):
     requests.post(ENDPOINT_CHNL_ADDOWNER, json = json_input)
     response = requests.post(ENDPOINT_CHNL_ADDOWNER, json = json_input)
     assert response.status_code == InputError.code
-    
+
 # raise AccessError since authorised user doesn't have owner permissions in
 # the channel
 def test_channel_addowner_v1_no_owner_permission(user_1_made_channel,
@@ -99,7 +98,7 @@ def test_channel_addowner_v1_no_owner_permission(user_1_made_channel,
     requests.post(ENDPOINT_JOIN_CHNL, json = json_input)
     # try to add the user get_u_id as an owner via get_token_2 (who is not
     # an owner in this channel either)
-    json_input = generate_chnl_func_json(get_token_2, channel_id1, 
+    json_input = generate_chnl_func_json(get_token_2, channel_id1,
                                          get_u_id['id'])
     response = requests.post(ENDPOINT_CHNL_ADDOWNER, json = json_input)
     assert response.status_code == AccessError.code
@@ -135,8 +134,3 @@ def test_channel_addowner_v1_successful_2(user_1_made_channel, get_u_id,
                                          get_u_id2['id'])
     response = requests.post(ENDPOINT_CHNL_ADDOWNER, json = json_input)
     assert response.status_code == 200
-
-
-
-
-
