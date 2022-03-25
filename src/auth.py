@@ -87,7 +87,7 @@ Return Value:
     user's ID (integer) if the correct input
     token (string)  Encrypted user id and time
 '''
-def auth_login_v2(email, password):
+def auth_login_v1(email, password):
     state = login_account_check_v2(email, password)
     if state == -1:
         raise InputError(description="Account does not exist")
@@ -191,7 +191,7 @@ Return Value:
     user's ID (integer) on the correct input
     token (string)  Encrypted user id and time
 '''
-def auth_register_v2(email, password, name_first, name_last):
+def auth_register_v1(email, password, name_first, name_last):
     if not check_email_valid(email):                        # email not valid
         raise InputError(description="Email address not valid")
     elif not email_is_new(email):                           # email exists
@@ -279,7 +279,6 @@ def user_profile_setname_v1(token, name_first, name_last):
                 if user.id == User_id:
                     user.name_first = name_first
                     user.name_last = name_last
-                    break
             data_store.set(store)
             return {}
 
@@ -310,7 +309,6 @@ def user_profile_setemail_v1(token, email):
             for user in store['users']:
                 if user.id == User_id:
                     user.email = email
-                    break
             data_store.set(store)
             return {}
 
@@ -368,7 +366,6 @@ def user_profile_sethandle_v1(token, handle_str):
             for user in store['users']:
                 if user.id == User_id:
                     user.handle = handle_str
-                    break
             data_store.set(store)
             return {}
 
