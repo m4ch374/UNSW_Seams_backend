@@ -31,6 +31,13 @@ REGISTER_DETAILS_3 = {
     'name_last': 'catcatcat',
 }
 
+REGISTER_DETAILS_4 = {
+    'email': 'blehblehbleh@gmail.com',
+    'password': 'vaobhubabk',
+    'name_first': 'xvfusxnzcq',
+    'name_last': 'fzrvnrbyqa',
+}
+
 
 # ==================================================
 
@@ -66,6 +73,11 @@ def get_usr_3():
 @pytest.fixture
 def get_u_id():
     resp = requests.post(ENDPOINT_REGISTER_USR, json=REGISTER_DETAILS_3).json()
+    return {"id": resp['auth_user_id'], "token": resp['token']}
+
+@pytest.fixture
+def get_u_id2():
+    resp = requests.post(ENDPOINT_REGISTER_USR, json=REGISTER_DETAILS_4).json()
     return {"id": resp['auth_user_id'], "token": resp['token']}
 
 @pytest.fixture
