@@ -15,7 +15,7 @@ import src.channels as chnl
 from src.error import InputError, AccessError
 
 # Import definitions
-from tests.iteration1_tests.channels_tests.definitions import ERROR_LIST, NAMES_LIST, INVALID_ID
+from tests.iteration1_tests.channels_tests.definitions import ERROR_LIST, NAMES_LIST
 
 # Should raise input error
 #
@@ -50,15 +50,6 @@ def test_channels_create_error_pub_and_priv(auth_user_id):
         for s in ERROR_LIST:
             chnl.channels_create_v1(auth_user_id, s, True)
             chnl.channels_create_v1(auth_user_id, s, False)
-
-# Should raise access error
-#
-# When:     auth_user_id is invalid
-#
-# Test passing in invalid user id
-def test_channels_create_error_invalid_id():
-    with pytest.raises(AccessError):
-        chnl.channels_create_v1(INVALID_ID, "dummy", True)
 
 # Should not raise any error
 # 

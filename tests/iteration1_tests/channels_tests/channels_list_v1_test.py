@@ -16,7 +16,7 @@ import src.channel as channel
 from src.error import AccessError
 
 # Import definitions
-from tests.iteration1_tests.channels_tests.definitions import NAMES_LIST, INVALID_ID
+from tests.iteration1_tests.channels_tests.definitions import NAMES_LIST
 
 # Helper funtion
 # helper funtion for testing channels list with one user
@@ -106,12 +106,3 @@ def test_channels_list_multi_user_multi_channels_with_join(auth_user_id, another
     
     assert chnl.channels_list_v1(auth_user_id)['channels'] == expected_output_1
     assert chnl.channels_list_v1(another_id)['channels'] == expected_output_2
-
-# Should raise access error
-#
-# When:     auth_user_id is invalid
-#
-# Test for passing in invalid user id
-def test_channels_list_access_error():
-    with pytest.raises(AccessError):
-        chnl.channels_list_v1(INVALID_ID)
