@@ -63,7 +63,8 @@ def test_channel_addowner_v1_invalid_u_id(get_token_1):
     response = requests.post(ENDPOINT_CHNL_ADDOWNER, json = json_input)
     assert response.status_code == InputError.code
 
-# raise inputerror since u_id refers to a user who isn't a member of the channel
+# raise inputerror since u_id refers to a user who isn't a member of the
+# channel
 def test_channel_addowner_v1_non_member(user_1_made_channel, get_u_id):
     # create a chnl
     channel_id1 = user_1_made_channel['channel']
