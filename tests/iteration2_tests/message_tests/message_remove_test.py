@@ -1,24 +1,24 @@
 '''
 ####################################################
-##          Tests for message/edit/v1           ##
+##          Tests for message/remove/v1           ##
 ####################################################
 
 # Expected behaviour:
+#    - Removes a given message from the frontend when called by an authorised user
 # InputError when:
-#   - dm_id does not refer to a valid dm
+#   - msg_id does not refer to a valid message
+#   - msg_id refers to a message which is in a channel/dm the user is not in
 # AccessError when:
-#   - dm_id is valid and the authorised user is not a member of the
-#     dm
 #   - user token is invalid
+#   - when msg_id and user_id refers to a message and user in the same channel/dm
+#     but the user does not have access permissions to the message (the message
+#     was not sent by the user and they do not have owner permissions in the channel/dn)
 # ==================================================
 '''
 
 
 # Imports
-from glob import glob
 from http.client import OK
-from threading import get_ident
-from webbrowser import get
 import requests
 
 # Import errors
@@ -203,3 +203,16 @@ def test_dm_message_remove_by_global_owner(user_1_made_dm_with_global_owner):
     response = requests.get(generate_get_dm_message_url(creator_token, dm_id, 0))
     assert response.status_code == OK
     assert len(response.json()['messages']) == 1
+
+def test_message_remove_twice(user_1_made_dm):
+    dm_id = user_1_made_dm['dm']
+    member_token = user_1_made_dm['member_token']
+    msg = requests.post(ENDPOINT_DM_SEND, json=send_msg_json(member_token, dm_id, 'a')).json()
+    response = requests.delete(ENDPOINT_MESSAGE_REMOVE, json=remove_msg_json(member_token, msg['message_id']))
+    response = requests.delete(ENDPOINT_MESSAGE_REMOVE, json=remove_msg_json(member_token, msg['message_id']))
+
+    assert response.status_code == InputError.code
+
+    response = requests.get(generate_get_dm_message_url(member_token, dm_id, 0))
+    assert response.status_code == OK
+    assert len(response.json()['messages']) == 0
