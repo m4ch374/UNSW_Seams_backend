@@ -50,13 +50,15 @@ def generate_chnl_func_json(token, channel_id, u_id):
         'u_id': u_id,
     }
 
-'''
-def create_admin_remove_user_input_json(token, u_id):
-    return {
-        'token': token,
-        'u_id': u_id,
-    }
-'''
+def generate_get_dm_message_url(token, dm, start):
+    url = f'{ENDPOINT_DM_MESSAGE}?token={token}&dm_id={str(dm)}&start={start}'
+    return url
+
+
+def generate_get_channel_message_url(token, channel, start):
+    url = f'{ENDPOINT_CHANNEL_MESSAGE}?token={token}&channel_id={str(channel)}&start={start}'
+    return url
+
 def create_admin_perm_change_input_json(token, u_id, permission_id):
     return {
         'token': token,
@@ -69,3 +71,18 @@ def send_msg_json(token, channel_id, message):
         'channel_id': channel_id,
         'message': message,
     }
+
+# used for both dm and channel send tests
+def edit_msg_json(token, msg_id, message):
+    return {
+        'token': token,
+        'message_id': msg_id,
+        'message': message,
+    }
+
+def remove_msg_json(token, msg_id):
+    return {
+        'token': token,
+        'message_id': msg_id,
+    }
+

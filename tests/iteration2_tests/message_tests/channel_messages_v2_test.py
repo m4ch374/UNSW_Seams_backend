@@ -14,6 +14,7 @@
 '''
 # Imports
 import requests
+from http.client import OK
 
 # Import errors
 from src.error import InputError, AccessError
@@ -22,21 +23,15 @@ from src.error import InputError, AccessError
 from tests.iteration2_tests.endpoints import ENDPOINT_CHANNEL_MESSAGE, ENDPOINT_MESSAGE_SEND
 
 # Import helper
-from tests.iteration2_tests.helper import send_msg_json
+from tests.iteration2_tests.helper import send_msg_json, generate_get_channel_message_url
 
-# Response code
-OK = 200
-
-def generate_url(token, channel, start):
-    url = f'{ENDPOINT_CHANNEL_MESSAGE}?token={token}&channel_id={str(channel)}&start={start}'
-    return url
 
 # Test invalid channel
 def test_channel_messages_invalid_channel_id(user_1_made_channel):
     token = user_1_made_channel['token']
     channel = user_1_made_channel['channel']
 
-    response = requests.get(generate_url(token, channel + 1, 0))
+    response = requests.get(generate_get_channel_message_url(token, channel + 1, 0))
     response_code = response.status_code
     assert response_code == InputError.code
 
@@ -44,7 +39,7 @@ def test_channel_messages_invalid_channel_id(user_1_made_channel):
 def test_channel_messages_invalid_user_id(user_1_made_channel):
     channel = user_1_made_channel['channel']
 
-    response = requests.get(generate_url("bad_token", channel, 0))
+    response = requests.get(generate_get_channel_message_url("bad_token", channel, 0))
     response_code = response.status_code
     assert response_code == AccessError.code
 
@@ -54,7 +49,7 @@ def test_channel_messages_invalid_start_id(user_1_made_channel):
     token = user_1_made_channel['token']
     channel = user_1_made_channel['channel']
 
-    response = requests.get(generate_url(token, channel, 2))
+    response = requests.get(generate_get_channel_message_url(token, channel, 2))
     response_code = response.status_code
     assert response_code == InputError.code
 
@@ -62,7 +57,7 @@ def test_channel_messages_start_id_negative(user_1_made_channel):
     token = user_1_made_channel['token']
     channel = user_1_made_channel['channel']
 
-    response = requests.get(generate_url(token, channel, -2))
+    response = requests.get(generate_get_channel_message_url(token, channel, -2))
     response_code = response.status_code
     assert response_code == InputError.code
 
@@ -71,7 +66,7 @@ def test_channel_messages_start_id_negative(user_1_made_channel):
 def test_channel_messages_invalid_user_and_channel(user_1_made_channel):
     channel = user_1_made_channel['channel']
 
-    response = requests.get(generate_url("bad_token", channel + 1, 0))
+    response = requests.get(generate_get_channel_message_url("bad_token", channel + 1, 0))
     response_code = response.status_code
     assert response_code == AccessError.code
 
@@ -79,7 +74,7 @@ def test_channel_messages_invalid_user_and_channel(user_1_made_channel):
 def test_channel_messages_invalid_all(user_1_made_channel):
     channel = user_1_made_channel['channel']
 
-    response = requests.get(generate_url("bad_token", channel + 1, 1))
+    response = requests.get(generate_get_channel_message_url("bad_token", channel + 1, 1))
     response_code = response.status_code
     assert response_code == AccessError.code
 
@@ -89,7 +84,7 @@ def test_channel_messages_invalid_user_access(user_1_made_channel, get_usr_2):
     invalid_token = get_usr_2['token']
     channel = user_1_made_channel['channel']
 
-    response = requests.get(generate_url(invalid_token, channel, 0))
+    response = requests.get(generate_get_channel_message_url(invalid_token, channel, 0))
     response_code = response.status_code
     assert response_code == AccessError.code
 
@@ -102,7 +97,7 @@ def test_channel_messages_simple(user_1_made_channel):
     for _ in range(2):
         requests.post(ENDPOINT_MESSAGE_SEND, json=send_msg_json(token, channel_id, 'a'))
 
-    response = requests.get(generate_url(token, channel_id, 0))
+    response = requests.get(generate_get_channel_message_url(token, channel_id, 0))
     assert response.status_code == OK
     assert len(response.json()['messages']) == 2
     assert response.json()['end'] == -1
@@ -114,7 +109,7 @@ def test_channel_messages_edge_50(user_1_made_channel):
     for _ in range(50):
         requests.post(ENDPOINT_MESSAGE_SEND, json=send_msg_json(token, channel_id, 'a'))
 
-    response = requests.get(generate_url(token, channel_id, 0))
+    response = requests.get(generate_get_channel_message_url(token, channel_id, 0))
     assert response.status_code == OK
     assert len(response.json()['messages']) == 50
     assert response.json()['end'] == -1
@@ -126,7 +121,7 @@ def test_channel_messages_edge_51(user_1_made_channel):
     for _ in range(51):
         requests.post(ENDPOINT_MESSAGE_SEND, json=send_msg_json(token, channel_id, 'a'))
 
-    response = requests.get(generate_url(token, channel_id, 0))
+    response = requests.get(generate_get_channel_message_url(token, channel_id, 0))
     assert response.status_code == OK
     assert len(response.json()['messages']) == 50
     assert response.json()['end'] == 50
@@ -138,13 +133,13 @@ def test_channel_messages_many(user_1_made_channel):
     for _ in range(75):
         requests.post(ENDPOINT_MESSAGE_SEND, json=send_msg_json(token, channel_id, 'a'))
 
-    response = requests.get(generate_url(token, channel_id, 0))
+    response = requests.get(generate_get_channel_message_url(token, channel_id, 0))
     assert response.status_code == OK
     assert len(response.json()['messages']) == 50
     assert response.json()['end'] == 50
     assert response.json()['start'] == 0
 
-    response = requests.get(generate_url(token, channel_id, 50))
+    response = requests.get(generate_get_channel_message_url(token, channel_id, 50))
     assert response.status_code == OK
     assert len(response.json()['messages']) == 25
     assert response.json()['end'] == -1

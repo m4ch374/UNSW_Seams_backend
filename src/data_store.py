@@ -99,12 +99,21 @@ class Datastore:
         else:
             return [chnl for chnl in self.__store['channel'] if chnl.id == id][0]
 
+    def get_msg(self, id):
+        if len(self.__store['messages']) == 0:
+            return None
+        else:
+            return [msg for msg in self.__store['messages'] if msg.id == id][0]
+
     def has_channel_id(self, id):
         return any(id == chnl.id for chnl in self.__store['channel'])
     
     def has_user_id(self, id):
         return any(id == usr.id for usr in self.__store['users'])
 
+    def has_msg_id(self, id):
+        return  any(id == msg.id for msg in self.__store['messages'])
+        
     # Check if token is valid
     def is_valid_token(self, token):
         return token in self.__store['tokens']
@@ -155,6 +164,13 @@ class Datastore:
     def remove_dm(self, dm):
         self.__store['dm'].remove(dm)
         data_store.set_store()
+    
+    def remove_msg(self, msg):
+        data = self.get()
+        for message in data['messages']:
+            if message == msg:
+                message == None
+        data_store.set(data)
 
     """
         return a list of user who is owner
