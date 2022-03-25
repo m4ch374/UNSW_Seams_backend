@@ -225,7 +225,32 @@ Exceptions:
                     not have owner permissions in the channel
 Return Value:{}
 '''
-'''
 def channel_removeowner_v1(auth_user_id, channel_id, u_id):
+    if not data_store.has_channel_id(channel_id):
+        raise InputError(description="Channel does not exist")
+    if data_store.has_user_id(u_id) == False:
+        raise InputError("User id passed is invalid!")
+    '''
+    for owner in chnl.owners
+    NOT YET DONE
+    - InputError - Occurs when u_id refers to a user who is currently the only 
+                   owner of the channel
+    '''
+    chnl = data_store.get_channel(channel_id)
+    auth_user = data_store.get_user(auth_user_id)
+    # check the auth user has owner permissions (either chnl or global owner)
+    if auth_user not in chnl.owners and auth_user.owner == False:
+        raise AccessError(description='Auth user is not a channel owner')
+    
+    # check that the user is already an owner
+    user = data_store.get_user(u_id)
+    if user not in chnl.owners:
+        raise InputError(description='User is not a channel owner')
+    # check that the user is not the only channel owner
+    if len(chnl.owners) == 1:
+        raise InputError(description='User is currently the only channel owner')
+    
+    chnl.owners.remove(user)
+    data_store.set_store()
     return {}
-'''
+
