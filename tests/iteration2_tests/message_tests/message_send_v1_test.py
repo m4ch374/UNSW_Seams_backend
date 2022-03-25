@@ -4,12 +4,14 @@
 ####################################################
 
 # Expected behaviour:
+#   - creates a new message with in a given channel from a valid string specified by
+#     an authorised user   
 # InputError when:
-#   - dm_id does not refer to a valid dm
+#   - channel_id does not refer to a valid channel
+#   - given string is empty or has over 1000 characters
 # AccessError when:
-#   - dm_id is valid and the authorised user is not a member of the
-#     dm
 #   - user token is invalid
+#   - channel_id is valid but the user is not in the channel
 # ==================================================
 '''
 # Imports

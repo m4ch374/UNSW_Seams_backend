@@ -59,7 +59,7 @@ def login_v2():
     data = request.get_json()
     email = data['email']
     password = data['password']
-    return dumps(auth.auth_login_v2(email, password))
+    return dumps(auth.auth_login_v1(email, password))
 
 @APP.route("/auth/logout/v1", methods=['POST'])
 def logout_v1():
@@ -74,7 +74,7 @@ def register_v2():
     password = data['password']
     name_first = data['name_first']
     name_last = data['name_last']
-    return dumps(auth.auth_register_v2(email, password, name_first, name_last))
+    return dumps(auth.auth_register_v1(email, password, name_first, name_last))
 
 @APP.route("/users/all/v1", methods=['GET'])
 def all_v1():
@@ -159,6 +159,32 @@ def channel_details_v2():
     user_id = data_store.get_id_from_token(request.args.get('token'))
     channel_id = int(request.args.get('channel_id'))
     response = channel.channel_details_v1(user_id, channel_id)
+    return dumps(response)
+
+@APP.route("/channel/leave/v1",methods=['POST'])
+def channel_leave_v1():
+    request_data = request.get_json()
+    auth_user_id = data_store.get_id_from_token(request_data['token'])
+    channel_id = request_data['channel_id']
+    response = chnl.channel_leave_v1(auth_user_id, channel_id)
+    return dumps(response)
+
+@APP.route("/channel/addowner/v1",methods=['POST'])
+def channel_addowner_v1():
+    request_data = request.get_json()
+    auth_user_id = data_store.get_id_from_token(request_data['token'])
+    channel_id = request_data['channel_id']
+    u_id = request_data['u_id']
+    response = chnl.channel_addowner_v1(auth_user_id, channel_id, u_id)
+    return dumps(response)
+
+@APP.route("/channel/removeowner/v1",methods=['POST'])
+def channel_removeowner_v1():
+    request_data = request.get_json()
+    auth_user_id = data_store.get_id_from_token(request_data['token'])
+    channel_id = request_data['channel_id']
+    u_id = request_data['u_id']
+    response = chnl.channel_removeowner_v1(auth_user_id, channel_id, u_id)
     return dumps(response)
 
 # ==================================================
