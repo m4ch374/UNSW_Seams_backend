@@ -25,7 +25,7 @@ Return Value:
 def login_account_check_v2(email, password):
     users = data_store.get()['users']
     for user in users:
-        if email == user.email:
+        if email == user.email and not user.removed:
             if compare_password(password, user.password):
                 return user.id
             return 0
@@ -146,7 +146,8 @@ def users_all_v1(token):
     else:
         users = []
         for user in data_store.get()['users']:
-            users.append(user.to_dict())
+            if not user.removed:
+                users.append(user.to_dict())
         return {'users': users}
 
 

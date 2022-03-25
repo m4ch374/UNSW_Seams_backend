@@ -46,6 +46,7 @@ class User:
         self.id = self.__generate_id()
         self.handle = self.__create_handle(name_first, name_last)
         self.owner = self.id == 1
+        self.removed = False
 
     '''
         Generates id for user
@@ -132,6 +133,7 @@ class User:
                 user.name_last = 'user'
                 user.handle = ''
                 user.owner = False
+                user.removed = True
         data_store.set(store)
 
 '''
