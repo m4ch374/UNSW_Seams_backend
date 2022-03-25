@@ -1,18 +1,21 @@
 '''
 ####################################################
-##          Tests for message/edit/v1           ##
+##          Tests for message/edit/v1             ##
 ####################################################
 
 # Expected behaviour:
+#    - Edits a given message to given string when called by an authorised user
 # InputError when:
-#   - dm_id does not refer to a valid dm
+#   - given string is more than 1000 characters in length
+#   - msg_id does not refer to a valid message
+#   - msg_id refers to a message which is in a channel/dm the user is not in
 # AccessError when:
-#   - dm_id is valid and the authorised user is not a member of the
-#     dm
 #   - user token is invalid
+#   - when msg_id and user_id refers to a message and user in the same channel/dm
+#     but the user does not have access permissions to the message (the message
+#     was not sent by the user and they do not have owner permissions in the channel/dn)
 # ==================================================
 '''
-
 
 # Imports
 from http.client import OK

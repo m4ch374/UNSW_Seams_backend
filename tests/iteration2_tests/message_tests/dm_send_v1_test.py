@@ -1,17 +1,20 @@
 '''
 ####################################################
-##          Tests for message/senddm/v1           ##
+##          Tests for message/senddm/v1             ##
 ####################################################
 
 # Expected behaviour:
+#   - creates a new message in a given dm from a valid string specified by
+#     an authorised user   
 # InputError when:
 #   - dm_id does not refer to a valid dm
+#   - given string is empty or has over 1000 characters
 # AccessError when:
-#   - dm_id is valid and the authorised user is not a member of the
-#     dm
 #   - user token is invalid
+#   - dm_id is valid but the user is not in the dm
 # ==================================================
 '''
+
 # Imports
 from ast import In
 import requests
