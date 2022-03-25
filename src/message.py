@@ -5,6 +5,22 @@ from src.objecs import Message, Channel, DmChannel
 from src.error import InputError, AccessError
 
 
+
+# Helper function used in channel and dm messages
+# Converts list of msgs to list of dictionaries containing msg info
+def make_msg_list(messages):
+    msg_list = []
+    for message in messages:
+        msg_list.append({'message_id': message.id,
+                        'user_id': message.u_id,
+                        'message': message.message,
+                        'time_sent': message.time_sent,
+                        })
+
+    return msg_list
+
+
+
 '''
 Function: channel_messages_v1
 Given a channel with ID channel_id that the authorised user is a member of, 
@@ -24,8 +40,6 @@ Arguments:
    - start (integer) when no errors raised
    - end (integer) when no errors raised
 '''
-#TODO: Helper functions to reduce repetition
-
 def channel_messages_v1(auth_user_id, channel_id, start):
     
     # Checking valid channel id, start id and user access
@@ -38,7 +52,6 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     if start > len(chnl_messages) or start < 0:
         raise InputError('Invalid message start index')
     
-
     # Splitting the stored messages list to paginate returned messages
     if start + 50 < len(chnl_messages):
         end = start + 50
@@ -46,15 +59,8 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     else:
         end = -1
         messages = channel.get_messages()[start:len(chnl_messages)+1]
-
-    # convert list of msgs to list of dictionaries containing msg info
-    msg_list = []
-    for message in messages:
-        msg_list.append({'message_id': message.id,
-                        'user_id': message.u_id,
-                        'message': message.message,
-                        'time_sent': message.time_sent,
-                        })
+    
+    msg_list = make_msg_list(messages)
 
     return {
         'messages': msg_list,
@@ -62,6 +68,25 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         'end': end,
     }
 
+'''
+Function: dm_messages_v1
+Given a channel with ID channel_id that the authorised user is a member of, 
+returns up to 50 messages starting from given start position.
+
+Arguments:
+   - user_id - id of the user requesting messages
+   - dm_id - id of the dm messages are being requested from
+   - start - the id of first message that is required
+ Exceptions:
+   - InputError - Occurs when dm_id does not refer to valid dm or start does not 
+                  refer to a valid message id
+   - AccessError -> Occurs when the user id is invalid or when the ids are valid but the 
+                    user is not a member of the dm. Takes priority over InputError
+ Returns:
+   - messages (list of dictionaries) 
+   - start (integer) 
+   - end (integer)
+'''
 def dm_messages_v1(user_id, dm_id, start):
 
     # Checking valid channel id, start id and user access
@@ -73,7 +98,6 @@ def dm_messages_v1(user_id, dm_id, start):
     chnl_messages = dm.get_messages()
     if start > len(chnl_messages) or start < 0:
         raise InputError(description='Invalid message start index')
-    
 
     # Splitting the stored messages list to paginate returned messages
     if start + 50 < len(chnl_messages):
@@ -82,21 +106,33 @@ def dm_messages_v1(user_id, dm_id, start):
     else:
         end = -1
         messages = chnl_messages[start:len(chnl_messages)]
+    
+    msg_list = make_msg_list(messages)
 
-     # convert list of msgs to list of dictionaries containing msg info
-    msg_list = []
-    for message in messages:
-        msg_list.append({'message_id': message.id,
-                        'user_id': message.u_id,
-                        'message': message.message,
-                        'time_sent': message.time_sent,
-                        })
     return {
         'messages': msg_list,
         'start': start,
         'end': end,
     }
 
+
+'''
+Function: message_send_v1
+Creates and stores a new message in a given channel when given a valid string by an
+authorised user.
+
+Arguments:
+   - user_id - id of the user sending the message
+   - channel_id - id of the channel the message is being sent in
+   - message - the string of the message to be created
+ Exceptions:
+   - InputError -> Occurs when channel_id does not refer to valid channel or the string is too long
+                  (>1000 characters) or empty
+   - AccessError -> Occurs when the user id is invalid or when the ids are valid but the 
+                    user is not a member of the channel. Takes priority over InputError
+ Returns:
+   - message_id -> the newly generated id of the new message
+'''
 def message_send_v1(user_id, channel_id, message):
     
     # Checking valid ids, access, and message length
@@ -122,6 +158,24 @@ def message_send_v1(user_id, channel_id, message):
 
     return {'message_id': new_message.id}
 
+
+'''
+Function: message_senddm_v1
+Creates and stores a new message in a given dm when given a valid string by an
+authorised user.
+
+Arguments:
+   - user_id - id of the user sending the message
+   - dm_id - id of the dm the message is being sent in
+   - message - the string of the message to be created
+ Exceptions:
+   - InputError -> Occurs when dm_id does not refer to valid dm or the string is too long
+                  (>1000 characters) or empty
+   - AccessError -> Occurs when the user id is invalid or when the ids are valid but the 
+                    user is not a member of the dm. Takes priority over InputError
+ Returns:
+   - message_id (integer) -> the newly generated id of the new message
+'''
 def message_senddm_v1(user_id, dm_id, message):
 
     # Checking valid ids, access, and message length
@@ -147,7 +201,23 @@ def message_senddm_v1(user_id, dm_id, message):
 
     return {'message_id': new_message.id}
 
+'''
+Function: message_edit_v1
+Edits an existing message in a channel/dm that the user is a part of. User must be the message
+sender or have owner permission in the channel/dm
 
+Arguments:
+   - user_id - id of the user sending the message
+   - msg_id - id of the channel the message is being sent in
+   - message - the string of the message to be created
+ Exceptions:
+   - InputError -> Occurs when msg_id does not refer to a valid message in a channel that the user is in,
+                when the string is too long (>1000 characters)
+   - AccessError -> Occurs when the user id is invalid or when the ids are valid but the 
+                    user does not have permissions to edit a message. Takes priority over InputError
+ Returns:
+   - Empty dictionary upon succes
+'''
 def message_edit_v1(user_id, msg_id, message):
 
     if data_store.has_msg_id(msg_id) == False:
@@ -182,6 +252,21 @@ def message_edit_v1(user_id, msg_id, message):
     
 
 
+'''
+Function: message_remove_v1
+Deletes an existing message in a channel/dm that the user is a part of. User must be the message
+sender or have owner permission in the channel/dm
+
+Arguments:
+   - user_id - id of the user sending the message
+   - msg_id - id of the channel the message is being sent in
+ Exceptions:
+   - InputError -> Occurs when msg_id does not refer to a valid message in a channel that the user is in
+   - AccessError -> Occurs when the user id is invalid or when the ids are valid but the 
+                    user does not have permissions to delete a message. Takes priority over InputError
+ Returns:
+   - Empty dictionary upon succes
+'''
 def message_remove_v1(user_id, msg_id):
     if data_store.has_msg_id(msg_id) == False:
         raise InputError(description='Message id does not exist')
