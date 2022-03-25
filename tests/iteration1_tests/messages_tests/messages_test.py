@@ -36,14 +36,6 @@ def test_invalid_user_id(first_user_and_channel):
     with pytest.raises(AccessError):
         assert channel_messages_v1(user + 1, channel, 0)
 
-# # Test that AccessError is raised when both user and channel id are invalid
-# def test_invalid_user_and_channel(first_user_and_channel):
-#     user = first_user_and_channel['first_user_id']
-#     channel = first_user_and_channel['first_channel_id']
-
-#     with pytest.raises(AccessError):
-#         assert channel_messages_v1(user + 1, channel + 1, 0)
-
 # Test that AccessError is raised when both user and start id are invalid
 def test_invalid_user_and_start(first_user_and_channel):
     user = first_user_and_channel['first_user_id']
@@ -51,14 +43,6 @@ def test_invalid_user_and_start(first_user_and_channel):
 
     with pytest.raises(AccessError):
         assert channel_messages_v1(user + 1, channel, -1)
-
-# # Test that AccessError is raised when both user, channel and start id are invalid
-# def test_invalid_user_channel_start(first_user_and_channel):
-#     user = first_user_and_channel['first_user_id']
-#     channel = first_user_and_channel['first_channel_id']
-
-#     with pytest.raises(AccessError):
-#         assert channel_messages_v1(user + 1, channel + 1, 1)
 
 # Test for non-member user trying to access channel messages
 def test_user_not_authorised(first_user_and_channel):

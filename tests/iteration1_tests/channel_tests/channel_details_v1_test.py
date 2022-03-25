@@ -43,14 +43,6 @@ def test_channel_details_invalid_access(first_user_and_channel):
     with pytest.raises(AccessError):
         assert channel_details_v1(second_user, channel)
 
-# # Test that AccessError is raised when both user and channel ids are invalid
-# def test_channel_details_invalid_channel_and_user(first_user_and_channel):
-#     user = first_user_and_channel['first_user_id']
-#     channel = first_user_and_channel['first_channel_id']
-
-#     with pytest.raises(AccessError):
-#         assert channel_details_v1(user + 1, channel + 1)
-
 # Test that correct channel details are returned when all inputs valid
 def test_channel_details_simple(first_user_and_channel):
     user = first_user_and_channel['first_user_id']
