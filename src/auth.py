@@ -279,7 +279,6 @@ def user_profile_setname_v1(token, name_first, name_last):
                 if user.id == User_id:
                     user.name_first = name_first
                     user.name_last = name_last
-                    break
             data_store.set(store)
             return {}
 
@@ -310,7 +309,6 @@ def user_profile_setemail_v1(token, email):
             for user in store['users']:
                 if user.id == User_id:
                     user.email = email
-                    break
             data_store.set(store)
             return {}
 
@@ -368,7 +366,6 @@ def user_profile_sethandle_v1(token, handle_str):
             for user in store['users']:
                 if user.id == User_id:
                     user.handle = handle_str
-                    break
             data_store.set(store)
             return {}
 
