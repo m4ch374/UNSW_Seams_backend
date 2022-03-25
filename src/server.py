@@ -1,6 +1,4 @@
 # Default Imports
-import sys
-sys.path.append('/Users/ellahuang/Documents/COMP1531/project-backend')
 import signal
 from json import dumps
 from flask import Flask, request
@@ -11,12 +9,12 @@ from src import channel
 
 
 # Our own imports
-import src.channels as chnls
-import src.auth as auth
 import src.channel as chnl
-import src.dm as dm
+import src.channels as chnls
 import src.message as msg
-import src.admin as admin
+from src import dm
+from src import auth
+from src import admin
 from src.other import clear_v1
 from src.data_store import data_store
 
@@ -270,8 +268,7 @@ def admin_user_remove_v1():
     request_data = request.get_json()
     auth_user_id = data_store.get_id_from_token(request_data['token'])
     u_id = request_data['u_id']
-    response = admin.admin_user_remove_v1(auth_user_id, u_id, 
-                                          request_data['token'])
+    response = admin.admin_user_remove_v1(auth_user_id, u_id)
     return dumps(response)
 
 @APP.route("/admin/userpermission/change/v1", methods=['POST'])

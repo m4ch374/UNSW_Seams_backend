@@ -42,24 +42,43 @@ Exceptions:
 Return Value:{}
 '''
 
-def admin_user_remove_v1(auth_user_id, u_id, token):
-    # permission_status = User.is_owner(token)
+def admin_user_remove_v1(auth_user_id, u_id):
     
-    
-    return {}
-'''
-def admin_user_remove_v1(token, u_id):
-    if not User.is_owner(token):
-        raise AccessError(description='the authorised user is not a global owner')
+    auth_user = data_store.get_user(auth_user_id)
+    if auth_user.owner == False:
+        raise AccessError(description='Auth user is not global owner')
     elif not data_store.has_user_id(u_id):
         raise InputError(description='u_id does not refer to a valid user')
-    elif len(data_store.all_owners()) == 1:
+    user_to_remove = data_store.get_user(u_id)
+    if user_to_remove.owner and is_there_more_than_one_global_owner() == False:
          raise InputError(description='u_id refers to a user who is the only global owner')
-    #else:
-        # TODO remove the user's messages
-        #User.set_removed_user_profile(u_id)
+    '''
+    # Set the profile of the removed user
+    user_to_remove.set_removed_user_profile(u_id)
+    
+    # remove the u_id from every channel
+    for user in data_store.get()['users']:
+        if user.id == u_id:
+            user_to_delete = user
+            data_store.get()['users'].remove(user_to_delete)
+            data_store.set()
+    '''
+    # # user_to_remove.remove_usr(u_id)
+    
+    # remove the u_id from the users list in data_store
+    
+    # remove the users messages
+    
+    # invalidate the token
+    
     return {}
 '''
+
+    # remeber to invalidate token -> remove token method in class datastore
+    
+    return {}
+'''
+
 '''
 Function: admin_userpermission_change_v1
 Given a user by their user ID, set their permissions to new permissions 
