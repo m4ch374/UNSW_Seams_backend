@@ -87,7 +87,7 @@ Return Value:
     user's ID (integer) if the correct input
     token (string)  Encrypted user id and time
 '''
-def auth_login_v2(email, password):
+def auth_login_v1(email, password):
     state = login_account_check_v2(email, password)
     if state == -1:
         raise InputError(description="Account does not exist")
@@ -191,7 +191,7 @@ Return Value:
     user's ID (integer) on the correct input
     token (string)  Encrypted user id and time
 '''
-def auth_register_v2(email, password, name_first, name_last):
+def auth_register_v1(email, password, name_first, name_last):
     if not check_email_valid(email):                        # email not valid
         raise InputError(description="Email address not valid")
     elif not email_is_new(email):                           # email exists
