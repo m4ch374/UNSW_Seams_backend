@@ -201,6 +201,32 @@ def message_senddm_v1(user_id, dm_id, message):
 
     return {'message_id': new_message.id}
 
+
+# Helper function which checks for valid user id, msg id and permissions before 
+# editing or removing a message
+def message_edit_and_remove_checks(user_id, msg_id):
+    if data_store.has_msg_id(msg_id) == False:
+        raise InputError(description='Message id does not exist')
+    msg = data_store.get_msg(msg_id)
+    if msg.chnl_id == -1:
+        raise InputError(description='Message has been deleted')
+    channel = data_store.get_channel(msg.chnl_id)
+    channel_type = 'channel'
+    if channel == None:
+        channel_type = 'dm'
+        channel = data_store.get_dm(msg.chnl_id)
+    if not channel.has_member_id(user_id):
+        raise InputError(description='Message id does not exist in your channels')
+
+    if channel_type == 'dm':
+        if not msg.u_id == user_id and not channel.has_owner_id(user_id):
+            raise AccessError(description='You cannot change that dm message')
+    else:
+        if not msg.u_id == user_id and not channel.has_owner_id(user_id) and not data_store.get_user(user_id).owner:
+            raise AccessError(description='You cannot change that message')
+ 
+
+
 '''
 Function: message_edit_v1
 Edits an existing message in a channel/dm that the user is a part of. User must be the message
@@ -220,32 +246,14 @@ Arguments:
 '''
 def message_edit_v1(user_id, msg_id, message):
 
-    if data_store.has_msg_id(msg_id) == False:
-        raise InputError(description='Message id does not exist')
-    msg = data_store.get_msg(msg_id)
-    if msg.chnl_id == -1:
-        raise InputError(description='Message has been deleted')
-    channel = data_store.get_channel(msg.chnl_id)
-    channel_type = 'channel'
-    if channel == None:
-        channel_type = 'dm'
-        channel = data_store.get_dm(msg.chnl_id)
-    if not channel.has_member_id(user_id):
-        raise InputError(description='Message id does not exist in your channels')
-
-    #shorten this (user is not the original sender of the message, a channel owner OR a global owner)
-    if channel_type == 'dm':
-        if not msg.u_id == user_id and not channel.has_owner_id(user_id):
-            raise AccessError(description='You cannot change that dm message')
-    else:
-        if not msg.u_id == user_id and not channel.has_owner_id(user_id) and not data_store.get_user(user_id).owner:
-            raise AccessError(description='You cannot change that message')
-
+    message_edit_and_remove_checks(user_id, msg_id)
+    
     if len(message) > 1000:
         raise InputError(description='Message must be less than 1000 characters')
     if len(message) == 0:
         message_remove_v1(user_id, msg_id)
     
+    msg = data_store.get_msg(msg_id)
     msg.message = message
 
     return {}
@@ -268,27 +276,10 @@ Arguments:
    - Empty dictionary upon succes
 '''
 def message_remove_v1(user_id, msg_id):
-    if data_store.has_msg_id(msg_id) == False:
-        raise InputError(description='Message id does not exist')
+
+    message_edit_and_remove_checks(user_id, msg_id)
+
     msg = data_store.get_msg(msg_id)
-    if msg.chnl_id == -1:
-        raise InputError(description='Message has been deleted')
-    channel = data_store.get_channel(msg.chnl_id)
-    channel_type = 'channel'
-    if channel == None:
-        channel_type = 'dm'
-        channel = data_store.get_dm(msg.chnl_id)
-    if not channel.has_member_id(user_id):
-        raise InputError(description='Message id does not exist in your channels')
-
-    #shorten this (user is not the original sender of the message, a channel owner OR a global owner)
-    if channel_type == 'dm':
-        if not msg.u_id == user_id and not channel.has_owner_id(user_id):
-            raise AccessError(description='You cannot change that dm message')
-    else:
-        if not msg.u_id == user_id and not channel.has_owner_id(user_id) and not data_store.get_user(user_id).owner:
-            raise AccessError(description='You cannot change that message')
-
     msg.chnl_id = -1
 
     return {}
