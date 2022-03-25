@@ -15,7 +15,7 @@ import src.channels as chnl
 from src.error import AccessError
 
 # Import definitions
-from tests.iteration1_tests.channels_tests.definitions import NAMES_LIST, INVALID_ID
+from tests.iteration1_tests.channels_tests.definitions import NAMES_LIST
 
 # Helper function
 # helper function for testing listall with one user creating
@@ -125,12 +125,3 @@ def test_channels_list_all_multi_user_multi_channels_private(auth_user_id, anoth
 # multiple public and private channels
 def test_channels_list_all_multi_user_pub_and_priv_channels(auth_user_id, another_id):
     listall_helper_create_multiple(auth_user_id, another_id, len(NAMES_LIST), False, True)
-
-# Should raise access error
-#
-# When:     auth_user_id is invalid
-#
-# Test for passing in invalid user id
-def test_channels_list_all_access_error():
-    with pytest.raises(AccessError):
-        chnl.channels_listall_v1(INVALID_ID)

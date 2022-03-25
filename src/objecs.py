@@ -122,6 +122,7 @@ class User:
             name_last should be 'user'.
             The user's email and handle should be reusable.
     """
+    # This is just bad code......
     def set_removed_user_profile(self, id):
         for user in data_store.get()['users']:
             if user.id == id:
