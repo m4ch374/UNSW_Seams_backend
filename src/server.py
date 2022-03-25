@@ -161,6 +161,32 @@ def channel_details_v2():
     response = channel.channel_details_v1(user_id, channel_id)
     return dumps(response)
 
+@APP.route("/channel/leave/v1",methods=['POST'])
+def channel_leave_v1():
+    request_data = request.get_json()
+    auth_user_id = data_store.get_id_from_token(request_data['token'])
+    channel_id = request_data['channel_id']
+    response = chnl.channel_leave_v1(auth_user_id, channel_id)
+    return dumps(response)
+
+@APP.route("/channel/addowner/v1",methods=['POST'])
+def channel_addowner_v1():
+    request_data = request.get_json()
+    auth_user_id = data_store.get_id_from_token(request_data['token'])
+    channel_id = request_data['channel_id']
+    u_id = request_data['u_id']
+    response = chnl.channel_addowner_v1(auth_user_id, channel_id, u_id)
+    return dumps(response)
+
+@APP.route("/channel/removeowner/v1",methods=['POST'])
+def channel_removeowner_v1():
+    request_data = request.get_json()
+    auth_user_id = data_store.get_id_from_token(request_data['token'])
+    channel_id = request_data['channel_id']
+    u_id = request_data['u_id']
+    response = chnl.channel_removeowner_v1(auth_user_id, channel_id, u_id)
+    return dumps(response)
+
 # ==================================================
 
 # ================== /dm domain ====================

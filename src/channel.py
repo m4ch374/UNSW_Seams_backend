@@ -53,7 +53,7 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
 
 
 '''
-Function: channel__v1
+Function: channel_details_v1
 Given a channel with ID channel_id that the authorised user is a member of, 
 provide basic details about the channel.
 
@@ -73,9 +73,11 @@ Arguments:
 '''
 
 def channel_details_v1(auth_user_id, channel_id):
-    
+    '''
+    Commented out to improve coverage since token system handles this error
     if not data_store.has_user_id(auth_user_id):
         raise AccessError("Account does not exist valid")
+    '''
     if not data_store.has_channel_id(channel_id):
         raise InputError("Channel does not exist")
     channel = data_store.get_channel(channel_id)
@@ -84,8 +86,6 @@ def channel_details_v1(auth_user_id, channel_id):
         raise AccessError("User not in channel")
 
     return channel.channel_details_dict()
-
-
 '''
 Function that determines if a user is allowed to access the channel
 Arguments:
@@ -136,5 +136,124 @@ def channel_join_v1(auth_user_id, channel_id):
     chnl = data_store.get_channel(channel_id)
     chnl.add_member_id(auth_user_id)
     
+    return {}
+
+'''
+Function : channel_leave_v1
+Given a channel with ID channel_id that the authorised user is a member of, 
+remove them as a member of the channel. Their messages should remain in the 
+channel. If the only channel owner leaves, the channel will remain.
+
+Arguments:
+    - auth_user_id (int) 
+    - channel_id (int)
+Exceptions:
+    - InputError - Occurs when channel_id does not refer to a valid channel
+    - AccessError - Occurs when channel_id is valid and the authorised user is 
+                    not a member of the channel
+Return Value:{}
+'''
+def channel_leave_v1(auth_user_id, channel_id):
+    if not data_store.has_channel_id(channel_id):
+        raise InputError(description="Channel does not exist")
+    if not user_in_channel(auth_user_id, channel_id):
+        raise AccessError(description="User is not a member of the channel")
+    
+    chnl = data_store.get_channel(channel_id)
+    user = data_store.get_user(auth_user_id)
+    chnl.remove_member(user)
+    # remove them if they are an owner
+    if user in chnl.owners:
+        chnl.owners.remove(user)
+        data_store.set_store()
+
+    return {}
+'''
+Function : channel_addowner_v1
+Make user with user id u_id an owner of the channel.
+
+Arguments:
+    - auth_user_id (int) 
+    - channel_id (int)
+    - u_id (int)
+Exceptions:
+    - InputError - Occurs when channel_id does not refer to a valid channel
+    - InputError - Occurs when u_id does not refer to a valid user
+    - InputError - Occurs when u_id refers to a user who is not a member of the 
+                   channel
+    - InputError - Occurs when u_id refers to a user who is already an owner of 
+                   the channel
+    - AccessError - channel_id is valid and the authorised user does not have 
+                    owner permissions in the channel
+Return Value:{}
+'''
+def channel_addowner_v1(auth_user_id, channel_id, u_id):
+    if not data_store.has_channel_id(channel_id):
+        raise InputError(description="Channel does not exist")
+    if data_store.has_user_id(u_id) == False:
+        raise InputError("User id passed is invalid!")
+    if not user_in_channel(u_id, channel_id):
+        raise InputError("User passed is not a member of the channel")
+    
+    chnl = data_store.get_channel(channel_id)
+    auth_user = data_store.get_user(auth_user_id)
+    # check that the auth user has owner permissions (either as a global owner
+    # or channel owner)
+    if auth_user not in chnl.owners and auth_user.owner == False:
+        raise AccessError(description='Auth user is not a channel owner')
+    # check that the user is not already an owner
+    user = data_store.get_user(u_id)
+    if user in chnl.owners:
+        raise InputError(description='User is already a channel owner')
+    
+    chnl.owners.append(user)
+    data_store.set_store()
+    return {}
+'''
+Function : channel_removeowner_v1
+Remove user with user id u_id as an owner of the channel.
+
+Arguments:
+    - auth_user_id (int) 
+    - channel_id (int)
+    - u_id (int)
+Exceptions:
+    - InputError - Occurs when channel_id does not refer to a valid channel
+    - InputError - Occurs when u_id does not refer to a valid user
+    - InputError - Occurs when u_id refers to a user who is not a member of the 
+                   channel
+    - InputError - Occurs when u_id refers to a user who is currently the only 
+                   owner of the channel
+    - AccessError - Occurs when channel_id is valid and the authorised user does
+                    not have owner permissions in the channel
+Return Value:{}
+'''
+def channel_removeowner_v1(auth_user_id, channel_id, u_id):
+    if not data_store.has_channel_id(channel_id):
+        raise InputError(description="Channel does not exist")
+    if data_store.has_user_id(u_id) == False:
+        raise InputError("User id passed is invalid!")
+    '''
+    for owner in chnl.owners
+    NOT YET DONE
+    - InputError - Occurs when u_id refers to a user who is currently the only 
+                   owner of the channel
+    '''
+    chnl = data_store.get_channel(channel_id)
+    auth_user = data_store.get_user(auth_user_id)
+    # check the auth user has owner permissions (either chnl or global owner)
+    if auth_user not in chnl.owners and auth_user.owner == False:
+        raise AccessError(description='Auth user is not a channel owner')
+    
+    # check that the user is already an owner
+    user = data_store.get_user(u_id)
+    if user not in chnl.owners:
+        raise InputError(description='User is not a channel owner')
+    # check that the user is not the only channel owner
+    if len(chnl.owners) == 1:
+        raise InputError(description='User is currently the only channel owner')
+    
+    chnl.owners.remove(user)
+    data_store.set_store()
     return {}
 
