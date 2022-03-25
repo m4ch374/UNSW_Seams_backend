@@ -59,7 +59,7 @@ def login_v2():
     data = request.get_json()
     email = data['email']
     password = data['password']
-    return dumps(auth.auth_login_v2(email, password))
+    return dumps(auth.auth_login_v1(email, password))
 
 @APP.route("/auth/logout/v1", methods=['POST'])
 def logout_v1():
@@ -74,7 +74,7 @@ def register_v2():
     password = data['password']
     name_first = data['name_first']
     name_last = data['name_last']
-    return dumps(auth.auth_register_v2(email, password, name_first, name_last))
+    return dumps(auth.auth_register_v1(email, password, name_first, name_last))
 
 @APP.route("/users/all/v1", methods=['GET'])
 def all_v1():
