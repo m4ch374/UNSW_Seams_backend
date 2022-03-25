@@ -18,6 +18,7 @@
 '''
 
 # Imports
+from calendar import c
 from http.client import OK
 import requests
 
@@ -119,11 +120,33 @@ def test_message_edit_by_global_owner(get_usr_2, user_1_made_channel):
     assert response.status_code == OK
     assert response.json()['messages'][0]['message'] == 'b'
 
+# Test that message is removed when the given string is empty 
+def test_message_edit_by_removing(user_1_made_channel, get_usr_2):
+    channel_id = user_1_made_channel['channel']
+    token_2 = get_usr_2['token']
+    requests.post(ENDPOINT_JOIN_CHNL, json={'token':token_2, 'channel_id':channel_id})
 
-def test_message_edit_delete_case():
-    pass
+    msg = requests.post(ENDPOINT_MESSAGE_SEND, json=send_msg_json(token_2, channel_id, 'a')).json()
+    response = requests.put(ENDPOINT_MESSAGE_EDIT, json=edit_msg_json(token_2, msg['message_id'], ''))
 
+    assert response.status_code == OK
+    
+    response = requests.get(generate_get_channel_message_url(token_2, channel_id, 0))
+    assert response.status_code == 200
+    assert len(response.json()['messages'])== 0
 
+def test_message_edit_after_remove(user_1_made_channel):
+    channel_id = user_1_made_channel['channel']
+    token = user_1_made_channel['token']
+    msg = requests.post(ENDPOINT_MESSAGE_SEND, json=send_msg_json(token, channel_id, 'a')).json()
+    response = requests.delete(ENDPOINT_MESSAGE_REMOVE, json=remove_msg_json(token, msg['message_id']))
+    response = requests.put(ENDPOINT_MESSAGE_EDIT, json=edit_msg_json(token, msg['message_id'], ''))
+
+    assert response.status_code == InputError.code
+
+    response = requests.get(generate_get_channel_message_url(token, channel_id, 0))
+    assert response.status_code == OK
+    assert len(response.json()['messages']) == 0
 
 ###### DO all of the above tests again but for dms #######
 
@@ -206,5 +229,28 @@ def test_dm_message_edit_by_global_owner(get_usr_3, user_1_made_dm_with_global_o
 
     assert response.status_code == AccessError.code
 
-def test_dm_message_edit_delete_case():
-    pass
+def test_dm_message_edit_by_removing(user_1_made_dm_with_global_owner):
+    dm_id = user_1_made_dm_with_global_owner['dm']
+    token = user_1_made_dm_with_global_owner['member_token']
+
+    msg = requests.post(ENDPOINT_DM_SEND, json=send_msg_json(token, dm_id, 'a')).json()
+    response = requests.put(ENDPOINT_MESSAGE_EDIT, json=edit_msg_json(token, msg['message_id'], ''))
+
+    assert response.status_code == OK
+
+    response = requests.get(generate_get_dm_message_url(token, dm_id, 0))
+    assert response.status_code == OK
+    assert len(response.json()['messages']) == 0
+
+def test_dm_message_edit_after_remove(user_1_made_dm):
+    dm_id = user_1_made_dm['dm']
+    member_token = user_1_made_dm['member_token']
+    msg = requests.post(ENDPOINT_DM_SEND, json=send_msg_json(member_token, dm_id, 'a')).json()
+    response = requests.delete(ENDPOINT_MESSAGE_REMOVE, json=remove_msg_json(member_token, msg['message_id']))
+    response = requests.put(ENDPOINT_MESSAGE_EDIT, json=edit_msg_json(member_token, msg['message_id'], ''))
+
+    assert response.status_code == InputError.code
+
+    response = requests.get(generate_get_dm_message_url(member_token, dm_id, 0))
+    assert response.status_code == OK
+    assert len(response.json()['messages']) == 0
