@@ -332,6 +332,12 @@ class DmChannel(Channel):
         }
         return result
 
+    def has_member_id(self, member_id):
+        return member_id in [mem.id for mem in self.members]
+
+    def has_owner_id(self, owner_id):
+        return owner_id in [owner.id for owner in self.owners]
+
 class Message:
     def __init__(self, u_id, message, chnl_id, time_sent):
         self.id = self.__generate_id()

@@ -41,3 +41,7 @@
 - Return value of <users_all_v1> is {'users': [{'u_id': 'integer', 'email': 'string', 'name_first': 'string'....},
                                               {'u_id': 'integer', 'email': 'string', 'name_first': 'string'....},
                                               {'u_id': 'integer', 'email': 'string', 'name_first': 'string'....}]}
+
+## **2. Assumptions - `message_remove.py (v2)`**
+
+- Removed messages will never be edited/accessed again. Current implementation assigns removed messages to a channel_id of -1 which can never be accessed but retains the message as an item in the datastore list so generate_id will continue producing successive ids.
