@@ -2,10 +2,16 @@ from src.data_store import data_store
 
 
 def clear_v1():
-    store = data_store.get()
-    store['users'] = []
-    store['channel'] = []
-    store['dm'] = []
-    store['tokens'] = []
-    store['messages'] = []
-    data_store.set(store)
+    clearted_data = {
+        'users' : [], 
+        'channel' : [],
+        'dm': [],
+        'messages': [],
+        'tokens' : [],
+        'last_used_id': {
+            'users': 0,
+            'channel': 0,
+            'messages': 0,
+        },
+    }
+    data_store.set(clearted_data)
