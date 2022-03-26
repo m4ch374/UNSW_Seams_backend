@@ -4,14 +4,18 @@
 ####################################################
 
 # Expected behaviour:
+#   - retrieves the next 50 sequential messages in a channel when given a valid channel
+#   - id by an authorised user
 # InputError when:
 #   - channel_id does not refer to a valid channel
+#   - start is greater than the total number of messages in the channel
 # AccessError when:
 #   - channel_id is valid and the authorised user is not a member of the
 #     channel
 #   - user token is invalid
 # ==================================================
 '''
+
 # Imports
 import requests
 from http.client import OK

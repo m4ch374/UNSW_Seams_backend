@@ -65,6 +65,8 @@ def create_admin_perm_change_input_json(token, u_id, permission_id):
         'u_id': u_id,
         'permission_id': permission_id,
     }
+
+# Used to create json for dm and channel send tests
 def send_msg_json(token, channel_id, message):
     return {
         'token': token,
@@ -72,7 +74,7 @@ def send_msg_json(token, channel_id, message):
         'message': message,
     }
 
-# used for both dm and channel send tests
+
 def edit_msg_json(token, msg_id, message):
     return {
         'token': token,
@@ -80,6 +82,7 @@ def edit_msg_json(token, msg_id, message):
         'message': message,
     }
 
+# Used for msg_remove tests
 def remove_msg_json(token, msg_id):
     return {
         'token': token,
