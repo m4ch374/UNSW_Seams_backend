@@ -43,7 +43,6 @@ Return Value:{}
 '''
 
 def admin_user_remove_v1(auth_user_id, u_id):
-    
     auth_user = data_store.get_user(auth_user_id)
     if auth_user.owner == False:
         raise AccessError(description='Auth user is not global owner')
@@ -52,32 +51,30 @@ def admin_user_remove_v1(auth_user_id, u_id):
     user_to_remove = data_store.get_user(u_id)
     if user_to_remove.owner and is_there_more_than_one_global_owner() == False:
          raise InputError(description='u_id refers to a user who is the only global owner')
-    '''
+    
     # Set the profile of the removed user
     user_to_remove.set_removed_user_profile(u_id)
-    
-    # remove the u_id from every channel
-    for user in data_store.get()['users']:
-        if user.id == u_id:
-            user_to_delete = user
-            data_store.get()['users'].remove(user_to_delete)
-            data_store.set()
-    '''
-    # # user_to_remove.remove_usr(u_id)
-    
-    # remove the u_id from the users list in data_store
-    
-    # remove the users messages
-    
-    # invalidate the token
-    
-    return {}
-'''
 
-    # remeber to invalidate token -> remove token method in class datastore
-    
+    # remove the u_id from every channel
+    store = data_store.get()
+    store_channels = store['channel']
+    for chnl in store_channels:
+        if chnl.has_member_id(u_id):
+            chnl.remove_member_id(u_id)
+            if chnl.has_owner_id(u_id):
+                chnl.remove_owner_id(u_id)
+            data_store.set(store)
+
+    # remove the user from all DM's
+    store_dms = store['dm']
+    for dm in store_dms:
+        if dm.has_member_id(u_id):
+            dm.remove_member_id(u_id)
+            data_store.set(store)
+    # remove the users messages
+    data_store.modify_msg_removed_usr(u_id)
+
     return {}
-'''
 
 '''
 Function: admin_userpermission_change_v1
