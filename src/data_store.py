@@ -172,6 +172,17 @@ class Datastore:
                 message == None
         data_store.set(data)
 
+    '''
+        replace every message associated with the user given with
+        the text 'Removed user'
+    '''
+    def modify_msg_removed_usr(self, u_id):
+        data = self.get()
+        for message in data['messages']:
+            if message.u_id == u_id:
+                message.message = 'Removed user'
+        data_store.set(data)
+
     """
         return a list of user who is owner
     """
