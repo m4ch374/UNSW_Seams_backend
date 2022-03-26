@@ -110,16 +110,6 @@ class User:
         return return_dict
 
     """
-        return True if token is owner
-        False if not
-        assume token is valid
-    """
-    def is_owner(self, token):
-        id = data_store.get_id_from_token(token)
-        user = data_store.get_user(id)
-        return user.owner
-
-    """
         for a removed user:
             Their profile must still be retrievable with user/profile.
             however name_first should be 'Removed'.
@@ -251,12 +241,31 @@ class Channel:
 
     '''
         Argument:
+            - usr_id: int
+        
+        Removes a owner from the current channel
+    '''
+    def remove_owner(self, usr):
+        self.owners.remove(usr)
+        data_store.set_store()
+
+    '''
+        Argument:
             -usr_id: int
 
         Removes a usr corresponding to the id from the current channel
     '''
     def remove_member_id(self, usr_id):
         self.remove_member(data_store.get_user(usr_id))
+
+    '''
+        Argument:
+            -usr_id: int
+
+        Removes a owner corresponding to the id from the current channel
+    '''
+    def remove_owner_id(self, usr_id):
+        self.remove_owner(data_store.get_user(usr_id))
 
     '''
         Gets all messages in the channel
@@ -344,6 +353,27 @@ class DmChannel(Channel):
 
     def has_owner_id(self, owner_id):
         return owner_id in [owner.id for owner in self.owners]
+
+    '''
+        Argument:
+            -usr_id: int
+
+        Removes a usr from the current dm
+    '''
+    def remove_member(self, usr):
+        self.members.remove(usr)
+        data_store.set_store()
+
+    '''
+        Argument:
+            -usr_id: int
+
+        Removes a usr corresponding to the id from the current channel
+    '''
+    def remove_member_id(self, usr_id):
+        self.remove_member(data_store.get_user(usr_id))
+
+        
 
 class Message:
     def __init__(self, u_id, message, chnl_id, time_sent):

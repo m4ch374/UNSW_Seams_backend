@@ -280,11 +280,15 @@ def message_remove_v1():
     return dumps (response)
 
 # ================ /admin domain ===================
-'''
+
 @APP.route("/admin/user/remove/v1", methods=['DELETE'])
 def admin_user_remove_v1():
-    return dumps({})
-'''
+    request_data = request.get_json()
+    auth_user_id = data_store.get_id_from_token(request_data['token'])
+    u_id = request_data['u_id']
+    response = admin.admin_user_remove_v1(auth_user_id, u_id)
+    return dumps(response)
+
 @APP.route("/admin/userpermission/change/v1", methods=['POST'])
 def admin_userpermission_change_v1():
     request_data = request.get_json()

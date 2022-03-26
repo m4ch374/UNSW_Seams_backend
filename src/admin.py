@@ -5,7 +5,6 @@ File containing admin remove user and change permission functions
 # imports
 from src.data_store import data_store
 from src.error import InputError, AccessError
-from src.objecs import User
 
 # helper functions
 '''
@@ -41,21 +40,40 @@ Exceptions:
     - AccessError - Occurs when the authorised user is not a global owner
 Return Value:{}
 '''
-'''
-CURRENTLY COMMENTED OUT AS NOT YET IMPLEMENTED OR CALLED :D
-def admin_user_remove_v1():
-'''
-# def admin_user_remove_v1(token, u_id):
-#     if not User.is_owner(token):
-#         raise AccessError(description='the authorised user is not a global owner')
-#     elif not data_store.has_user_id(u_id):
-#         raise InputError(description='u_id does not refer to a valid user')
-#     elif len(data_store.all_owners()) == 1:
-#          raise InputError(description='u_id refers to a user who is the only global owner')
-#     else:
-#         # TODO remove the user's messages
-#         User.set_removed_user_profile(u_id)
-#         return {}
+
+def admin_user_remove_v1(auth_user_id, u_id):
+    auth_user = data_store.get_user(auth_user_id)
+    if auth_user.owner == False:
+        raise AccessError(description='Auth user is not global owner')
+    elif not data_store.has_user_id(u_id):
+        raise InputError(description='u_id does not refer to a valid user')
+    user_to_remove = data_store.get_user(u_id)
+    if user_to_remove.owner and is_there_more_than_one_global_owner() == False:
+         raise InputError(description='u_id refers to a user who is the only global owner')
+    
+    # Set the profile of the removed user
+    user_to_remove.set_removed_user_profile(u_id)
+
+    # remove the u_id from every channel
+    store = data_store.get()
+    store_channels = store['channel']
+    for chnl in store_channels:
+        if chnl.has_member_id(u_id):
+            chnl.remove_member_id(u_id)
+            if chnl.has_owner_id(u_id):
+                chnl.remove_owner_id(u_id)
+            data_store.set(store)
+
+    # remove the user from all DM's
+    store_dms = store['dm']
+    for dm in store_dms:
+        if dm.has_member_id(u_id):
+            dm.remove_member_id(u_id)
+            data_store.set(store)
+    # remove the users messages
+    data_store.modify_msg_removed_usr(u_id)
+
+    return {}
 
 '''
 Function: admin_userpermission_change_v1
