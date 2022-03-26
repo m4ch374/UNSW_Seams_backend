@@ -26,6 +26,8 @@ ENDPOINT_DM_LEAVE = f"{url}dm/leave/v1"
 
 ENDPOINT_USER_PROF = f"{url}user/profile/v1"
 
+ENDPOINT_USERS_ALL = f"{url}users/all/v1"
+
 ENDPOINT_CHNL_INVITE = f"{url}channel/invite/v2"
 
 ENDPOINT_CHNL_LEAVE = f"{url}channel/leave/v1"

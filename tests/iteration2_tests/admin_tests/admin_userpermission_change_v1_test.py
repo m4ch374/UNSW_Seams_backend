@@ -6,7 +6,8 @@
 # Expected behaviour:
 # InputError when:
 #   - u_id does not refer to a valid user
-#   - u_id refers to a user who is the only global owner and they are being demoted to a user
+#   - u_id refers to a user who is the only global owner and they are being 
+#   - demoted to a user
 #   - permission_id is invalid
 #   - the user already has the permissions level of permission_id
 # AccessError when:
