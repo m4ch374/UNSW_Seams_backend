@@ -226,14 +226,6 @@ def dm_leave_v1():
     response = dm.dm_leave_v1(u_id, data['dm_id'])
     return dumps(response)
 
-# Commented for coverage
-# @APP.route("/dm/messages/v1", methods=['GET'])
-# def dm_messages_v1():
-#     data = dict(request.args)
-#     u_id = data_store.get_id_from_token(data['token'])
-#     response = dm.dm_messages_v1(u_id, int(data['dm_id'], int(data['start'])))
-#     return response
-
 
 # # =============== /messages domain =================
 @APP.route("/channel/messages/v2", methods=['GET'])

@@ -5,7 +5,6 @@ File containing admin remove user and change permission functions
 # imports
 from src.data_store import data_store
 from src.error import InputError, AccessError
-from src.objecs import User
 
 # helper functions
 '''
@@ -53,7 +52,7 @@ def admin_user_remove_v1(auth_user_id, u_id):
          raise InputError(description='u_id refers to a user who is the only global owner')
     
     # Set the profile of the removed user
-    user_to_remove.set_removed_user_profile(u_id)
+    user_to_remove.set_removed_user_profile()
 
     # remove the u_id from every channel
     store = data_store.get()

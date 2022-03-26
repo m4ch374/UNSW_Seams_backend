@@ -41,6 +41,7 @@ def dm_remove_v1(u_id, dm_id):
     
     check_is_creator(dm_chnl, u_id)
 
+    dm_chnl.remove_associated_msg()
     data_store.remove_dm(dm_chnl)
     return {}
 
@@ -62,7 +63,3 @@ def dm_leave_v1(u_id, dm_id):
 
     dm_chnl.remove_member_id(u_id)
     return {}
-
-# Commented for coverage
-# def dm_messages_v1(u_id, dm_id, start):
-#     return {}

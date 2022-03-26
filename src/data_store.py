@@ -48,6 +48,11 @@ initial_object = {
     'dm': [],
     'messages': [],
     'tokens' : [],
+    'last_used_id': {
+        'users': 0,
+        'channel': 0,
+        'messages': 0,
+    },
 } # credit to Hanqi for this placeholder love you <3
 
 # Definitions
