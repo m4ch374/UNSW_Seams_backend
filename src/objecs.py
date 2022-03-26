@@ -53,7 +53,10 @@ class User:
     '''
     def __generate_id(self):
         store = data_store.get()
-        return len(store['users']) + 1
+        curr_id = store['last_used_id']['users'] + 1
+        store['last_used_id']['users'] = curr_id
+        data_store.set_store
+        return curr_id
 
     '''
     Arguments:
@@ -123,18 +126,14 @@ class User:
             name_last should be 'user'.
             The user's email and handle should be reusable.
     """
-    # This is just bad code......
-    def set_removed_user_profile(self, id):
-        store = data_store.get()
-        for user in store['users']:
-            if user.id == id:
-                user.email = ''
-                user.name_first = 'Removed'
-                user.name_last = 'user'
-                user.handle = ''
-                user.owner = False
-                user.removed = True
-        data_store.set(store)
+    def set_removed_user_profile(self):
+        self.email = ''
+        self.name_first = 'Removed'
+        self.name_last = 'user'
+        self.handle = ''
+        self.owner = False
+        self.removed = True
+        data_store.set_store()
 
 '''
 Channel class, stores info of a channel
@@ -183,7 +182,10 @@ class Channel:
     '''
     def __generate_id(self):
         data = data_store.get()
-        return len(data['channel']) + len(data['dm']) + 1
+        curr_id = data['last_used_id']['channel'] + 1
+        data['last_used_id']['channel'] = curr_id
+        data_store.set_store()
+        return curr_id
 
     '''
         Argument:
@@ -264,6 +266,14 @@ class Channel:
         return [msg for msg in msg_list if msg.chnl_id == self.id]
 
     '''
+        Removes all messages in the channel
+    '''
+    def remove_associated_msg(self):
+        data = data_store.get()
+        data['messages'] = [msg for msg in data['messages'] if msg.chnl_id != self.id]
+        data_store.set_store()
+
+    '''
         Returns basic info of this channel in dictionary form (following docs)
 
         Return value: {channel_id, name}
@@ -301,9 +311,6 @@ class DmChannel(Channel):
         # Initiate class
         usr_list = [data_store.get_user(u_id) for u_id in u_ids]
         super().__init__('', owner, False)
-        
-        # Set id
-        self.id = self.__generate_id()
 
         # add members in channel
         for usr in usr_list:
@@ -311,10 +318,6 @@ class DmChannel(Channel):
 
         # Set name
         self.name = ', '.join(sorted([mem.handle for mem in self.members]))
-
-    def __generate_id(self):
-        data = data_store.get()
-        return len(data['channel']) + len(data['dm']) + 1
     
     def channel_dict(self):
         result = super().channel_dict()
@@ -353,4 +356,6 @@ class Message:
 
     def __generate_id(self):
         data = data_store.get()
-        return len(data['messages']) + 1
+        curr_id = data['last_used_id']['messages'] + 1
+        data['last_used_id']['messages'] = curr_id
+        return curr_id
