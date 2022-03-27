@@ -54,6 +54,17 @@ def test_global_owner_has_no_permission(get_usr_1, get_usr_2):
     resp = requests.delete(ENDPOINT_DM_REMOVE, json=data)
     assert resp.status_code == AccessError.code
 
+def test_left_owner_has_no_permission(get_usr_1):
+    data = generate_dm_input_json(get_usr_1['token'], [])
+    dm_id = requests.post(ENDPOINT_DM_CREATE, json=data).json()['dm_id']
+
+    data = generate_dm_json(get_usr_1['token'], dm_id)
+    requests.post(ENDPOINT_DM_LEAVE, json=data)
+
+    data = generate_dm_json(get_usr_1['token'], dm_id)
+    resp = requests.delete(ENDPOINT_DM_REMOVE, json=data)
+    assert resp.status_code == AccessError.code
+
 def test_valid(get_usr_1, get_usr_2):
     data = generate_dm_input_json(get_usr_1['token'], [get_usr_2['auth_user_id']])
     data1 = generate_dm_input_json(get_usr_2['token'], [get_usr_1['auth_user_id']])
@@ -107,7 +118,7 @@ def test_removed_associated_msg(get_usr_1):
         'dm_id': dm_id,
         'message': 'hi',
     }
-    msg_id = requests.post(ENDPOINT_DM_SEND, json=msg).json()
+    msg_id = requests.post(ENDPOINT_DM_SEND, json=msg).json()['message_id']
 
     data = generate_dm_json(get_usr_1['token'], dm_id)
     requests.delete(ENDPOINT_DM_REMOVE, json=data)
