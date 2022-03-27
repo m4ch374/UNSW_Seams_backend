@@ -45,3 +45,7 @@
 ## **2. Assumptions - `message_remove.py (v2)`**
 
 - Removed messages will never be edited/accessed again. Current implementation assigns removed messages to a channel_id of -1 which can never be accessed but retains the message as an item in the datastore list so generate_id will continue producing successive ids.
+
+## **3. Assumptions - `dm/create/v1`**
+
+- If the id of the creator is in list `u_ids`, it is also considered as duplicate u_ids, therefore raising `InputError`
