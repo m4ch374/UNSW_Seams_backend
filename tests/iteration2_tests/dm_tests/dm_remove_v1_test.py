@@ -118,7 +118,7 @@ def test_removed_associated_msg(get_usr_1):
         'dm_id': dm_id,
         'message': 'hi',
     }
-    msg_id = requests.post(ENDPOINT_DM_SEND, json=msg).json()
+    msg_id = requests.post(ENDPOINT_DM_SEND, json=msg).json()['message_id']
 
     data = generate_dm_json(get_usr_1['token'], dm_id)
     requests.delete(ENDPOINT_DM_REMOVE, json=data)
