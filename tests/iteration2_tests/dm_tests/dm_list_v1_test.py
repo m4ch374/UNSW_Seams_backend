@@ -13,8 +13,6 @@ from tests.iteration2_tests.endpoints import *
 # Import helper
 from tests.iteration2_tests.helper import generate_dm_input_json
 
-from src.data_store import data_store
-
 INVALID_TOKEN = 'invalid'
 
 def test_invalid_token():
