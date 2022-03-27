@@ -257,7 +257,7 @@ def message_send_v1():
 def message_senddm_v1():
     data = request.get_json()
     user_id = data_store.get_id_from_token(data['token'])
-    dm_id = data['channel_id']
+    dm_id = data['dm_id']
     message = data['message']
     response = msg.message_senddm_v1(user_id, dm_id, message)
     return dumps(response)

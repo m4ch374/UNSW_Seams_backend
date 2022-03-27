@@ -18,7 +18,6 @@
 '''
 
 # Imports
-from calendar import c
 from http.client import OK
 import requests
 
@@ -154,7 +153,7 @@ def test_dm_message_edit_message_too_long(user_1_made_dm):
     channel_id = user_1_made_dm['dm']
     token = user_1_made_dm['creator_token']
     
-    requests.post(ENDPOINT_DM_SEND, json=send_msg_json(token, channel_id, 'a')).json()
+    requests.post(ENDPOINT_DM_SEND, json=send_dm_json(token, channel_id, 'a')).json()
     response = requests.put(ENDPOINT_MESSAGE_EDIT, json=edit_msg_json(token, channel_id, 'a'*1001))
 
     assert response.status_code == InputError.code
@@ -162,7 +161,7 @@ def test_dm_message_edit_message_too_long(user_1_made_dm):
 def test_dm_message_edit_message_id_nonexist(user_1_made_dm):
     dm_id = user_1_made_dm['dm']
     token = user_1_made_dm['creator_token']
-    msg = requests.post(ENDPOINT_DM_SEND, json=send_msg_json(token, dm_id, 'a')).json()
+    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_json(token, dm_id, 'a')).json()
     response = requests.put(ENDPOINT_MESSAGE_EDIT, json=edit_msg_json(token, msg['message_id'] + 1, 'b'))
 
     assert response.status_code == InputError.code
@@ -173,7 +172,7 @@ def test_dm_message_edit_invalid_message_id(user_1_made_dm, get_usr_3):
     token_1 = user_1_made_dm['creator_token']
     token_2 = get_usr_3['token']
 
-    msg = requests.post(ENDPOINT_DM_SEND, json=send_msg_json(token_1, dm_id, 'a')).json()
+    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_json(token_1, dm_id, 'a')).json()
     response = requests.put(ENDPOINT_MESSAGE_EDIT, json=edit_msg_json(token_2, msg['message_id'], 'b'))
 
     assert response.status_code == InputError.code
@@ -184,7 +183,7 @@ def test_dm_message_edit_invalid_message_access(user_1_made_dm):
     token_1 = user_1_made_dm['creator_token']
     token_2 = user_1_made_dm['member_token']
 
-    msg = requests.post(ENDPOINT_DM_SEND, json=send_msg_json(token_1, dm_id, 'a')).json()
+    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_json(token_1, dm_id, 'a')).json()
     response = requests.put(ENDPOINT_MESSAGE_EDIT, json=edit_msg_json(token_2, msg['message_id'], 'b'))
 
     assert response.status_code == AccessError.code
@@ -193,7 +192,7 @@ def test_dm_message_edit_by_non_owner_sender(user_1_made_dm):
     dm_id = user_1_made_dm['dm']
     token_1 = user_1_made_dm['member_token']
 
-    msg = requests.post(ENDPOINT_DM_SEND, json=send_msg_json(token_1, dm_id, 'a')).json()
+    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_json(token_1, dm_id, 'a')).json()
     response = requests.put(ENDPOINT_MESSAGE_EDIT, json=edit_msg_json(token_1, msg['message_id'], 'b'))
 
     assert response.status_code == OK
@@ -208,7 +207,7 @@ def test_dm_message_edit_by_local_owner(user_1_made_dm):
     token_1 = user_1_made_dm['creator_token']
     token_2 = user_1_made_dm['member_token']
 
-    msg = requests.post(ENDPOINT_DM_SEND, json=send_msg_json(token_2, dm_id, 'a')).json()
+    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_json(token_2, dm_id, 'a')).json()
     response = requests.put(ENDPOINT_MESSAGE_EDIT, json=edit_msg_json(token_1, msg['message_id'], 'b'))
 
     assert response.status_code == OK
@@ -224,7 +223,7 @@ def test_dm_message_edit_by_global_owner(get_usr_3, user_1_made_dm_with_global_o
     token_1 = user_1_made_dm_with_global_owner['creator_token']
     token_2 = user_1_made_dm_with_global_owner['member_token']
 
-    msg = requests.post(ENDPOINT_DM_SEND, json=send_msg_json(token_1, dm_id, 'a')).json()
+    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_json(token_1, dm_id, 'a')).json()
     response = requests.put(ENDPOINT_MESSAGE_EDIT, json=edit_msg_json(token_2, msg['message_id'], 'b'))
 
     assert response.status_code == AccessError.code
@@ -233,7 +232,7 @@ def test_dm_message_edit_by_removing(user_1_made_dm_with_global_owner):
     dm_id = user_1_made_dm_with_global_owner['dm']
     token = user_1_made_dm_with_global_owner['member_token']
 
-    msg = requests.post(ENDPOINT_DM_SEND, json=send_msg_json(token, dm_id, 'a')).json()
+    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_json(token, dm_id, 'a')).json()
     response = requests.put(ENDPOINT_MESSAGE_EDIT, json=edit_msg_json(token, msg['message_id'], ''))
 
     assert response.status_code == OK
@@ -245,7 +244,7 @@ def test_dm_message_edit_by_removing(user_1_made_dm_with_global_owner):
 def test_dm_message_edit_after_remove(user_1_made_dm):
     dm_id = user_1_made_dm['dm']
     member_token = user_1_made_dm['member_token']
-    msg = requests.post(ENDPOINT_DM_SEND, json=send_msg_json(member_token, dm_id, 'a')).json()
+    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_json(member_token, dm_id, 'a')).json()
     response = requests.delete(ENDPOINT_MESSAGE_REMOVE, json=remove_msg_json(member_token, msg['message_id']))
     response = requests.put(ENDPOINT_MESSAGE_EDIT, json=edit_msg_json(member_token, msg['message_id'], ''))
 

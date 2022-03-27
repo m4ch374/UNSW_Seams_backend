@@ -311,7 +311,7 @@ class Channel:
 class DmChannel(Channel):
     def __init__(self, owner, u_ids):
         # Sanity check
-        if len(set(u_ids)) != len(u_ids):
+        if len(set(u_ids)) != len(u_ids) or owner.id in u_ids:
             raise InputError(description="error: Duplicates of ids are not allowed.")
         
         if not all(data_store.has_user_id(u_id) for u_id in u_ids):
