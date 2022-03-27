@@ -80,6 +80,7 @@ def send_msg_json(token, channel_id, message):
         'message': message,
     }
 
+<<<<<<< HEAD
 def send_dm_msg_json(token, channel_id, message):
     return {
         'token': token,
@@ -88,6 +89,14 @@ def send_dm_msg_json(token, channel_id, message):
     }
 
 
+=======
+def send_dm_json(token, dm_id, message):
+    return {
+        'token': token,
+        'dm_id': dm_id,
+        'message': message,
+    }
+>>>>>>> f4b54e6d7aca3aad2006625c93d0262b54264f16
 
 def edit_msg_json(token, msg_id, message):
     return {

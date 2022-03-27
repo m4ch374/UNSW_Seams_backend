@@ -128,7 +128,7 @@ def test_message_remove_by_global_owner(get_usr_2, user_1_made_channel):
 def test_dm_message_remove_message_id_nonexist(user_1_made_dm):
     dm_id = user_1_made_dm['dm']
     token = user_1_made_dm['creator_token']
-    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_msg_json(token, dm_id, 'a')).json()
+    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_json(token, dm_id, 'a')).json()
     response = requests.delete(ENDPOINT_MESSAGE_REMOVE, json=remove_msg_json(token, msg['message_id'] + 1))
 
     assert response.status_code == InputError.code
@@ -141,7 +141,7 @@ def test_dm_message_remove_invalid_message_id(user_1_made_dm, get_usr_3):
     dm_id = user_1_made_dm['dm']
     creator_token = user_1_made_dm['creator_token']
     external_token = get_usr_3['token']
-    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_msg_json(creator_token, dm_id, 'a')).json()
+    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_json(creator_token, dm_id, 'a')).json()
     response = requests.delete(ENDPOINT_MESSAGE_REMOVE, json=remove_msg_json(external_token, msg['message_id']))
 
     assert response.status_code == InputError.code
@@ -154,7 +154,7 @@ def test_dm_message_remove_invalid_message_access(user_1_made_dm):
     dm_id = user_1_made_dm['dm']
     creator_token = user_1_made_dm['creator_token']
     member_token = user_1_made_dm['member_token']
-    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_msg_json(creator_token, dm_id, 'a')).json()
+    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_json(creator_token, dm_id, 'a')).json()
     response = requests.delete(ENDPOINT_MESSAGE_REMOVE, json=remove_msg_json(member_token, msg['message_id']))
 
     assert response.status_code == AccessError.code
@@ -167,7 +167,7 @@ def test_dm_message_remove_by_sender(user_1_made_dm):
     dm_id = user_1_made_dm['dm']
     creator_token = user_1_made_dm['creator_token']
     member_token = user_1_made_dm['member_token']
-    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_msg_json(member_token, dm_id, 'a')).json()
+    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_json(member_token, dm_id, 'a')).json()
     response = requests.delete(ENDPOINT_MESSAGE_REMOVE, json=remove_msg_json(member_token, msg['message_id']))
 
     assert response.status_code == OK
@@ -180,7 +180,7 @@ def test_dm_message_remove_by_local_owner(user_1_made_dm):
     dm_id = user_1_made_dm['dm']
     creator_token = user_1_made_dm['creator_token']
     member_token = user_1_made_dm['member_token']
-    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_msg_json(member_token, dm_id, 'a')).json()
+    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_json(member_token, dm_id, 'a')).json()
     response = requests.delete(ENDPOINT_MESSAGE_REMOVE, json=remove_msg_json(creator_token, msg['message_id']))
 
     assert response.status_code == OK
@@ -195,7 +195,7 @@ def test_dm_message_remove_by_global_owner(user_1_made_dm_with_global_owner):
     dm_id = user_1_made_dm_with_global_owner['dm']
     creator_token = user_1_made_dm_with_global_owner['creator_token']
     member_token = user_1_made_dm_with_global_owner['member_token']
-    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_msg_json(creator_token, dm_id, 'a')).json()
+    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_json(creator_token, dm_id, 'a')).json()
     response = requests.delete(ENDPOINT_MESSAGE_REMOVE, json=remove_msg_json(member_token, msg['message_id']))
 
     assert response.status_code == AccessError.code
@@ -207,7 +207,7 @@ def test_dm_message_remove_by_global_owner(user_1_made_dm_with_global_owner):
 def test_message_remove_twice(user_1_made_dm):
     dm_id = user_1_made_dm['dm']
     member_token = user_1_made_dm['member_token']
-    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_msg_json(member_token, dm_id, 'a')).json()
+    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_json(member_token, dm_id, 'a')).json()
     response = requests.delete(ENDPOINT_MESSAGE_REMOVE, json=remove_msg_json(member_token, msg['message_id']))
     response = requests.delete(ENDPOINT_MESSAGE_REMOVE, json=remove_msg_json(member_token, msg['message_id']))
 
