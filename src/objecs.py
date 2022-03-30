@@ -38,20 +38,23 @@ To represent User in dict
 usr_in_dict = new_user.to_dict()
 '''
 class User:
-    def __init__(self, email, password, name_first, name_last):
+    def __init__(self, email, password, name_first, name_last, id=None, removed=False, is_load=False):
         self.email = email
-        self.password = hashing_password(password)
+        self.password = hashing_password(password) if not is_load else password
         self.name_first = name_first
         self.name_last = name_last
-        self.id = self.__generate_id()
+        self.id = self.__generate_id(id)
         self.handle = self.__create_handle(name_first, name_last)
         self.owner = self.id == 1
-        self.removed = False
+        self.removed = removed
 
     '''
         Generates id for user
     '''
-    def __generate_id(self):
+    def __generate_id(self, id):
+        if id is not None:
+            return int(id)
+
         store = data_store.get()
         curr_id = store['last_used_id']['users'] + 1
         store['last_used_id']['users'] = curr_id
@@ -96,6 +99,9 @@ class User:
             handle = handle_temp
         return handle
 
+    def serialize(self):
+        return self.__dict__
+
     '''
         Output format following section 6.1. of the sepec
     '''
@@ -124,6 +130,11 @@ class User:
         self.owner = False
         self.removed = True
         data_store.set_store()
+
+    @staticmethod
+    def decode_json(jsn):
+        return User(jsn['email'], jsn['password'], jsn['name_first'], 
+            jsn['name_last'], jsn['id'], jsn['removed'], True)
 
 '''
 Channel class, stores info of a channel
@@ -160,22 +171,46 @@ NOTE: member is of type User, NOT ITS ID
 If you want to use id, use `has_member_id()` instead
 '''
 class Channel:
-    def __init__(self, name, owner, is_public):
-        self.id = self.__generate_id()
+    def __init__(self, name, owner, is_public, id=None, owners=None, members=None):
+        self.id = self.__generate_id(id)
         self.name = name
-        self.owners = [owner]
-        self.members = [owner]
+        self.owners = self.__get_owners(owner, owners)
+        self.members = self.__get_members(owner, members)
         self.is_public = is_public
 
     '''
         Generates id for Channel
     '''
-    def __generate_id(self):
+    def __generate_id(self, id):
+        if id is not None:
+            return int(id)
+
         data = data_store.get()
         curr_id = data['last_used_id']['channel'] + 1
         data['last_used_id']['channel'] = curr_id
         data_store.set_store()
         return curr_id
+
+    def __get_owners(self, owner, owners):
+        if owners is not None:
+            return owners
+
+        return [owner]
+
+    def __get_members(self, owner, members):
+        if members is not None:
+            return members
+
+        return [owner]
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'owners': [usr.id for usr in self.owners],
+            'members': [usr.id for usr in self.members],
+            'is_public': self.is_public,
+        }
 
     '''
         Argument:
@@ -308,20 +343,26 @@ class Channel:
         }
         return return_dict
 
+    @staticmethod
+    def decode_json(jsn, owners, members):
+        return Channel(jsn['name'], None, jsn['is_public'], 
+            jsn['id'], owners, members)
+
 class DmChannel(Channel):
-    def __init__(self, owner, u_ids):
+    def __init__(self, owner, u_ids, id=None, owners=None, members=None):
         # Sanity check
-        if len(set(u_ids)) != len(u_ids) or owner.id in u_ids:
-            raise InputError(description="error: Duplicates of ids are not allowed.")
-        
-        if not all(data_store.has_user_id(u_id) for u_id in u_ids):
-            raise InputError(description="error: Invalid user id")
+        if owner is not None:
+            if len(set(u_ids)) != len(u_ids) or owner.id in u_ids:
+                raise InputError(description="error: Duplicates of ids are not allowed.")
+            
+            if not all(data_store.has_user_id(u_id) for u_id in u_ids):
+                raise InputError(description="error: Invalid user id")
 
         # Initiate class
-        usr_list = [data_store.get_user(u_id) for u_id in u_ids]
-        super().__init__('', owner, False)
+        super().__init__('', owner, False, id, owners, members)
 
         # add members in channel
+        usr_list = [data_store.get_user(u_id) for u_id in u_ids]
         for usr in usr_list:
             self.add_member(usr)
 
@@ -373,19 +414,37 @@ class DmChannel(Channel):
     def remove_member_id(self, usr_id):
         self.remove_member(data_store.get_user(usr_id))
 
-        
+    @staticmethod
+    def decode_json(jsn, owners, members):
+        return DmChannel(None, [], jsn['id'], owners, members)
 
 class Message:
-    def __init__(self, u_id, message, chnl_id, time_sent):
-        self.id = self.__generate_id()
+    def __init__(self, u_id, message, chnl_id, time_sent, id=None):
+        self.id = self.__generate_id(id)
         self.u_id = u_id
         self.message = message
         self.chnl_id = chnl_id
         self.time_sent = time_sent
 
 
-    def __generate_id(self):
+    def __generate_id(self, id):
+        if id is not None:
+            return int(id)
+
         data = data_store.get()
         curr_id = data['last_used_id']['messages'] + 1
         data['last_used_id']['messages'] = curr_id
         return curr_id
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'u_id': self.u_id,
+            'message': self.message,
+            'chnl_id': self.chnl_id,
+            'time_sent': self.time_sent,
+        }
+
+    @staticmethod
+    def decode_json(jsn):
+        return Message(jsn['u_id'], jsn['message'], jsn['chnl_id'], jsn['time_sent'], jsn['id'])

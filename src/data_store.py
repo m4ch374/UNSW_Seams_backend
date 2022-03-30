@@ -34,12 +34,13 @@ Example usage:
 '''
 
 # Imports
-import pickle
+import json
 import os
 import jwt
 from datetime import datetime
 from src.config import TOKEN_SECRET
 from src.error import AccessError
+import traceback
 
 # Initial object
 initial_object = {
@@ -57,30 +58,59 @@ initial_object = {
 
 # Definitions
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__)) + '/'
-DATA_PATH = CURRENT_DIR + '_data.bin'
+DATA_PATH = CURRENT_DIR + '_data.json'
 
 ## YOU ARE ALLOWED TO CHANGE THE BELOW IF YOU WISH
 class Datastore:
     def __init__(self):
-        self.__store = self.__get_store()
+        self.__store = initial_object
 
     # Get data and fill it to __store
-    def __get_store(self):
+    def get_store(self):
         try:
-            file_content = open(DATA_PATH, "rb")
-            data = pickle.load(file_content)
-        except Exception:   # if file is not found or file is empty, return initial obj
-            file_content = open(DATA_PATH, "wb+")
+            file_content = open(DATA_PATH, "r")
+            data = self.__json_to_obj(json.load(file_content))
+        except Exception as e:   # if file is not found or file is empty, return initial obj
+            print(e)
+            file_content = open(DATA_PATH, "w+")
             data = initial_object
-            pickle.dump(data, file_content)
+            json.dump(data, file_content, indent=4)
+            traceback.print_exc()
         
         file_content.close()
         return data
 
+    def __to_json(self):
+        store = self.__store.copy()
+        store['users'] = [usr.serialize() for usr in store['users']]
+        store['channel'] = [chnl.serialize() for chnl in store['channel']]
+        store['dm'] = [dm.serialize() for dm in store['dm']]
+        store['messages'] = [msg.serialize() for msg in store['messages']]
+        return store
+
+    def __json_to_obj(self, jsn):
+        # would cause error if imported from the top
+        # due to circular import issues
+        # didnt want to, but have to
+        from src.objecs import User, Channel, DmChannel, Message
+        jsn['users'] = [User.decode_json(item) for item in jsn['users']]
+
+        id_to_usr = lambda x : next((usr for usr in jsn['users'] if usr.id == x), None)
+        get_users = lambda li: [id_to_usr(u_id) for u_id in li]
+
+        jsn['channel'] = [Channel.decode_json(item, get_users(item['owners']), get_users(item['members'])) 
+            for item in jsn['channel']]
+
+        jsn['dm'] = [DmChannel.decode_json(item, get_users(item['owners']), get_users(item['members'])) 
+            for item in jsn['dm']]
+
+        jsn['messages'] = [Message.decode_json(item) for item in jsn['messages']]
+        return jsn
+
     # Store everything in __store to `_data.bin`
     def set_store(self):
-        file_handler = open(DATA_PATH, "wb")
-        pickle.dump(self.__store, file_handler)
+        file_handler = open(DATA_PATH, "w")
+        json.dump(data_store.__to_json(), file_handler, indent=4)
         file_handler.close()
 
     def get(self):
@@ -91,6 +121,9 @@ class Datastore:
             raise TypeError('store must be of type dictionary')
         self.__store = store
         self.set_store()
+
+    def tmp_set(self, store):
+        self.__store = store
 
     def get_user(self, id):
         for user in self.__store['users']:
@@ -209,3 +242,5 @@ print('Loading Datastore...')
 
 global data_store
 data_store = Datastore()
+store = data_store.get_store()
+data_store.tmp_set(store)
