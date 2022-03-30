@@ -110,6 +110,44 @@ def profile_sethandle_v1():
     handle_str = data['handle_str']
     return dumps(auth.user_profile_sethandle_v1(token, handle_str))
 
+@APP.route("/notifications/get/v1", methods=['GET'])
+def notifications_get():
+    token = request.args.get('token')
+    return dumps(auth.notifications_get_v1(token))
+
+@APP.route("/auth/passwordreset/request/v1", methods=['POST'])
+def passwordreset_request():
+    data = request.get_json()
+    email = data['email']
+    return dumps(auth.auth_passwordreset_request_v1(email))
+
+@APP.route("/auth/passwordreset/reset/v1", methods=['POST'])
+def passwordreset():
+    data = request.get_json()
+    reset_code = data['reset_code']
+    new_password = data['new_password']
+    return dumps(auth.auth_passwordreset_reset_v1(reset_code, new_password))
+
+@APP.route("/user/profile/uploadphoto/v1", methods=['POST'])
+def uploadphoto_v1():
+    data = request.get_json()
+    token = data['token']
+    img_url = data['img_url']
+    x_start = data['x_start']
+    y_start = data['y_start']
+    x_end = data['x_end']
+    y_end = data['y_end']
+    return dumps(auth.user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end))
+
+@APP.route("/user/stats/v1", methods=['GET'])
+def user_stats():
+    token = request.args.get('token')
+    return dumps(auth.user_stats_v1(token))
+
+@APP.route("/users/stats/v1", methods=['GET'])
+def users_stats():
+    token = request.args.get('token')
+    return dumps(auth.users_stats_v1(token))
 
 # =============== /channels domain =================
 @APP.route("/channels/create/v2", methods=['POST'])
