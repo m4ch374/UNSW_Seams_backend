@@ -13,5 +13,6 @@ def clear_v1():
             'channel': 0,
             'messages': 0,
         },
+        'reset_code': [],
     }
     data_store.set(clearted_data)

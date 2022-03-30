@@ -1,5 +1,4 @@
 import re
-from urllib import response
 from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.objecs import User
@@ -314,7 +313,6 @@ def notifications_get_v1(token):
     return {'notifications': []}
 
 
-
 '''
 Arguments:
     email (string)    - user's email
@@ -363,7 +361,6 @@ Return Value:
 '''
 def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     return {}
-
 
 
 '''
