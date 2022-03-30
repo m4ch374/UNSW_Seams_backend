@@ -227,6 +227,17 @@ class Datastore:
     def all_owners(self):
         return [user for user in data_store.get()['users'] if user.owner]
 
+    """
+        remove tokens associate with u_id
+    """
+    def remove_token_by_id(self, id):
+        store = data_store.get()
+        for token in store['tokens']:
+            if data_store.get_id_from_token(token) == id:
+                store['tokens'].remove(token)
+        data_store.set(store)
+
+
 print('Loading Datastore...')
 
 global data_store
