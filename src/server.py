@@ -1,5 +1,4 @@
 # Default Imports
-from pickle import FALSE
 import signal
 from json import dumps
 from flask import Flask, request
