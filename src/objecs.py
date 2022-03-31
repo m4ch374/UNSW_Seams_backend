@@ -2,6 +2,7 @@
 besides the given ones """
 
 # Imports
+import sys
 from src.data_store import data_store
 from src.encrypt import hashing_password
 from src.error import InputError
@@ -142,8 +143,17 @@ class User:
         self.removed = True
         data_store.set_store()
 
-    def add_notif(self, notif_type, **kwargs):
-        new_notif = Notification(notif_type, kwargs)
+    # Wanted to use **kwargs as arguments but pylint said no
+    def add_notif(self, notif_type, user_handle, channel_id=-1, dm_id=-1, msg_content=''):
+        kwargs = {
+            'notif_type': notif_type,
+            'user_handle': user_handle,
+            'channel_id': channel_id,
+            'dm_id': dm_id,
+            'msg_content': msg_content,
+        }
+        
+        new_notif = Notification(**kwargs)
         self.notifications.insert(0, new_notif)
         data_store.set_store()
 
@@ -472,8 +482,8 @@ class Message:
         return Message(jsn['u_id'], jsn['message'], jsn['chnl_id'], jsn['time_sent'], jsn['id'])
 
 class Notification:
-    def __init__(self, notif_type, **kwargs):
-        self.notif_type = notif_type
+    def __init__(self, **kwargs):
+        self.notif_type = kwargs.get('notif_type')
         self.user_handle = kwargs.get('user_handle')
         self.channel_id = kwargs.get('channel_id', -1)
         self.dm_id = kwargs.get('dm_id', -1)
@@ -499,14 +509,12 @@ class Notification:
     def serialize(self):
         return {
             'notif_type': self.notif_type,
-            'kwargs': {
-                'user_handle': self.user_handle,
-                'channel_id': self.channel_id,
-                'dm_id': self.dm_id,
-                'msg_content': self.msg_content,
-            },
+            'user_handle': self.user_handle,
+            'channel_id': self.channel_id,
+            'dm_id': self.dm_id,
+            'msg_content': self.msg_content,
         }
 
     @staticmethod
     def decode_json(jsn):
-        return Notification(jsn['notif_type'], **jsn['kwargs'])
+        return Notification(**jsn)
