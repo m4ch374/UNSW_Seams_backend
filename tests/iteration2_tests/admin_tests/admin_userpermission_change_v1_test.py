@@ -58,7 +58,7 @@ def test_admin_perm_change_demote_only_global_owner(get_u_id):
     response = requests.post(ENDPOINT_ADMIN_PERM_CHANGE, json = json_input)
     assert response.status_code == InputError.code
 
-# raise InputError since permission already = permission_id
+# raise InputError since permission already == permission_id
 def test_admin_perm_change_perm_already_set(get_token_1, get_u_id):
     json_input = create_admin_perm_change_input_json(get_token_1,
                                                      get_u_id['id'], 
