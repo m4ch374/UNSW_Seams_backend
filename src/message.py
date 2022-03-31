@@ -252,6 +252,7 @@ def message_edit_v1(user_id, msg_id, message):
         raise InputError(description='Message must be less than 1000 characters')
     if len(message) == 0:
         message_remove_v1(user_id, msg_id)
+        return {}
     
     msg = data_store.get_msg(msg_id)
     msg.message = message
@@ -280,6 +281,6 @@ def message_remove_v1(user_id, msg_id):
     message_edit_and_remove_checks(user_id, msg_id)
 
     msg = data_store.get_msg(msg_id)
-    msg.chnl_id = -1
+    data_store.remove_msg(msg)
 
     return {}

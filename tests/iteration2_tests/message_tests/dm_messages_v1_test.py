@@ -27,11 +27,7 @@ from src.error import InputError, AccessError
 from tests.iteration2_tests.endpoints import ENDPOINT_DM_SEND
 
 # Import helper
-<<<<<<< HEAD
-from tests.iteration2_tests.helper import send_dm_msg_json, generate_get_dm_message_url
-=======
 from tests.iteration2_tests.helper import send_dm_json, generate_get_dm_message_url
->>>>>>> f4b54e6d7aca3aad2006625c93d0262b54264f16
 
 # Test invalid dm
 def test_dm_messages_invalid_dm_id(user_1_made_dm):
@@ -102,11 +98,7 @@ def test_dm_messages_simple(user_1_made_dm):
     token = user_1_made_dm['creator_token']
     dm_id = user_1_made_dm['dm']
     for _ in range(2):
-<<<<<<< HEAD
-        requests.post(ENDPOINT_DM_SEND, json=send_dm_msg_json(token, dm_id, 'a'))
-=======
         requests.post(ENDPOINT_DM_SEND, json=send_dm_json(token, dm_id, 'a'))
->>>>>>> f4b54e6d7aca3aad2006625c93d0262b54264f16
 
     response = requests.get(generate_get_dm_message_url(token, dm_id, 0))
     assert response.status_code == OK
@@ -118,11 +110,7 @@ def test_dm_messages_edge_50(user_1_made_dm):
     token = user_1_made_dm['creator_token']
     dm_id = user_1_made_dm['dm']
     for _ in range(50):
-<<<<<<< HEAD
-        requests.post(ENDPOINT_DM_SEND, json=send_dm_msg_json(token, dm_id, 'a'))
-=======
         requests.post(ENDPOINT_DM_SEND, json=send_dm_json(token, dm_id, 'a'))
->>>>>>> f4b54e6d7aca3aad2006625c93d0262b54264f16
 
     response = requests.get(generate_get_dm_message_url(token, dm_id, 0))
     assert response.status_code == OK
@@ -134,11 +122,7 @@ def test_dm_messages_edge_51(user_1_made_dm):
     token = user_1_made_dm['creator_token']
     dm_id = user_1_made_dm['dm']
     for _ in range(51):
-<<<<<<< HEAD
-        requests.post(ENDPOINT_DM_SEND, json=send_dm_msg_json(token, dm_id, 'a'))
-=======
         requests.post(ENDPOINT_DM_SEND, json=send_dm_json(token, dm_id, 'a'))
->>>>>>> f4b54e6d7aca3aad2006625c93d0262b54264f16
 
     response = requests.get(generate_get_dm_message_url(token, dm_id, 0))
     assert response.status_code == OK
@@ -150,11 +134,7 @@ def test_dm_messages_many(user_1_made_dm):
     token = user_1_made_dm['creator_token']
     dm_id = user_1_made_dm['dm']
     for _ in range(75):
-<<<<<<< HEAD
-        requests.post(ENDPOINT_DM_SEND, json=send_dm_msg_json(token, dm_id, 'a'))
-=======
         requests.post(ENDPOINT_DM_SEND, json=send_dm_json(token, dm_id, 'a'))
->>>>>>> f4b54e6d7aca3aad2006625c93d0262b54264f16
 
     response = requests.get(generate_get_dm_message_url(token, dm_id, 0))
     assert response.status_code == OK

@@ -216,3 +216,16 @@ def test_message_remove_twice(user_1_made_dm):
     response = requests.get(generate_get_dm_message_url(member_token, dm_id, 0))
     assert response.status_code == OK
     assert len(response.json()['messages']) == 0
+
+def test_message_send_after_remove(user_1_made_dm):
+    dm_id = user_1_made_dm['dm']
+    member_token = user_1_made_dm['member_token']
+    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_json(member_token, dm_id, 'a')).json()
+    response = requests.delete(ENDPOINT_MESSAGE_REMOVE, json=remove_msg_json(member_token, msg['message_id']))
+    msg = requests.post(ENDPOINT_DM_SEND, json=send_dm_json(member_token, dm_id, 'a')).json()
+
+    assert response.status_code == OK
+
+    response = requests.get(generate_get_dm_message_url(member_token, dm_id, 0))
+    assert response.status_code == OK
+    assert len(response.json()['messages']) == 1
