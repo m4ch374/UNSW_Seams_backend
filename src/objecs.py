@@ -6,7 +6,7 @@ import sys
 from src.data_store import data_store
 from src.encrypt import hashing_password
 from src.error import InputError
-from src.config import TAGGED, MSG_REACTED, ADDED
+from src.config import TAGGED, MSG_REACTED, ADDED, ICON
 
 '''
 User Class, store information of each user
@@ -49,7 +49,7 @@ class User:
         self.handle = self.__create_handle(name_first, name_last)
         self.owner = self.id == 1
         self.removed = removed
-        self.img = ''
+        self.img = ICON
         self.notifications = notifications
 
     '''
