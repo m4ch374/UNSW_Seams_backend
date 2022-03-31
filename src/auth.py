@@ -1,9 +1,16 @@
 import re
+from urllib import response
 from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.objecs import User
 from src.encrypt import hashing_password
+import string
+import random
+import requests
+import smtplib
 
+# size of reset_code
+N = 5
 
 '''
     Compare two passwords
@@ -64,8 +71,11 @@ Arguments:
     token (string)  Encrypted user id and time
 '''
 def auth_logout_v1(token):
-    data_store.remove_token(token)
-    return {}
+    if not data_store.is_valid_token(token):
+        raise AccessError(description="Token is invalid!")
+    else:
+        data_store.remove_token(token)
+        return {}
 
 
 '''
@@ -288,4 +298,98 @@ def user_profile_sethandle_v1(token, handle_str):
                     user.handle = handle_str
             data_store.set(store)
             return {}
+
+
+'''
+Arguments:
+    token (string)  Encrypted user id and time
+
+Exceptions:
+    AccessError  - Occurs    Invalid token
+
+Return Value:
+    list of dict        -[{channel_id, dm_id, notification_message}...]
+'''
+def notifications_get_v1(token):
+    return {'notifications': []}
+
+
+
+'''
+Arguments:
+    email (string)    - user's email
+
+Return Value:
+    An empty dict {}
+'''
+def auth_passwordreset_request_v1(email):
+    return {}
+
+
+'''
+Arguments:
+    reset_code      (string)  resetcode
+    new_password    (string)  new password
+
+Exceptions:
+    InputError  - Occurs    Invalid reset_code
+                            Length of password less than 6 characters
+
+Return Value:
+    An empty dirt {}
+'''
+def auth_passwordreset_reset_v1(reset_code, new_password):
+    return {}
+
+
+'''
+Arguments:
+    token   (string)  Encrypted user id and time
+    img_url (int)
+    x_start (int)
+    y_start (int)
+    x_end   (int)
+    y_end   (int)
+
+Exceptions:
+    InputError  - Occurs    Invalid token
+                            Invalid img_url
+                            Pictures size not matched
+                            Pictures size is not correct
+                            Image not a JPG
+
+Return Value:
+    An empty dirt {}
+'''
+def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
+    return {}
+
+
+
+'''
+Arguments:
+    token (string)  Encrypted user id and time
+
+Exceptions:
+    InputError  - Occurs    Invalid token
+
+Return Value:
+    An dict         {'user_stats': ....}
+'''
+def user_stats_v1(token):
+    return {'user_stats': {'channels_joined': [], 'dms_joined': [], 'messages_sent': [], 'involvement_rate': 0}}
+
+
+'''
+Arguments:
+    token (string)  Encrypted user id and time
+
+Exceptions:
+    InputError  - Occurs    Invalid token
+
+Return Value:
+    An dict         {'workspace_stats': ....}
+'''
+def users_stats_v1(token):
+    return {'workspace_stats': {'channels_exist': [], 'dms_exist': [], 'messages_exist': [], 'utilization_rate': 0}}
 

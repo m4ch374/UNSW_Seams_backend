@@ -73,6 +73,9 @@ def admin_user_remove_v1(auth_user_id, u_id):
     # remove the users messages
     data_store.modify_msg_removed_usr(u_id)
 
+    # remove the tokens associate with the u_id
+    data_store.remove_token_by_id(u_id)
+
     return {}
 
 '''

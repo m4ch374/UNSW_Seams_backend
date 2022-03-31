@@ -2,9 +2,11 @@
 besides the given ones """
 
 # Imports
+import sys
 from src.data_store import data_store
 from src.encrypt import hashing_password
 from src.error import InputError
+from src.config import TAGGED, MSG_REACTED, ADDED
 
 '''
 User Class, store information of each user
@@ -38,24 +40,27 @@ To represent User in dict
 usr_in_dict = new_user.to_dict()
 '''
 class User:
-    def __init__(self, email, password, name_first, name_last):
+    def __init__(self, email, password, name_first, name_last, id=None, removed=False, notifications=[], is_load=False):
         self.email = email
-        self.password = hashing_password(password)
+        self.password = hashing_password(password) if not is_load else password
         self.name_first = name_first
         self.name_last = name_last
-        self.id = self.__generate_id()
+        self.id = self.__generate_id(id)
         self.handle = self.__create_handle(name_first, name_last)
         self.owner = self.id == 1
-        self.removed = False
+        self.removed = removed
+        self.notifications = notifications
 
     '''
         Generates id for user
     '''
-    def __generate_id(self):
+    def __generate_id(self, id):
+        if id is not None:
+            return int(id)
+
         store = data_store.get()
         curr_id = store['last_used_id']['users'] + 1
         store['last_used_id']['users'] = curr_id
-        data_store.set_store
         return curr_id
 
     '''
@@ -96,6 +101,19 @@ class User:
             handle = handle_temp
         return handle
 
+    def serialize(self):
+        return {
+            'email': self.email,
+            'password': self.password,
+            'name_first': self.name_first,
+            'name_last': self.name_last,
+            'id': self.id,
+            'handle': self.handle,
+            'owner': self.owner,
+            'removed': self.removed,
+            'notifications': [notif.serialize() for notif in self.notifications],
+        }
+
     '''
         Output format following section 6.1. of the sepec
     '''
@@ -124,6 +142,32 @@ class User:
         self.owner = False
         self.removed = True
         data_store.set_store()
+
+    # Wanted to use **kwargs as arguments but pylint said no
+    def add_notif(self, notif_type, user_handle, channel_id=-1, dm_id=-1, msg_content=''):
+        kwargs = {
+            'notif_type': notif_type,
+            'user_handle': user_handle,
+            'channel_id': channel_id,
+            'dm_id': dm_id,
+            'msg_content': msg_content,
+        }
+        
+        new_notif = Notification(**kwargs)
+        self.notifications.insert(0, new_notif)
+        data_store.set_store()
+
+    def remove_react_notif(self, chnl_id):
+        is_remove = lambda x: x.notif_type == MSG_REACTED and (x.channel_id == chnl_id or x.dm_id == chnl_id)
+        self.notifications = [notif for notif in self.notifications if not is_remove(notif)]
+        data_store.set_store()
+
+    @staticmethod
+    def decode_json(jsn):
+        notif_lst = [Notification.decode_json(item) for item in jsn['notifications']]
+
+        return User(jsn['email'], jsn['password'], jsn['name_first'], 
+            jsn['name_last'], jsn['id'], jsn['removed'], notif_lst, True)
 
 '''
 Channel class, stores info of a channel
@@ -160,22 +204,45 @@ NOTE: member is of type User, NOT ITS ID
 If you want to use id, use `has_member_id()` instead
 '''
 class Channel:
-    def __init__(self, name, owner, is_public):
-        self.id = self.__generate_id()
+    def __init__(self, name, owner, is_public, id=None, owners=None, members=None):
+        self.id = self.__generate_id(id)
         self.name = name
-        self.owners = [owner]
-        self.members = [owner]
+        self.owners = self.__get_owners(owner, owners)
+        self.members = self.__get_members(owner, members)
         self.is_public = is_public
 
     '''
         Generates id for Channel
     '''
-    def __generate_id(self):
+    def __generate_id(self, id):
+        if id is not None:
+            return int(id)
+
         data = data_store.get()
         curr_id = data['last_used_id']['channel'] + 1
         data['last_used_id']['channel'] = curr_id
-        data_store.set_store()
         return curr_id
+
+    def __get_owners(self, owner, owners):
+        if owners is not None:
+            return owners
+
+        return [owner]
+
+    def __get_members(self, owner, members):
+        if members is not None:
+            return members
+
+        return [owner]
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'owners': [usr.id for usr in self.owners],
+            'members': [usr.id for usr in self.members],
+            'is_public': self.is_public,
+        }
 
     '''
         Argument:
@@ -308,20 +375,26 @@ class Channel:
         }
         return return_dict
 
+    @staticmethod
+    def decode_json(jsn, owners, members):
+        return Channel(jsn['name'], None, jsn['is_public'], 
+            jsn['id'], owners, members)
+
 class DmChannel(Channel):
-    def __init__(self, owner, u_ids):
+    def __init__(self, owner, u_ids, id=None, owners=None, members=None):
         # Sanity check
-        if len(set(u_ids)) != len(u_ids) or owner.id in u_ids:
-            raise InputError(description="error: Duplicates of ids are not allowed.")
-        
-        if not all(data_store.has_user_id(u_id) for u_id in u_ids):
-            raise InputError(description="error: Invalid user id")
+        if owner is not None:
+            if len(set(u_ids)) != len(u_ids) or owner.id in u_ids:
+                raise InputError(description="error: Duplicates of ids are not allowed.")
+            
+            if not all(data_store.has_user_id(u_id) for u_id in u_ids):
+                raise InputError(description="error: Invalid user id")
 
         # Initiate class
-        usr_list = [data_store.get_user(u_id) for u_id in u_ids]
-        super().__init__('', owner, False)
+        super().__init__('', owner, False, id, owners, members)
 
         # add members in channel
+        usr_list = [data_store.get_user(u_id) for u_id in u_ids]
         for usr in usr_list:
             self.add_member(usr)
 
@@ -373,19 +446,75 @@ class DmChannel(Channel):
     def remove_member_id(self, usr_id):
         self.remove_member(data_store.get_user(usr_id))
 
-        
+    @staticmethod
+    def decode_json(jsn, owners, members):
+        return DmChannel(None, [], jsn['id'], owners, members)
 
 class Message:
-    def __init__(self, u_id, message, chnl_id, time_sent):
-        self.id = self.__generate_id()
+    def __init__(self, u_id, message, chnl_id, time_sent, id=None):
+        self.id = self.__generate_id(id)
         self.u_id = u_id
         self.message = message
         self.chnl_id = chnl_id
         self.time_sent = time_sent
 
 
-    def __generate_id(self):
+    def __generate_id(self, id):
+        if id is not None:
+            return int(id)
+
         data = data_store.get()
         curr_id = data['last_used_id']['messages'] + 1
         data['last_used_id']['messages'] = curr_id
         return curr_id
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'u_id': self.u_id,
+            'message': self.message,
+            'chnl_id': self.chnl_id,
+            'time_sent': self.time_sent,
+        }
+
+    @staticmethod
+    def decode_json(jsn):
+        return Message(jsn['u_id'], jsn['message'], jsn['chnl_id'], jsn['time_sent'], jsn['id'])
+
+class Notification:
+    def __init__(self, **kwargs):
+        self.notif_type = kwargs.get('notif_type')
+        self.user_handle = kwargs.get('user_handle')
+        self.channel_id = kwargs.get('channel_id', -1)
+        self.dm_id = kwargs.get('dm_id', -1)
+        self.msg_content = kwargs.get('msg_content', '')
+        self.msg = self.__generate_msg()
+
+    def __get_chnl_name(self):
+        if self.channel_id != -1:
+            return data_store.get_channel(self.channel_id).name
+        else:
+            return data_store.get_dm(self.dm_id).name
+
+    def __generate_msg(self):
+        notif = f"{self.notif_type}: \"{self.user_handle} "
+        if self.notif_type == TAGGED:
+            notif += f"tagged you in {self.__get_chnl_name()}: {self.msg_content[:20]}\""
+        elif self.notif_type == MSG_REACTED:
+            notif += f"reacted to your message in {self.__get_chnl_name}\""
+        elif self.notif_type == ADDED:
+            notif += f"added you to {self.__get_chnl_name}\""
+        return notif
+
+    def serialize(self):
+        return {
+            'notif_type': self.notif_type,
+            'user_handle': self.user_handle,
+            'channel_id': self.channel_id,
+            'dm_id': self.dm_id,
+            'msg_content': self.msg_content,
+        }
+
+    @staticmethod
+    def decode_json(jsn):
+        return Notification(**jsn)
