@@ -1,0 +1,13 @@
+{
+    "users": [],
+    "channel": [],
+    "dm": [],
+    "messages": [],
+    "tokens": [],
+    "last_used_id": {
+        "users": 0,
+        "channel": 0,
+        "messages": 0
+    },
+    "reset_code": {}
+}
