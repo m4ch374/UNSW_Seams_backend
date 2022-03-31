@@ -98,13 +98,16 @@ Exceptions:
 Return Value:{}
 '''
 def admin_userpermission_change_v1(auth_user_id, u_id, permission_id):
-    # checking for input and access errors
-    if data_store.has_user_id(u_id) == False:
-        raise InputError(description='Invalid user')
     # check that the auth user has global owner permissions
     auth_user = data_store.get_user(auth_user_id)
     if auth_user.owner == False:
         raise AccessError(description='Auth user is not global owner')
+    
+    # checking for input and access errors
+    if data_store.has_user_id(u_id) == False:
+        raise InputError(description='Invalid user')
+    if permission_id not in [0, 1]:
+        raise InputError(description='Invalid permission_id')
     user = data_store.get_user(u_id)
     if user.owner == permission_id:
         raise InputError(description='Permission already set to permission_id')

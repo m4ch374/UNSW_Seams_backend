@@ -49,6 +49,14 @@ def test_admin_perm_change_invalid_user_id(get_token_1):
     response = requests.post(ENDPOINT_ADMIN_PERM_CHANGE, json = json_input)
     assert response.status_code == InputError.code
 
+# raise InputError since invalid permission_id passed
+def test_admin_perm_change_invalid_perm(get_token_1, get_u_id):
+    json_input = create_admin_perm_change_input_json(get_token_1,
+                                                     get_u_id['id'],
+                                                     INVALID_PERM_ID)
+    response = requests.post(ENDPOINT_ADMIN_PERM_CHANGE, json = json_input)
+    assert response.status_code == InputError.code
+
 # raise InputError since demoting only global owner to user
 def test_admin_perm_change_demote_only_global_owner(get_u_id):
     user1_id = get_u_id['id']
