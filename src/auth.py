@@ -7,6 +7,7 @@ import string
 import random
 import requests
 import smtplib
+from datetime import datetime
 
 # size of reset_code
 N = 5
@@ -374,7 +375,7 @@ Return Value:
     An dict         {'user_stats': ....}
 '''
 def user_stats_v1(token):
-    return {'user_stats': {'channels_joined': [], 'dms_joined': [], 'messages_sent': [], 'involvement_rate': 0}}
+    return {'user_stats': {'channels_joined': [{'num_channels_joined': 0, 'time_stamp': 0}], 'dms_joined': [{'num_dms_joined': 0, 'time_stamp': 0}], 'messages_sent': [{'num_messages_sent': 0, 'time_stamp': 0}], 'involvement_rate': 0}}
 
 
 '''
@@ -388,5 +389,5 @@ Return Value:
     An dict         {'workspace_stats': ....}
 '''
 def users_stats_v1(token):
-    return {'workspace_stats': {'channels_exist': [], 'dms_exist': [], 'messages_exist': [], 'utilization_rate': 0}}
+    return {'workspace_stats': {'channels_exist': [{'num_channels_exist': 0, 'time_stamp': 0}], 'dms_exist': [{'num_dms_exist': 0, 'time_stamp': 0}], 'messages_exist': [{'num_messages_exist': 0, 'time_stamp': 0}], 'utilization_rate': 0}}
 

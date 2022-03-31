@@ -47,6 +47,7 @@ class User:
         self.handle = self.__create_handle(name_first, name_last)
         self.owner = self.id == 1
         self.removed = removed
+        self.img = ''
 
     '''
         Generates id for user
@@ -112,6 +113,7 @@ class User:
             'name_first': str(self.name_first),
             'name_last': str(self.name_last),
             'handle_str': str(self.handle),
+            'profile_img_url': str(self.img)
         }
         return return_dict
 
