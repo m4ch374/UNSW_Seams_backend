@@ -1,11 +1,85 @@
 {
-    "users": [],
+    "users": [
+        {
+            "email": "z8888888@ed.unsw.edu.au",
+            "password": "12c36819a735ec938864ccd9dbbffa848c77116992b1b21dcb73794e4d03d4c9",
+            "name_first": "Russell",
+            "name_last": "Wang",
+            "id": 1,
+            "handle": "russellwang",
+            "owner": true,
+            "removed": false,
+            "notifications": []
+        },
+        {
+            "email": "z5555555@ed.unsw.edu.au",
+            "password": "12c36819a735ec938864ccd9dbbffa848c77116992b1b21dcb73794e4d03d4c9",
+            "name_first": "William",
+            "name_last": "Wu",
+            "id": 2,
+            "handle": "williamwu",
+            "owner": false,
+            "removed": false,
+            "notifications": []
+        },
+        {
+            "email": "z1@ed.unsw.edu.au",
+            "password": "12c36819a735ec938864ccd9dbbffa848c77116992b1b21dcb73794e4d03d4c9",
+            "name_first": "11",
+            "name_last": "11",
+            "id": 3,
+            "handle": "1111",
+            "owner": false,
+            "removed": false,
+            "notifications": []
+        },
+        {
+            "email": "z2@ed.unsw.edu.au",
+            "password": "12c36819a735ec938864ccd9dbbffa848c77116992b1b21dcb73794e4d03d4c9",
+            "name_first": "22",
+            "name_last": "22",
+            "id": 4,
+            "handle": "2222",
+            "owner": false,
+            "removed": false,
+            "notifications": []
+        },
+        {
+            "email": "z3@ed.unsw.edu.au",
+            "password": "12c36819a735ec938864ccd9dbbffa848c77116992b1b21dcb73794e4d03d4c9",
+            "name_first": "33",
+            "name_last": "33",
+            "id": 5,
+            "handle": "3333",
+            "owner": false,
+            "removed": false,
+            "notifications": []
+        },
+        {
+            "email": "z4@ed.unsw.edu.au",
+            "password": "12c36819a735ec938864ccd9dbbffa848c77116992b1b21dcb73794e4d03d4c9",
+            "name_first": "44",
+            "name_last": "44",
+            "id": 6,
+            "handle": "4444",
+            "owner": false,
+            "removed": false,
+            "notifications": []
+        }
+    ],
     "channel": [],
     "dm": [],
     "messages": [],
-    "tokens": [],
+    "tokens": [
+        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwibG9nZ2VkX2luX2F0IjoiMjAyMi0wNC0wMSAwMzo1MToyMy4yNTQxMDYifQ.avxZ3LICJs2r0aMcHy-vn1YLiJfyIrm7G5hDSdla34M",
+        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MiwibG9nZ2VkX2luX2F0IjoiMjAyMi0wNC0wMSAwMzo1MToyMy4yNjg5NDAifQ.HaRY3ceFyiTNfkkqm49KYfSemnBptbkjFqjbwpsIpFA",
+        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MywibG9nZ2VkX2luX2F0IjoiMjAyMi0wNC0wMSAwMzo1MToyMy4yODg2NTAifQ.oKq2a1Nsocc9o57AvIORstPQa7bg3YUNpBPAKVD_ekg",
+        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6NCwibG9nZ2VkX2luX2F0IjoiMjAyMi0wNC0wMSAwMzo1MToyMy4yOTk3OTQifQ.Zo4c-6mvk_oAxg4q-NJXfN_EHPicRpPYXZY4KCwTAdM",
+        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6NSwibG9nZ2VkX2luX2F0IjoiMjAyMi0wNC0wMSAwMzo1MToyMy4zMDc5MzEifQ.rWZ9EkXlzSXgVc-xxZJx78TQsodlSaB0-7CnNCPITjA",
+        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6NiwibG9nZ2VkX2luX2F0IjoiMjAyMi0wNC0wMSAwMzo1MToyMy4zMjUzOTQifQ.d1sjULf2CwFMyaZni9jP2XF7degUdoo07ZK3WZPuV6o"
+    ],
     "last_used_id": {
-        "users": 0,
+        "users": 6,
         "channel": 0,
         "messages": 0
     },
