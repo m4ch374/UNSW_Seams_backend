@@ -64,16 +64,60 @@ def test_channel_removeowner_v1_invalid_u_id(get_token_1):
     assert response.status_code == InputError.code
 
 # raise InputError since u_id refers to a user who isn't an owner of the channel
+# but IS a member of the chnl
 def test_channel_removeowner_v1_member_not_owner(user_1_made_channel, get_u_id):
     # create a chnl, then join user get_u_id
     channel_id1 = user_1_made_channel['channel']
     token_1 = user_1_made_channel['token']
     json_input = create_chnl_join_input_json(get_u_id['token'], channel_id1)
     requests.post(ENDPOINT_JOIN_CHNL, json = json_input)
-    # add u_id as a owner
+    # remove u_id as a owner
     json_input = generate_chnl_func_json(token_1, channel_id1, get_u_id['id'])
     response = requests.post(ENDPOINT_CHNL_REMOVEOWNER, json = json_input)
     assert response.status_code == InputError.code
+
+# raise AccesError since u_id refers to a user who isn't an owner of the channel
+# and also IS'NT a member of the chnl
+def test_channel_removeowner_v1_member_nor_owner_member(get_token_2,
+                                                        user_1_made_channel,
+                                                        get_u_id):
+    # create a chnl, then join user get_u_id
+    channel_id1 = user_1_made_channel['channel']
+    token_1 = user_1_made_channel['token']
+    json_input = create_chnl_join_input_json(get_u_id['token'], channel_id1)
+    requests.post(ENDPOINT_JOIN_CHNL, json = json_input)
+    # promote get_u_id to channel owner via the chnl owner user_1_made_channel
+    user_1_tok = user_1_made_channel['token']
+    json_input = generate_chnl_func_json(user_1_tok, channel_id1,
+                                         get_u_id['id'])
+    requests.post(ENDPOINT_CHNL_ADDOWNER, json = json_input)
+    # remove u_id as a owner (but fail since get_token_2 does not have perms)
+    json_input = generate_chnl_func_json(get_token_2, channel_id1, get_u_id['id'])
+    response = requests.post(ENDPOINT_CHNL_REMOVEOWNER, json = json_input)
+    assert response.status_code == AccessError.code
+
+# successfully remove a chnl owner since user has global owner permissions
+# and theyre inside the chnl
+def test_channel_removeowner_v1_member_nor_owner_member_2(get_u_id2,
+                                                          user_1_made_channel,
+                                                          get_u_id):
+    # create a chnl, then join user get_u_id AND get_u_id2
+    channel_id1 = user_1_made_channel['channel']
+    token_1 = user_1_made_channel['token']
+    json_input = create_chnl_join_input_json(get_u_id['token'], channel_id1)
+    requests.post(ENDPOINT_JOIN_CHNL, json = json_input)
+    json_input = create_chnl_join_input_json(get_u_id2['token'], channel_id1)
+    requests.post(ENDPOINT_JOIN_CHNL, json = json_input)
+    # promote get_u_id to channel owner via the chnl owner user_1_made_channel
+    user_1_tok = user_1_made_channel['token']
+    json_input = generate_chnl_func_json(user_1_tok, channel_id1,
+                                         get_u_id['id'])
+    requests.post(ENDPOINT_CHNL_ADDOWNER, json = json_input)
+    # remove u_id as a owner (but fail since get_token_2 does not have perms)
+    json_input = generate_chnl_func_json(get_u_id2['token'], channel_id1,
+                                         get_u_id['id'])
+    response = requests.post(ENDPOINT_CHNL_REMOVEOWNER, json = json_input)
+    assert response.status_code == 200
 
 # raise InputError since u_id refers to a user who is currently the only owner
 # of the channel
