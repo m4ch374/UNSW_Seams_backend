@@ -94,7 +94,6 @@ def test_channel_removeowner_v1_member_nor_owner_member_1(get_token_2,
     json_input = generate_chnl_func_json(get_token_2, channel_id1, get_u_id['id'])
     response = requests.post(ENDPOINT_CHNL_REMOVEOWNER, json = json_input)
     assert response.status_code == AccessError.code
-    assert 1 == 0
 
 # successfully remove a chnl owner since user has global owner permissions
 # and theyre inside the chnl
