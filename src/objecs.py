@@ -167,48 +167,6 @@ class User:
         self.notifications = [notif for notif in self.notifications if not is_remove(notif)]
         data_store.set_store()
 
-    def user_join_ch(u_id):
-        store = data_store.get()
-        for user in store['users']:
-            if user.id == u_id:
-                user.channels += 1
-        data_store.set(store)
-
-    def user_join_dm(u_id):
-        store = data_store.get()
-        for user in store['users']:
-            if user.id == u_id:
-                user.dms += 1
-        data_store.set(store)
-
-    def user_sent_msg(u_id):
-        store = data_store.get()
-        for user in store['users']:
-            if user.id == u_id:
-                user.messages += 1
-        data_store.set(store)
-
-    def user_leave_ch(u_id):
-        store = data_store.get()
-        for user in store['users']:
-            if user.id == u_id:
-                user.channels -= 1
-        data_store.set(store)
-
-    def user_leave_dm(u_id):
-        store = data_store.get()
-        for user in store['users']:
-            if user.id == u_id:
-                user.dms -= 1
-        data_store.set(store)
-
-    def user_remove_msg(u_id):
-        store = data_store.get()
-        for user in store['users']:
-            if user.id == u_id:
-                user.messages -= 1
-        data_store.set(store)
-
     @staticmethod
     def decode_json(jsn):
         notif_lst = [Notification.decode_json(item) for item in jsn['notifications']]

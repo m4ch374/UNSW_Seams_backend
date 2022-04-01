@@ -1,9 +1,9 @@
 from datetime import timezone
 import datetime as dt
 from src.data_store import data_store
-from src.objecs import Message, Channel, DmChannel, User
+from src.objecs import Message, Channel, DmChannel
 from src.error import InputError, AccessError
-
+import src.stats_hepler as User
 
 
 # Helper function used in channel and dm messages

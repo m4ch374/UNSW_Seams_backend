@@ -7,7 +7,8 @@
 # Imports
 from src.data_store import data_store
 from src.error import InputError
-from src.objecs import Channel, User
+from src.objecs import Channel
+import src.stats_hepler as User
 
 '''
 Arguments:

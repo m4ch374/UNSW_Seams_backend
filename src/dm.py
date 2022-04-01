@@ -6,7 +6,8 @@ This file contains function for the domain
 # Imports
 from src.data_store import data_store
 from src.error import InputError, AccessError
-from src.objecs import DmChannel, User
+from src.objecs import DmChannel
+import src.stats_hepler as User
 
 # =================== helpers ======================
 def check_valid_dm_id(dm_id):
