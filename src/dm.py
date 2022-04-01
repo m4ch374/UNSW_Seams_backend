@@ -53,7 +53,7 @@ def dm_remove_v1(u_id, dm_id):
     for dm in data_store.get()['dm']:
         if dm.id == dm_id:
             for user in dm.members:
-                ser.user_leave_dm(user.id)
+                User.user_leave_dm(user.id)
 
     return {}
 
