@@ -1,6 +1,6 @@
 import requests
 from tests.iteration3_tests.user_tests.definitions import REGISTER_V2, AUTH_PASSWORDRESET_REQUEST_V1
-
+from src.data_store import data_store
 
 def test_invalid_email():
     requests.post(REGISTER_V2, json = {'email': 'z1@ed.unsw.edu.au', 'password': '1234567', 'name_first': '11', 'name_last': '11'})

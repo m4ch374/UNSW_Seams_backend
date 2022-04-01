@@ -13,7 +13,7 @@ def test_invalid_token():
 def test_invalid_url():
     user = requests.post(REGISTER_V2, json = {'email': 'z5555555@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'William', 'name_last': 'Wu'})
     user_data = user.json()
-    json = {'token': user_data['token'], 'img_url':'asdasdasd', 'x_start':0, 'y_start':0, 'x_end':0, 'y_end':0}
+    json = {'token': user_data['token'], 'img_url':'http://webcms3.cse.unsw.edu.au/COMP1531', 'x_start':0, 'y_start':0, 'x_end':0, 'y_end':0}
     response = requests.post(USER_PROFILE_UPLOADPHOTO_V1, json = json)
     assert response.status_code == 400
 

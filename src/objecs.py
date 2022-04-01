@@ -51,7 +51,9 @@ class User:
         self.removed = removed
         self.img = ICON
         self.notifications = notifications
-
+        self.channels = 0
+        self.dms = 0
+        self.messages = 0
     '''
         Generates id for user
     '''
