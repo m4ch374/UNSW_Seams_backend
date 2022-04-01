@@ -54,6 +54,7 @@ class User:
         self.channels = 0
         self.dms = 0
         self.messages = 0
+
     '''
         Generates id for user
     '''
@@ -156,7 +157,7 @@ class User:
             'dm_id': dm_id,
             'msg_content': msg_content,
         }
-        
+
         new_notif = Notification(**kwargs)
         self.notifications.insert(0, new_notif)
         data_store.set_store()
@@ -165,6 +166,48 @@ class User:
         is_remove = lambda x: x.notif_type == MSG_REACTED and (x.channel_id == chnl_id or x.dm_id == chnl_id)
         self.notifications = [notif for notif in self.notifications if not is_remove(notif)]
         data_store.set_store()
+
+    def user_join_ch(u_id):
+        store = data_store.get()
+        for user in store['users']:
+            if user.id == u_id:
+                user.channels += 1
+        data_store.set(store)
+
+    def user_join_dm(u_id):
+        store = data_store.get()
+        for user in store['users']:
+            if user.id == u_id:
+                user.dms += 1
+        data_store.set(store)
+
+    def user_sent_msg(u_id):
+        store = data_store.get()
+        for user in store['users']:
+            if user.id == u_id:
+                user.messages += 1
+        data_store.set(store)
+
+    def user_leave_ch(u_id):
+        store = data_store.get()
+        for user in store['users']:
+            if user.id == u_id:
+                user.channels -= 1
+        data_store.set(store)
+
+    def user_leave_dm(u_id):
+        store = data_store.get()
+        for user in store['users']:
+            if user.id == u_id:
+                user.dms -= 1
+        data_store.set(store)
+
+    def user_remove_msg(u_id):
+        store = data_store.get()
+        for user in store['users']:
+            if user.id == u_id:
+                user.messages -= 1
+        data_store.set(store)
 
     @staticmethod
     def decode_json(jsn):

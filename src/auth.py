@@ -344,9 +344,18 @@ def search_v1(token, query_str):
         raise InputError(description="length of query_str should be 1 to 1000")
     else:
         u_id = data_store.get_id_from_token(token)
+        user = data_store.get_user(u_id)
+        store = data_store.get()
+        id_list = []
+        for ch in store['channel']:
+            if user in ch.members:
+                id_list.append(ch.id)
+        for dm in store['dm']:
+            if user in dm.members:
+                id_list.append(dm.id)
         msg_list = []
-        for msg in data_store.get()['messages']:
-            if msg.u_id == u_id and query_str.casefold() in msg.message.casefold():
+        for msg in store['messages']:
+            if msg.chnl_id in id_list and query_str.casefold() in msg.message.casefold():
                 #TODO
                 msg_list.append({'message_id': msg.id,
                                 'u_id': msg.u_id,
@@ -490,10 +499,11 @@ def user_stats_v1(token):
                 time = ((dt.datetime.now(timezone.utc)).replace(tzinfo=timezone.utc)).timestamp()
                 #TODO
                 rate = 0.5
-                return {'user_stats': {'channels_joined': [{'num_channels_joined': 1, 'time_stamp': time}],  # user.channels
-                                       'dms_joined': [{'num_dms_joined': user.dms, 'time_stamp': time}],
-                                       'messages_sent': [{'num_messages_sent': 1, 'time_stamp': time}],      # user.messages
-                                       'involvement_rate': rate}}
+                ret_dict =  {'channels_joined': [{'num_channels_joined': user.channels, 'time_stamp': time}],
+                            'dms_joined': [{'num_dms_joined': user.dms, 'time_stamp': time}],
+                            'messages_sent': [{'num_messages_sent': user.messages, 'time_stamp': time}],
+                            'involvement_rate': rate}
+        return {'user_stats': ret_dict}
 
 
 '''
