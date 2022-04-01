@@ -56,3 +56,7 @@
 
 - inside of <reset_code> is: {"A reset code" : id}
 
+## **2. Assumptions - `other.py`**
+
+- clear() will also remove the images made by tests
+
