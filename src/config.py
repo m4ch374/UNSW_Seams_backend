@@ -19,6 +19,7 @@ ADDED       = "added to channel/DM"
 # for send email
 SERVER_EMAIL = "cs1531ant@gmail.com"
 SERVER_PASSWORD = 'unsw1531ant'
+
 # size of reset_code
 N = 8   # example: AS23F8GS
 
