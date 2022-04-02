@@ -118,7 +118,14 @@ class User:
             'handle': self.handle,
             'owner': self.owner,
             'removed': self.removed,
+            'img': self.img,
             'notifications': [notif.serialize() for notif in self.notifications],
+            'channels': self.channels,
+            'dms': self.dms,
+            'messages': self.messages,
+            'ch_list': self.ch_list,
+            'dm_list': self.dm_list,
+            'mg_list': self.mg_list,
         }
 
     '''
