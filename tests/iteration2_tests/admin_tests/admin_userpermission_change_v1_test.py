@@ -20,7 +20,7 @@ import requests
 from src.error import InputError, AccessError
 from tests.iteration2_tests.endpoints import (
     ENDPOINT_ADMIN_PERM_CHANGE, ENDPOINT_JOIN_CHNL, ENDPOINT_CREATE_CHNL,
-    ENDPOINT_JOIN_CHNL, ENDPOINT_LIST_CHNL,
+    ENDPOINT_JOIN_CHNL, ENDPOINT_LIST_CHNL, ENDPOINT_REGISTER_USR,
 )
 from tests.iteration2_tests.helper import (
     create_admin_perm_change_input_json, generate_channel_input_json,
@@ -67,10 +67,20 @@ def test_admin_perm_change_demote_only_global_owner(get_u_id):
     assert response.status_code == InputError.code
 
 # raise InputError since permission already == permission_id
-def test_admin_perm_change_perm_already_set(get_token_1, get_u_id):
+def test_admin_perm_change_perm_already_set_1(get_token_1, get_u_id):
     json_input = create_admin_perm_change_input_json(get_token_1,
                                                      get_u_id['id'], 
                                                      USER_PERM_ID)
+    response = requests.post(ENDPOINT_ADMIN_PERM_CHANGE, json = json_input)
+    assert response.status_code == InputError.code
+
+# raise InputError since permission already == permission_id
+def test_admin_perm_change_perm_already_set_2(get_token_1, get_u_id):
+    json_input = create_admin_perm_change_input_json(get_token_1, 
+                                                     get_u_id['id'], 
+                                                     OWNER_PERM_ID)
+    response = requests.post(ENDPOINT_ADMIN_PERM_CHANGE, json = json_input)
+    assert response.status_code == 200
     response = requests.post(ENDPOINT_ADMIN_PERM_CHANGE, json = json_input)
     assert response.status_code == InputError.code
 
@@ -126,11 +136,13 @@ def test_admin_perm_change_promote_then_demote(get_token_1, get_token_2,
                                                      get_u_id['id'], 
                                                      OWNER_PERM_ID)
     response = requests.post(ENDPOINT_ADMIN_PERM_CHANGE, json = json_input)
+    assert response.status_code == 200
     # demote them again
     json_input = create_admin_perm_change_input_json(get_token_1, 
                                                      get_u_id['id'], 
                                                      USER_PERM_ID)
     response = requests.post(ENDPOINT_ADMIN_PERM_CHANGE, json = json_input)
+    assert response.status_code == 200
     # join the newly promoted user to a private chnl
     data1 = generate_channel_input_json(get_token_1, "First Chnl", False)
     response = requests.post(ENDPOINT_CREATE_CHNL, json=data1).json()
