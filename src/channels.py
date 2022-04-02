@@ -8,6 +8,7 @@
 from src.data_store import data_store
 from src.error import InputError
 from src.objecs import Channel
+import src.stats_hepler as User
 
 '''
 Arguments:
@@ -76,5 +77,7 @@ def channels_create_v1(auth_user_id, name, is_public):
     data = data_store.get()
     data['channel'].append(new_channel)
     data_store.set(data)
+
+    User.user_join_ch(auth_user_id)
 
     return {'channel_id': new_channel.id}

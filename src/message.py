@@ -3,7 +3,7 @@ import datetime as dt
 from src.data_store import data_store
 from src.objecs import Message, Channel, DmChannel
 from src.error import InputError, AccessError
-
+import src.stats_hepler as User
 
 
 # Helper function used in channel and dm messages
@@ -156,6 +156,8 @@ def message_send_v1(user_id, channel_id, message):
     data['messages'].append(new_message)
     data_store.set(data)
 
+    User.user_sent_msg(user_id)
+
     return {'message_id': new_message.id}
 
 
@@ -198,6 +200,8 @@ def message_senddm_v1(user_id, dm_id, message):
     data = data_store.get()
     data['messages'].append(new_message)
     data_store.set(data)
+
+    User.user_sent_msg(user_id)
 
     return {'message_id': new_message.id}
 
@@ -281,5 +285,7 @@ def message_remove_v1(user_id, msg_id):
 
     msg = data_store.get_msg(msg_id)
     msg.chnl_id = -1
+
+    User.user_remove_msg(user_id)
 
     return {}

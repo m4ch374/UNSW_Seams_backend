@@ -110,10 +110,16 @@ def profile_sethandle_v1():
     handle_str = data['handle_str']
     return dumps(auth.user_profile_sethandle_v1(token, handle_str))
 
-@APP.route("/notifications/get/v1", methods=['GET'])
-def notifications_get():
+# @APP.route("/notifications/get/v1", methods=['GET'])
+# def notifications_get():
+#     token = request.args.get('token')
+#     return dumps(auth.notifications_get_v1(token))
+
+@APP.route("/search/v1", methods=['GET'])
+def search():
     token = request.args.get('token')
-    return dumps(auth.notifications_get_v1(token))
+    query_str  = request.args.get('query_str')
+    return dumps(auth.search_v1(token, query_str))
 
 @APP.route("/auth/passwordreset/request/v1", methods=['POST'])
 def passwordreset_request():
@@ -351,4 +357,4 @@ def clear():
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, quit_gracefully) # For coverage
-    APP.run(port=config.port, debug=False) # Do not edit this port
+    APP.run(port=config.port, debug=False, threaded=True) # Do not edit this port

@@ -1,16 +1,20 @@
 import re
-from urllib import response
+import urllib.request
+import smtplib, ssl
+import string
+import random
+import requests
+from datetime import timezone
+import datetime as dt
+from PIL import Image
+from datetime import datetime
 from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.objecs import User
 from src.encrypt import hashing_password
-import string
-import random
-import requests
-import smtplib
+from src.config import SERVER_EMAIL, SERVER_PASSWORD
+from src.config import N
 
-# size of reset_code
-N = 5
 
 '''
     Compare two passwords
@@ -300,19 +304,84 @@ def user_profile_sethandle_v1(token, handle_str):
             return {}
 
 
+# '''
+# Arguments:
+#     token (string)  Encrypted user id and time
+
+# Exceptions:
+#     AccessError  - Occurs    Invalid token
+
+# Return Value:
+#     list of dict        -[{channel_id, dm_id, notification_message}...]
+# '''
+# def notifications_get_v1(token):
+#     return {'notifications': []}
+#     if not data_store.is_valid_token(token):
+#         raise AccessError(description="Token is invalid!")
+#     else:
+#         u_id = data_store.get_id_from_token(token)
+#         for user in data_store.get()['users']:
+#             if user.id == u_id:
+#                 return {'notifications': user.notifications}
+
+
 '''
 Arguments:
     token (string)  Encrypted user id and time
+    query_str (string)  string to search
 
 Exceptions:
-    AccessError  - Occurs    Invalid token
+    AccessError  - Occurs   Invalid token
+                            length of query_str should be 1 to 1000
 
 Return Value:
-    list of dict        -[{channel_id, dm_id, notification_message}...]
+    list of dict        -[{message_id, u_id, message...}...]
 '''
-def notifications_get_v1(token):
-    return {'notifications': []}
+def search_v1(token, query_str):
+    if not data_store.is_valid_token(token):
+        raise AccessError(description="Token is invalid!")
+    elif len(query_str) < 1 or len(query_str) > 1000:
+        raise InputError(description="length of query_str should be 1 to 1000")
+    else:
+        u_id = data_store.get_id_from_token(token)
+        user = data_store.get_user(u_id)
+        store = data_store.get()
+        id_list = []
+        for ch in store['channel']:
+            if user in ch.members:
+                id_list.append(ch.id)
+        for dm in store['dm']:
+            if user in dm.members:
+                id_list.append(dm.id)
+        msg_list = []
+        for msg in store['messages']:
+            if msg.chnl_id in id_list and query_str.casefold() in msg.message.casefold():
+                #TODO
+                msg_list.append({'message_id': msg.id,
+                                'u_id': msg.u_id,
+                                'message': msg.message,
+                                'time_sent': msg.time_sent,
+                                'reacts': 'msg.reacts',
+                                'is_pinned': 'msg.is_pinned'})
+        return {'messages': msg_list}
 
+
+'''
+Arguments:
+    email (string)    - user's email
+    reset_code (string) - reset code
+'''
+def send_email(email, reset_code):
+    port = 465
+    smtp_server = "smtp.gmail.com"
+    sender_email = SERVER_EMAIL
+    password = SERVER_PASSWORD
+    receiver_email = email
+    message = reset_code
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
+        server.login(sender_email, password)
+        server.sendmail(sender_email, receiver_email, message)
 
 
 '''
@@ -323,6 +392,14 @@ Return Value:
     An empty dict {}
 '''
 def auth_passwordreset_request_v1(email):
+    store = data_store.get()
+    for user in store['users']:
+        if user.email == email:
+            data_store.remove_token_by_id(user.id)
+            reset_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=N))
+            store['reset_code'][reset_code] = user.id
+            data_store.set(store)
+            send_email(email, reset_code)
     return {}
 
 
@@ -339,7 +416,21 @@ Return Value:
     An empty dirt {}
 '''
 def auth_passwordreset_reset_v1(reset_code, new_password):
-    return {}
+    reset_code = reset_code.upper()
+    if not data_store.has_reset_code(reset_code):
+        raise InputError(description="Invalid reset_code")
+    elif len(new_password) < 6:                                 # password less than 6 characters
+        raise InputError(description="Length of password should more than 6 characters")
+    else:
+        store = data_store.get()
+        u_id = store['reset_code'][reset_code]
+        for user in store['users']:
+            if user.id == u_id:
+                user.password = hashing_password(new_password)
+                store['reset_code'].pop(reset_code)
+                data_store.set(store)
+                return {}
+
 
 
 '''
@@ -362,8 +453,30 @@ Return Value:
     An empty dirt {}
 '''
 def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
-    return {}
-
+    if not data_store.is_valid_token(token):
+        raise AccessError(description="Token is invalid!")
+    elif not requests.get(img_url).status_code == 200:
+        raise InputError(description="Pictures not available")
+    else:
+        u_id = data_store.get_id_from_token(token)
+        urllib.request.urlretrieve(img_url, f"images/{u_id}.jpg")
+        img = Image.open(f"images/{u_id}.jpg")
+        width, height = img.size
+        if x_start < 0 or x_end > width or y_start < 0 or y_end > height:
+            raise InputError(description="Pictures size not matched")
+        elif x_end <= x_start or y_end <= y_start:
+            raise InputError(description="Pictures size is invalid")
+        elif img.mode != 'RGB':
+            raise InputError(description="Image must be JPG")
+        else:
+            cropped = img.crop((x_start, y_start, x_end, y_end))
+            cropped.save(f"images/{u_id}.jpg")
+            store = data_store.get()
+            for user in store['users']:
+                if user.id == u_id:
+                    user.img = img_url
+            data_store.set(store)
+            return {}
 
 
 '''
@@ -377,7 +490,20 @@ Return Value:
     An dict         {'user_stats': ....}
 '''
 def user_stats_v1(token):
-    return {'user_stats': {'channels_joined': [], 'dms_joined': [], 'messages_sent': [], 'involvement_rate': 0}}
+    if not data_store.is_valid_token(token):
+        raise AccessError(description="Token is invalid!")
+    else:
+        u_id = data_store.get_id_from_token(token)
+        for user in data_store.get()['users']:
+            if user.id == u_id:
+                time = ((dt.datetime.now(timezone.utc)).replace(tzinfo=timezone.utc)).timestamp()
+                #TODO
+                rate = 0.5
+                ret_dict =  {'channels_joined': [{'num_channels_joined': user.channels, 'time_stamp': time}],
+                            'dms_joined': [{'num_dms_joined': user.dms, 'time_stamp': time}],
+                            'messages_sent': [{'num_messages_sent': user.messages, 'time_stamp': time}],
+                            'involvement_rate': rate}
+        return {'user_stats': ret_dict}
 
 
 '''
@@ -391,5 +517,18 @@ Return Value:
     An dict         {'workspace_stats': ....}
 '''
 def users_stats_v1(token):
-    return {'workspace_stats': {'channels_exist': [], 'dms_exist': [], 'messages_exist': [], 'utilization_rate': 0}}
+    if not data_store.is_valid_token(token):
+        raise AccessError(description="Token is invalid!")
+    else:
+        #TODO
+        store = data_store.get()
+        time = ((dt.datetime.now(timezone.utc)).replace(tzinfo=timezone.utc)).timestamp()
+        chs = [{'num_channels_exist': len(store['channel']), 'time_stamp': time}]
+        dms = [{'num_dms_exist': len(store['dm']), 'time_stamp': time}]
+        mgs = [{'num_messages_exist': len(store['messages']), 'time_stamp': time}]
+        rate = 0.5
+        return {'workspace_stats': {'channels_exist': chs,
+                                    'dms_exist': dms,
+                                    'messages_exist': mgs,
+                                    'utilization_rate': rate}}
 
