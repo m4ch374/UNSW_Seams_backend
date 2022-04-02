@@ -63,7 +63,7 @@ def test_channel_addowner_v1_invalid_u_id(get_token_1):
     assert response.status_code == InputError.code
 
 # raise inputerror since u_id refers to a user who isn't a member of the
-# channel
+# channel (although no access errors raised since they are global owner)
 def test_channel_addowner_v1_non_member(user_1_made_channel, get_u_id):
     # create a chnl
     channel_id1 = user_1_made_channel['channel']
@@ -95,6 +95,21 @@ def test_channel_addowner_v1_no_owner_permission(user_1_made_channel,
     json_input = create_chnl_join_input_json(get_u_id['token'], channel_id1)
     requests.post(ENDPOINT_JOIN_CHNL, json = json_input)
     json_input = create_chnl_join_input_json(get_token_2, channel_id1)
+    requests.post(ENDPOINT_JOIN_CHNL, json = json_input)
+    # try to add the user get_u_id as an owner via get_token_2 (who is not
+    # an owner in this channel either)
+    json_input = generate_chnl_func_json(get_token_2, channel_id1,
+                                         get_u_id['id'])
+    response = requests.post(ENDPOINT_CHNL_ADDOWNER, json = json_input)
+    assert response.status_code == AccessError.code
+
+# raise AccessError since authorised user isnt in chnl and doesnt have global
+# owner permissions ()
+def test_channel_addowner_v1_no_owner_permission_2(user_1_made_channel,
+                                                   get_token_2, get_u_id):
+    # create a chnl, then join user get_u_id and get_token_2
+    channel_id1 = user_1_made_channel['channel']
+    json_input = create_chnl_join_input_json(get_u_id['token'], channel_id1)
     requests.post(ENDPOINT_JOIN_CHNL, json = json_input)
     # try to add the user get_u_id as an owner via get_token_2 (who is not
     # an owner in this channel either)
