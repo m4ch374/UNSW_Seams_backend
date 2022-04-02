@@ -98,6 +98,12 @@ Exceptions:
 Return Value:{}
 '''
 def admin_userpermission_change_v1(auth_user_id, u_id, permission_id):
+    # since rest of implementation all assumes user permission id == 0 and
+    # owner permission_id == 1  while interface assumes user_perm_id == 1 and 
+    # owner_perm_id == 2, change permission_id given to permission_id used
+    if permission_id == 2:
+        permission_id = 0
+
     # check that the auth user has global owner permissions
     auth_user = data_store.get_user(auth_user_id)
     if auth_user.owner == False:
@@ -111,8 +117,12 @@ def admin_userpermission_change_v1(auth_user_id, u_id, permission_id):
     user = data_store.get_user(u_id)
     if user.owner == permission_id:
         raise InputError(description='Permission already set to permission_id')
+    '''
     if permission_id == 0:
         if not is_there_more_than_one_global_owner():
             raise InputError(description='Cannot demote only global owner')
+    '''
+    if not is_there_more_than_one_global_owner() and user.owner == 1:
+         raise InputError(description='Cannot demote only global owner')
     user.owner = permission_id
     return {}
