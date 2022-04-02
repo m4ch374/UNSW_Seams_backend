@@ -18,9 +18,9 @@ def test_valid_input():
     requests.post(ENDPOINT_MESSAGE_SEND, json = {'token':user_data['token'],'channel_id':1, 'message':'qqq'})
     response = requests.get(USER_STATS_V1, {'token': user_data['token']})
     assert response.status_code == 200
-    workspace_stats = response.json()['user_stats']
-    assert workspace_stats['channels_joined'][0]['num_channels_joined'] == 1
-    assert workspace_stats['dms_joined'][0]['num_dms_joined'] == 0
-    assert workspace_stats['messages_sent'][0]['num_messages_sent'] == 1
-    assert type(workspace_stats['involvement_rate']) == type(1.2345)
+    user_stats = response.json()['user_stats']
+    assert len(user_stats['channels_joined']) == 1
+    assert len(user_stats['dms_joined']) == 0
+    assert len(user_stats['messages_sent']) == 1
+    assert type(user_stats['involvement_rate']) == type(1.2345)
 

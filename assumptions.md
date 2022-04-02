@@ -60,3 +60,4 @@
 
 - clear() will also remove the images made by tests
 
+- 'a_test.py' will change data_store to init state after tests

@@ -1,6 +1,6 @@
 from src.data_store import data_store
 from src.error import InputError, AccessError
-import src.stats_hepler as User
+import src.stats_helper as User
 
 '''
 Function that determines if a user is in the channel

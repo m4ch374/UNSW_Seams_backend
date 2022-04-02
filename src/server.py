@@ -110,10 +110,10 @@ def profile_sethandle_v1():
     handle_str = data['handle_str']
     return dumps(auth.user_profile_sethandle_v1(token, handle_str))
 
-# @APP.route("/notifications/get/v1", methods=['GET'])
-# def notifications_get():
-#     token = request.args.get('token')
-#     return dumps(auth.notifications_get_v1(token))
+@APP.route("/notifications/get/v1", methods=['GET'])
+def notifications_get():
+    token = request.args.get('token')
+    return dumps(auth.notifications_get_v1(token))
 
 @APP.route("/search/v1", methods=['GET'])
 def search():
