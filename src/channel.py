@@ -1,5 +1,6 @@
 from src.data_store import data_store
 from src.error import InputError, AccessError
+import src.stats_hepler as User
 
 '''
 Function that determines if a user is in the channel
@@ -49,6 +50,9 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     # now that no errors have been detected, join the user to the channel
     chnl = data_store.get_channel(channel_id)
     chnl.add_member_id(u_id)
+
+    User.user_join_ch(u_id)
+
     return {}
 
 
@@ -136,6 +140,8 @@ def channel_join_v1(auth_user_id, channel_id):
     chnl = data_store.get_channel(channel_id)
     chnl.add_member_id(auth_user_id)
     
+    User.user_join_ch(auth_user_id)
+
     return {}
 
 '''
@@ -166,6 +172,8 @@ def channel_leave_v1(auth_user_id, channel_id):
     if user in chnl.owners:
         chnl.owners.remove(user)
         data_store.set_store()
+
+    User.user_leave_ch(auth_user_id)
 
     return {}
 '''

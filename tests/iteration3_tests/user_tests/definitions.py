@@ -6,6 +6,8 @@ from tests.iteration3_tests.user_tests.definitions import *
 
 NOTIFICATIONS_GET_V1 = BASE_URL + "/notifications/get/v1"
 
+SEARCH = BASE_URL + "/search/v1"
+
 AUTH_PASSWORDRESET_REQUEST_V1 = BASE_URL + "/auth/passwordreset/request/v1"
 
 AUTH_PASSWORDRESET_RESET_V1 = BASE_URL + "/auth/passwordreset/reset/v1"
@@ -22,3 +24,8 @@ LOGOUT_V1 = BASE_URL + '/auth/logout/v1'
 
 REGISTER_V2 = BASE_URL + '/auth/register/v2'
 
+ENDPOINT_CHNL_INVITE = BASE_URL + '/channel/invite/v2'
+
+ENDPOINT_CREATE_CHNL = BASE_URL + '/channels/create/v2'
+
+ENDPOINT_MESSAGE_SEND = BASE_URL + '/message/send/v1'

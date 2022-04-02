@@ -6,7 +6,7 @@ import sys
 from src.data_store import data_store
 from src.encrypt import hashing_password
 from src.error import InputError
-from src.config import TAGGED, MSG_REACTED, ADDED
+from src.config import TAGGED, MSG_REACTED, ADDED, ICON
 
 '''
 User Class, store information of each user
@@ -49,7 +49,11 @@ class User:
         self.handle = self.__create_handle(name_first, name_last)
         self.owner = self.id == 1
         self.removed = removed
+        self.img = ICON
         self.notifications = notifications
+        self.channels = 0
+        self.dms = 0
+        self.messages = 0
 
     '''
         Generates id for user
@@ -124,6 +128,7 @@ class User:
             'name_first': str(self.name_first),
             'name_last': str(self.name_last),
             'handle_str': str(self.handle),
+            'profile_img_url': str(self.img)
         }
         return return_dict
 
@@ -152,7 +157,7 @@ class User:
             'dm_id': dm_id,
             'msg_content': msg_content,
         }
-        
+
         new_notif = Notification(**kwargs)
         self.notifications.insert(0, new_notif)
         data_store.set_store()

@@ -15,3 +15,14 @@ PASSWORD_SECRET = 'kfyusre1df6g68serdsf32g185awe961a3621jh4561yt9u4635231sfxg32h
 TAGGED      = "tagged"
 MSG_REACTED = "reacted message"
 ADDED       = "added to channel/DM"
+
+# for send email
+SERVER_EMAIL = "cs1531ant@gmail.com"
+SERVER_PASSWORD = 'unsw1531ant'
+
+# size of reset_code
+N = 8   # example: AS23F8GS
+
+# Default icon
+ICON = 'http://t4.ftcdn.net/jpg/02/29/75/83/360_F_229758328_7x8jwCwjtBMmC6rgFzLFhZoEpLobB6L8.jpg'
+
