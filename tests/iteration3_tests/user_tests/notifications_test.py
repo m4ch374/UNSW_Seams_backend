@@ -2,7 +2,6 @@ import requests
 from tests.iteration3_tests.user_tests.definitions import REGISTER_V2, NOTIFICATIONS_GET_V1
 
 def test_invalid_token():
-    def test_invalid_token():
     response = requests.get(NOTIFICATIONS_GET_V1, {'token': '123'})
     assert response.status_code == 403
 
