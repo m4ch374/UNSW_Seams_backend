@@ -54,6 +54,9 @@ class User:
         self.channels = 0
         self.dms = 0
         self.messages = 0
+        self.ch_list =[]    # {'num_channels_joined': user.channels, 'time_stamp': user.chtime}
+        self.dm_list =[]    # {'num_dms_joined': user.dms, 'time_stamp': user.dmtime}
+        self.mg_list =[]    # {'num_messages_sent': user.messages, 'time_stamp': user.mgtime}
 
     '''
         Generates id for user

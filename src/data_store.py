@@ -44,7 +44,7 @@ import traceback
 
 # Initial object
 initial_object = {
-    'users' : [], 
+    'users' : [],
     'channel' : [],
     'dm': [],
     'messages': [],
@@ -54,7 +54,15 @@ initial_object = {
         'channel': 0,
         'messages': 0,
     },
-    'reset_code': {},    # (dict) for user to reset password
+    'reset_code': {},   # (dict) for user to reset password
+    'stats_list': {
+        'chs_num': 0,
+        'dms_num': 0,
+        'msg_num': 0,
+        'chs_list': [],     # [{'num_channels_exist': chs_num, 'time_stamp': time}]
+        'dms_list': [],     # [{'num_dms_exist': dms_num, 'time_stamp': time}]
+        'msg_list': [],     # [{'num_messages_exist': msg_num, 'time_stamp': time}]
+    },
 } # credit to Hanqi for this placeholder love you <3
 
 # Definitions

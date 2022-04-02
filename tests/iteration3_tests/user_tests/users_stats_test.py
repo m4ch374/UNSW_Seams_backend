@@ -19,8 +19,8 @@ def test_valid_input():
     response = requests.get(USERS_STATS_V1, {'token': user_data['token']})
     assert response.status_code == 200
     workspace_stats = response.json()['workspace_stats']
-    assert workspace_stats['channels_exist'][0]['num_channels_exist'] == 1
-    assert workspace_stats['dms_exist'][0]['num_dms_exist'] == 0
-    assert workspace_stats['messages_exist'][0]['num_messages_exist'] == 1
+    assert len(workspace_stats['channels_exist']) == 1
+    assert len(workspace_stats['dms_exist']) == 0
+    assert len(workspace_stats['messages_exist']) == 1
     assert type(workspace_stats['utilization_rate']) == type(1.2345)
 
