@@ -4,16 +4,14 @@ import smtplib, ssl
 import string
 import random
 import requests
-from datetime import timezone
-import datetime as dt
 from PIL import Image
-from datetime import datetime
 from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.objecs import User
 from src.encrypt import hashing_password
 from src.config import SERVER_EMAIL, SERVER_PASSWORD
 from src.config import N
+from src.stats_helper import cal_involvement_rate, cal_utilization_rate
 
 
 '''
@@ -304,25 +302,24 @@ def user_profile_sethandle_v1(token, handle_str):
             return {}
 
 
-# '''
-# Arguments:
-#     token (string)  Encrypted user id and time
+'''
+Arguments:
+    token (string)  Encrypted user id and time
 
-# Exceptions:
-#     AccessError  - Occurs    Invalid token
+Exceptions:
+    AccessError  - Occurs    Invalid token
 
-# Return Value:
-#     list of dict        -[{channel_id, dm_id, notification_message}...]
-# '''
-# def notifications_get_v1(token):
-#     return {'notifications': []}
-#     if not data_store.is_valid_token(token):
-#         raise AccessError(description="Token is invalid!")
-#     else:
-#         u_id = data_store.get_id_from_token(token)
-#         for user in data_store.get()['users']:
-#             if user.id == u_id:
-#                 return {'notifications': user.notifications}
+Return Value:
+    list of dict        -[{channel_id, dm_id, notification_message}...]
+'''
+def notifications_get_v1(token):
+    if not data_store.is_valid_token(token):
+        raise AccessError(description="Token is invalid!")
+    else:
+        u_id = data_store.get_id_from_token(token)
+        for user in data_store.get()['users']:
+            if user.id == u_id:
+                return {'notifications': user.notifications}
 
 
 '''
@@ -432,7 +429,6 @@ def auth_passwordreset_reset_v1(reset_code, new_password):
                 return {}
 
 
-
 '''
 Arguments:
     token   (string)  Encrypted user id and time
@@ -496,12 +492,10 @@ def user_stats_v1(token):
         u_id = data_store.get_id_from_token(token)
         for user in data_store.get()['users']:
             if user.id == u_id:
-                time = ((dt.datetime.now(timezone.utc)).replace(tzinfo=timezone.utc)).timestamp()
-                #TODO
-                rate = 0.5
-                ret_dict =  {'channels_joined': [{'num_channels_joined': user.channels, 'time_stamp': time}],
-                            'dms_joined': [{'num_dms_joined': user.dms, 'time_stamp': time}],
-                            'messages_sent': [{'num_messages_sent': user.messages, 'time_stamp': time}],
+                rate = cal_involvement_rate(user.channels, user.dms, user.messages)
+                ret_dict =  {'channels_joined': user.ch_list,
+                            'dms_joined': user.dm_list,
+                            'messages_sent': user.mg_list,
                             'involvement_rate': rate}
         return {'user_stats': ret_dict}
 
@@ -520,15 +514,10 @@ def users_stats_v1(token):
     if not data_store.is_valid_token(token):
         raise AccessError(description="Token is invalid!")
     else:
-        #TODO
         store = data_store.get()
-        time = ((dt.datetime.now(timezone.utc)).replace(tzinfo=timezone.utc)).timestamp()
-        chs = [{'num_channels_exist': len(store['channel']), 'time_stamp': time}]
-        dms = [{'num_dms_exist': len(store['dm']), 'time_stamp': time}]
-        mgs = [{'num_messages_exist': len(store['messages']), 'time_stamp': time}]
-        rate = 0.5
-        return {'workspace_stats': {'channels_exist': chs,
-                                    'dms_exist': dms,
-                                    'messages_exist': mgs,
+        rate = cal_utilization_rate()
+        return {'workspace_stats': {'channels_exist': store['stats_list']['chs_list'],
+                                    'dms_exist': store['stats_list']['dms_list'],
+                                    'messages_exist': store['stats_list']['msg_list'],
                                     'utilization_rate': rate}}
 
