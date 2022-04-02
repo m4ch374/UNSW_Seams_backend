@@ -302,25 +302,24 @@ def user_profile_sethandle_v1(token, handle_str):
             return {}
 
 
-# '''
-# Arguments:
-#     token (string)  Encrypted user id and time
+'''
+Arguments:
+    token (string)  Encrypted user id and time
 
-# Exceptions:
-#     AccessError  - Occurs    Invalid token
+Exceptions:
+    AccessError  - Occurs    Invalid token
 
-# Return Value:
-#     list of dict        -[{channel_id, dm_id, notification_message}...]
-# '''
-# def notifications_get_v1(token):
-#     return {'notifications': []}
-#     if not data_store.is_valid_token(token):
-#         raise AccessError(description="Token is invalid!")
-#     else:
-#         u_id = data_store.get_id_from_token(token)
-#         for user in data_store.get()['users']:
-#             if user.id == u_id:
-#                 return {'notifications': user.notifications}
+Return Value:
+    list of dict        -[{channel_id, dm_id, notification_message}...]
+'''
+def notifications_get_v1(token):
+    if not data_store.is_valid_token(token):
+        raise AccessError(description="Token is invalid!")
+    else:
+        u_id = data_store.get_id_from_token(token)
+        for user in data_store.get()['users']:
+            if user.id == u_id:
+                return {'notifications': user.notifications}
 
 
 '''
