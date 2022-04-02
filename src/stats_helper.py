@@ -65,30 +65,35 @@ def add_ch():
     store = data_store.get()
     store['stats_list']['chs_num'] += 1
     store['stats_list']['chs_list'].append({'num_channels_exist': store['stats_list']['chs_num'], 'time_stamp': time})
+    data_store.set(store)
 
 def add_dm():
     time = get_time()
     store = data_store.get()
     store['stats_list']['dms_num'] += 1
     store['stats_list']['dms_list'].append({'num_dms_exist': store['stats_list']['dms_num'], 'time_stamp': time})
+    data_store.set(store)
 
 def add_msg():
     time = get_time()
     store = data_store.get()
     store['stats_list']['msg_num'] += 1
     store['stats_list']['msg_list'].append({'num_messages_exist': store['stats_list']['msg_num'], 'time_stamp': time})
+    data_store.set(store)
 
 def remove_dm():
     time = get_time()
     store = data_store.get()
     store['stats_list']['dms_num'] -= 1
     store['stats_list']['dms_list'].append({'num_dms_exist': store['stats_list']['dms_num'], 'time_stamp': time})
+    data_store.set(store)
 
 def remove_msg():
     time = get_time()
     store = data_store.get()
     store['stats_list']['msg_num'] -= 1
     store['stats_list']['msg_list'].append({'num_messages_exist': store['stats_list']['msg_num'], 'time_stamp': time})
+    data_store.set(store)
 
 def cal_involvement_rate(chs, dms ,mgs):
     store = data_store.get()
