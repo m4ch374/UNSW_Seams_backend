@@ -12,6 +12,7 @@ from tests.iteration3_tests.endpoints import *
 
 # Definitions
 INVALID_TOKEN = 'invalid'
+NON_EXIST_MSG_ID = -1
 REACT_ID = 1
 INVALID_REACT = -1
 
@@ -37,6 +38,15 @@ def test_invalid_token(get_usr_1):
     }
     resp = requests.post(ENDPOINT_MESSAGE_UNREACT, json=data)
     assert resp.status_code == AccessError.code
+
+def test_non_exist_msg_id(get_usr_1):
+    data = {
+        'token': get_usr_1['token'],
+        'message_id': NON_EXIST_MSG_ID,
+        'react_id': REACT_ID,
+    }
+    resp = requests.post(ENDPOINT_MESSAGE_UNREACT, json=data)
+    assert resp.status_code == InputError.code
 
 def test_invalid_msg_id(get_usr_1, get_usr_2):
     data = {
