@@ -150,6 +150,6 @@ def test_valid(get_usr_1):
         'channel_id': chnl_id,
         'start': 0
     }
-    msg = requests.get(ENDPOINT_CHANNEL_MESSAGE, json=data).json()['messages'][0]
+    msg = requests.get(ENDPOINT_CHANNEL_MESSAGE, params=data).json()['messages'][0]
 
-    assert get_usr_1['auth_user_id'] in msg['reacts']['u_ids']
+    assert msg['reacts'][0]['is_this_user_reacted']
