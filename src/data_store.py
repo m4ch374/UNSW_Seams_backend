@@ -44,7 +44,7 @@ import traceback
 
 # Initial object
 initial_object = {
-    'users' : [], 
+    'users' : [],
     'channel' : [],
     'dm': [],
     'messages': [],
@@ -53,6 +53,15 @@ initial_object = {
         'users': 0,
         'channel': 0,
         'messages': 0,
+    },
+    'reset_code': {},   # (dict) for user to reset password
+    'stats_list': {
+        'chs_num': 0,
+        'dms_num': 0,
+        'msg_num': 0,
+        'chs_list': [],     # [{'num_channels_exist': chs_num, 'time_stamp': time}]
+        'dms_list': [],     # [{'num_dms_exist': dms_num, 'time_stamp': time}]
+        'msg_list': [],     # [{'num_messages_exist': msg_num, 'time_stamp': time}]
     },
 } # credit to Hanqi for this placeholder love you <3
 
@@ -233,6 +242,12 @@ class Datastore:
             if data_store.get_id_from_token(token) == id:
                 store['tokens'].remove(token)
         data_store.set(store)
+
+    """
+        true if reset_code exist
+    """
+    def has_reset_code(self, reset_code):
+        return reset_code in data_store.get()['reset_code'].keys()
 
 
 print('Loading Datastore...')

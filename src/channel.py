@@ -1,5 +1,6 @@
 from src.data_store import data_store
 from src.error import InputError, AccessError
+import src.stats_helper as User
 
 '''
 Function that determines if a user is in the channel
@@ -49,6 +50,9 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     # now that no errors have been detected, join the user to the channel
     chnl = data_store.get_channel(channel_id)
     chnl.add_member_id(u_id)
+
+    User.user_join_ch(u_id)
+
     return {}
 
 
@@ -136,6 +140,8 @@ def channel_join_v1(auth_user_id, channel_id):
     chnl = data_store.get_channel(channel_id)
     chnl.add_member_id(auth_user_id)
     
+    User.user_join_ch(auth_user_id)
+
     return {}
 
 '''
@@ -167,6 +173,8 @@ def channel_leave_v1(auth_user_id, channel_id):
         chnl.owners.remove(user)
         data_store.set_store()
 
+    User.user_leave_ch(auth_user_id)
+
     return {}
 '''
 Function : channel_addowner_v1
@@ -190,10 +198,6 @@ Return Value:{}
 def channel_addowner_v1(auth_user_id, channel_id, u_id):
     if not data_store.has_channel_id(channel_id):
         raise InputError(description="Channel does not exist")
-    if data_store.has_user_id(u_id) == False:
-        raise InputError("User id passed is invalid!")
-    if not user_in_channel(u_id, channel_id):
-        raise InputError("User passed is not a member of the channel")
     
     chnl = data_store.get_channel(channel_id)
     auth_user = data_store.get_user(auth_user_id)
@@ -201,6 +205,13 @@ def channel_addowner_v1(auth_user_id, channel_id, u_id):
     # or channel owner)
     if auth_user not in chnl.owners and auth_user.owner == False:
         raise AccessError(description='Auth user is not a channel owner')
+    
+    if data_store.has_user_id(u_id) == False:
+        raise InputError("User id passed is invalid!")
+    if not user_in_channel(u_id, channel_id):
+        raise InputError("User passed is not a member of the channel")
+    
+    
     # check that the user is not already an owner
     user = data_store.get_user(u_id)
     if user in chnl.owners:
@@ -233,18 +244,12 @@ def channel_removeowner_v1(auth_user_id, channel_id, u_id):
         raise InputError(description="Channel does not exist")
     if data_store.has_user_id(u_id) == False:
         raise InputError("User id passed is invalid!")
-    '''
-    for owner in chnl.owners
-    NOT YET DONE
-    - InputError - Occurs when u_id refers to a user who is currently the only 
-                   owner of the channel
-    '''
     chnl = data_store.get_channel(channel_id)
     auth_user = data_store.get_user(auth_user_id)
     # check the auth user has owner permissions (either chnl or global owner)
-    if auth_user not in chnl.owners and auth_user.owner == False:
-        raise AccessError(description='Auth user is not a channel owner')
-    
+    if auth_user not in chnl.owners:
+        if auth_user not in chnl.members or auth_user.owner == False:
+            raise AccessError(description='Auth user is not a channel owner')
     # check that the user is already an owner
     user = data_store.get_user(u_id)
     if user not in chnl.owners:

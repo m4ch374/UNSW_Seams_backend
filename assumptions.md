@@ -49,3 +49,15 @@
 ## **3. Assumptions - `dm/create/v1`**
 
 - If the id of the creator is in list `u_ids`, it is also considered as duplicate u_ids, therefore raising `InputError`
+
+# Iteration - 3
+
+## **1. Assumptions - `reset_code` in `data_store` **
+
+- inside of <reset_code> is: {"A reset code" : id}
+
+## **2. Assumptions - `other.py`**
+
+- clear() will also remove the images made by tests
+
+- 'a_test.py' will change data_store to init state after tests

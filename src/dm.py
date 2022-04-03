@@ -7,6 +7,7 @@ This file contains function for the domain
 from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.objecs import DmChannel
+import src.stats_helper as User
 
 # =================== helpers ======================
 def check_valid_dm_id(dm_id):
@@ -27,6 +28,11 @@ def dm_create_v1(u_id, u_ids):
     dm_chnl = DmChannel(data_store.get_user(u_id), u_ids)
     data_store.add_dm(dm_chnl)
 
+    User.user_join_dm(u_id)
+    for id in u_ids:
+        User.user_join_dm(id)
+    User.add_dm()
+
     return {'dm_id': dm_chnl.id}
 
 def dm_list_v1(u_id):
@@ -43,6 +49,14 @@ def dm_remove_v1(u_id, dm_id):
 
     dm_chnl.remove_associated_msg()
     data_store.remove_dm(dm_chnl)
+
+    User.user_leave_dm(u_id)
+    for dm in data_store.get()['dm']:
+        if dm.id == dm_id:
+            for user in dm.members:
+                User.user_leave_dm(user.id)
+    User.remove_dm()
+
     return {}
 
 def dm_details_v1(u_id, dm_id):
