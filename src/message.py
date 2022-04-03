@@ -2,26 +2,12 @@ from src.data_store import data_store
 from src.objecs import Message
 from src.error import InputError, AccessError
 import src.stats_helper as User
+from src.config import REACT_IDS
 from src.time import get_time
 from datetime import timezone
 import datetime as dt
 import threading
 
-# Helper function used in channel and dm messages
-# Converts list of msgs to list of dictionaries containing msg info
-def make_msg_list(messages):
-    msg_list = []
-    for message in messages:
-        msg_list.append({'message_id': message.id,
-                        'user_id': message.u_id,
-                        'message': message.message,
-                        'time_sent': message.time_sent,
-                        })
-
-    return msg_list
-
-
-from src.config import REACT_IDS
 
 '''
 Function: channel_messages_v1
