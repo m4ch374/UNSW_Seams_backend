@@ -107,6 +107,7 @@ class User:
             handle = handle_temp
         return handle
 
+    # dosent look clean but i have no better idea
     def serialize(self):
         return {
             'email': self.email,
@@ -181,7 +182,7 @@ class User:
     @staticmethod
     def decode_json(jsn):
         return User(jsn['email'], jsn['password'], jsn['name_first'], 
-            jsn['name_last'], True), jsn['kwargs']
+            jsn['name_last'], True, jsn['kwargs'])
 
 '''
 Channel class, stores info of a channel
