@@ -519,6 +519,7 @@ class Message:
             'kwargs': {
                 'id': self.id,
                 'time_sent': self.time_sent,
+                'reacts': self.reacts,
                 'is_pinned': self.is_pinned,
             }
         }
