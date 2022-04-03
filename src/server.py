@@ -1,6 +1,7 @@
 # Default Imports
 import signal
 from json import dumps
+from urllib import response
 from flask import Flask, request
 from flask_cors import CORS
 from src.error import InputError
@@ -331,6 +332,13 @@ def message_react_v1():
     data = request.get_json()
     u_id = data_store.get_id_from_token(data['token'])
     response = msg.message_react_v1(u_id, data['message_id'], data['react_id'])
+    return dumps(response)
+
+@APP.route("/message/unreact/v1", methods=['POST'])
+def message_unreact_v1():
+    data = request.get_json()
+    u_id = data_store.get_id_from_token(data['token'])
+    response = msg.message_unreact_v1(u_id, data['message_id'], data['react_id'])
     return dumps(response)
 
 # ==================================================
