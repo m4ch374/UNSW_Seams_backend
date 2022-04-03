@@ -181,8 +181,14 @@ class User:
 
     @staticmethod
     def decode_json(jsn):
-        return User(jsn['email'], jsn['password'], jsn['name_first'], 
-            jsn['name_last'], True, jsn['kwargs'])
+        return User(
+            email=jsn['email'], 
+            password=jsn['password'], 
+            name_first=jsn['name_first'], 
+            name_last=jsn['name_last'], 
+            is_load=True, 
+            kwargs=jsn['kwargs']
+        )
 
 '''
 Channel class, stores info of a channel
