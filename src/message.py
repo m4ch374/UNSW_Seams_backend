@@ -292,3 +292,12 @@ def message_remove_v1(user_id, msg_id):
     User.remove_msg()
 
     return {}
+
+
+def message_sendlater_v1(token, channel_id, message, time_sent):
+    return {'message_id': 0}
+
+
+def message_sendlaterdm_v1(token, dm_id, message, time_sent):
+    return {'message_id': 0}
+
