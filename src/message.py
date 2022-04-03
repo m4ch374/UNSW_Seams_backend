@@ -1,10 +1,11 @@
-from datetime import timezone
-import datetime as dt
 from src.data_store import data_store
 from src.objecs import Message, Channel, DmChannel
 from src.error import InputError, AccessError
 import src.stats_helper as User
-
+from src.time import get_time
+from datetime import timezone
+import datetime as dt
+import threading
 
 # Helper function used in channel and dm messages
 # Converts list of msgs to list of dictionaries containing msg info
@@ -294,10 +295,111 @@ def message_remove_v1(user_id, msg_id):
     return {}
 
 
+"""
+    sent msg to channel/dm
+    for sentlater ch/dm
+"""
+def send_msg(new_message, u_id):
+    data = data_store.get()
+    data['messages'].append(new_message)
+    data_store.set(data)
+
+    User.user_sent_msg(u_id)
+    User.add_msg()
+
+
+'''
+Arguments:
+    token           (string)
+    channel_id      (int)
+    message         (string)
+    time_sent       (int) send time
+
+Exceptions:
+    InputError  - Occurs    Invalid channel id
+                            message < 1 or > 1000
+                            time_sent is a time in the past
+    AccessError - Occurs    Invalid token
+                            user not a member
+
+Return Value:
+    message_id      (int)
+'''
 def message_sendlater_v1(token, channel_id, message, time_sent):
-    return {'message_id': 0}
+    if not data_store.is_valid_token(token):
+        raise AccessError(description="Token is invalid!")
+
+    if not data_store.has_channel_id(channel_id):
+        raise InputError(description="channel_id does not refer to a valid channel")
+
+    user_id = data_store.get_id_from_token(token)
+    channel = data_store.get_channel(channel_id)
+    if not channel.has_member_id(user_id):
+        raise AccessError(description="user not a member")
+
+    if len(message) < 1 or len(message) > 1000:
+        raise InputError(description="message should be 1 to 1000")
+
+    time_now = get_time()
+    if time_sent <= time_now:
+        raise InputError(description="time_sent is a time in the past")
+
+    new_message = Message(
+        u_id=user_id,
+        message=message,
+        chnl_id=channel_id,
+        time_sent=time_sent
+    )
+    t = threading.Timer(time_sent - time_now, send_msg, [new_message, user_id])
+    t.start()
+
+    return {'message_id': new_message.id}
 
 
+'''
+Arguments:
+    token           (string)
+    dm_id      (int)
+    message         (string)
+    time_sent       (int) send time
+
+Exceptions:
+    InputError  - Occurs    Invalid channel id
+                            message < 1 or > 1000
+                            time_sent is a time in the past
+    AccessError - Occurs    Invalid token
+                            user not a member
+
+Return Value:
+    message_id      (int)
+'''
 def message_sendlaterdm_v1(token, dm_id, message, time_sent):
-    return {'message_id': 0}
+    if not data_store.is_valid_token(token):
+        raise AccessError(description="Token is invalid!")
+
+    if not data_store.has_dm_id(dm_id):
+        raise InputError(description="dm_id does not refer to a valid dm")
+
+    user_id = data_store.get_id_from_token(token)
+    dm = data_store.get_dm(dm_id)
+    if not dm.has_member_id(user_id):
+        raise AccessError(description="user not a member")
+
+    if len(message) < 1 or len(message) > 1000:
+        raise InputError(description="message should be 1 to 1000")
+
+    time_now = get_time()
+    if time_sent <= time_now:
+        raise InputError(description="time_sent is a time in the past")
+
+    new_message = Message(
+        u_id=user_id,
+        message=message,
+        chnl_id=dm_id,
+        time_sent=time_sent
+    )
+    t = threading.Timer(time_sent - time_now, send_msg, [new_message, user_id])
+    t.start()
+
+    return {'message_id': new_message.id}
 

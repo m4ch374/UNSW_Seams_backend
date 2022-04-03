@@ -363,8 +363,8 @@ def search_v1(token, query_str):
                                 'u_id': msg.u_id,
                                 'message': msg.message,
                                 'time_sent': msg.time_sent,
-                                'reacts': 'msg.reacts',
-                                'is_pinned': 'msg.is_pinned'})
+                                'reacts': msg.reacts,
+                                'is_pinned': msg.is_pinned})
         return {'messages': msg_list}
 
 
