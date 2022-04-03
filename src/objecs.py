@@ -2,7 +2,6 @@
 besides the given ones """
 
 # Imports
-import sys
 from src.data_store import data_store
 from src.encrypt import hashing_password
 from src.error import InputError
@@ -41,23 +40,23 @@ To represent User in dict
 usr_in_dict = new_user.to_dict()
 '''
 class User:
-    def __init__(self, email, password, name_first, name_last, id=None, removed=False, notifications=[], is_load=False):
+    def __init__(self, email, password, name_first, name_last, is_load=False, **kwargs):
         self.email = email
         self.password = hashing_password(password) if not is_load else password
         self.name_first = name_first
         self.name_last = name_last
-        self.id = self.__generate_id(id)
-        self.handle = self.__create_handle(name_first, name_last)
-        self.owner = self.id == 1
-        self.removed = removed
-        self.img = ICON
-        self.notifications = notifications
-        self.channels = 0
-        self.dms = 0
-        self.messages = 0
-        self.ch_list = [{'num_channels_joined': 0, 'time_stamp': get_time()}]    # {'num_channels_joined': user.channels, 'time_stamp': user.chtime}
-        self.dm_list = [{'num_dms_joined': 0, 'time_stamp': self.ch_list[0]['time_stamp']}]    # {'num_dms_joined': user.dms, 'time_stamp': user.dmtime}
-        self.mg_list = [{'num_messages_sent': 0, 'time_stamp': self.ch_list[0]['time_stamp']}]    # {'num_messages_sent': user.messages, 'time_stamp': user.mgtime}
+        self.id = self.__generate_id(kwargs.get('id', None))
+        self.handle = kwargs.get('handle', self.__create_handle(name_first, name_last))
+        self.owner = kwargs.get('owner', self.id == 1)
+        self.removed = kwargs.get('removed', False)
+        self.img = kwargs.get('img', ICON)
+        self.notifications = [Notification.decode_json(item) for item in kwargs.get('notifications', [])]
+        self.channels = kwargs.get('channels', 0)
+        self.dms = kwargs.get('dms', 0)
+        self.messages = kwargs.get('messages', 0)
+        self.ch_list = kwargs.get('ch_list', [])    # {'num_channels_joined': user.channels, 'time_stamp': user.chtime}
+        self.dm_list = kwargs.get('dm_list', [])    # {'num_dms_joined': user.dms, 'time_stamp': user.dmtime}
+        self.mg_list = kwargs.get('mg_list', [])    # {'num_messages_sent': user.messages, 'time_stamp': user.mgtime}
 
     '''
         Generates id for user
@@ -109,24 +108,27 @@ class User:
             handle = handle_temp
         return handle
 
+    # dosent look clean but i have no better idea
     def serialize(self):
         return {
             'email': self.email,
             'password': self.password,
             'name_first': self.name_first,
             'name_last': self.name_last,
-            'id': self.id,
-            'handle': self.handle,
-            'owner': self.owner,
-            'removed': self.removed,
-            'img': self.img,
-            'notifications': [notif.serialize() for notif in self.notifications],
-            'channels': self.channels,
-            'dms': self.dms,
-            'messages': self.messages,
-            'ch_list': self.ch_list,
-            'dm_list': self.dm_list,
-            'mg_list': self.mg_list,
+            'kwargs': {
+                'id': self.id,
+                'handle': self.handle,
+                'owner': self.owner,
+                'removed': self.removed,
+                'img': self.img,
+                'notifications': [notif.serialize() for notif in self.notifications],
+                'channels': self.channels,
+                'dms': self.dms,
+                'messages': self.messages,
+                'ch_list': self.ch_list,
+                'dm_list': self.dm_list,
+                'mg_list': self.mg_list,
+            }
         }
 
     '''
@@ -180,10 +182,14 @@ class User:
 
     @staticmethod
     def decode_json(jsn):
-        notif_lst = [Notification.decode_json(item) for item in jsn['notifications']]
-
-        return User(jsn['email'], jsn['password'], jsn['name_first'], 
-            jsn['name_last'], jsn['id'], jsn['removed'], notif_lst, True)
+        return User(
+            email=jsn['email'], 
+            password=jsn['password'], 
+            name_first=jsn['name_first'], 
+            name_last=jsn['name_last'], 
+            is_load=True, 
+            kwargs=jsn['kwargs']
+        )
 
 '''
 Channel class, stores info of a channel
