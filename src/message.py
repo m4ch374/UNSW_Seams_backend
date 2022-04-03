@@ -2,6 +2,7 @@ from src.data_store import data_store
 from src.objecs import Message
 from src.error import InputError, AccessError
 import src.stats_helper as User
+from src.config import REACT_IDS
 
 '''
 Function: channel_messages_v1
@@ -270,5 +271,30 @@ def message_remove_v1(user_id, msg_id):
 
     User.user_remove_msg(user_id)
     User.remove_msg()
+
+    return {}
+
+# ===============================================
+# Every thing below here is written by Henry
+# ===============================================
+
+def message_share_v1():
+    pass
+
+def message_react_v1(u_id, message_id, react_id):
+    if not data_store.has_msg_id(message_id):
+        raise InputError(description="error: Invalid msg id")
+
+    message = data_store.get_msg(message_id)
+    channel_originated = (data_store.get_channel(message.chnl_id) 
+        if data_store.has_channel_id(message.chnl_id) else data_store.get_dm(message.chnl_id))
+
+    if not channel_originated.has_member_id(u_id):
+        raise InputError(description="error: Not in channal of associated message")
+
+    if react_id not in REACT_IDS:
+        raise InputError(description="error: Invalid react ID")
+
+    message.add_reaction_from_id(u_id, react_id, message.chnl_id)
 
     return {}
