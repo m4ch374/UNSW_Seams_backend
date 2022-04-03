@@ -1,25 +1,7 @@
-from datetime import timezone
-import datetime as dt
 from src.data_store import data_store
-from src.objecs import Message, Channel, DmChannel
+from src.objecs import Message
 from src.error import InputError, AccessError
 import src.stats_helper as User
-
-
-# Helper function used in channel and dm messages
-# Converts list of msgs to list of dictionaries containing msg info
-def make_msg_list(messages):
-    msg_list = []
-    for message in messages:
-        msg_list.append({'message_id': message.id,
-                        'user_id': message.u_id,
-                        'message': message.message,
-                        'time_sent': message.time_sent,
-                        })
-
-    return msg_list
-
-
 
 '''
 Function: channel_messages_v1
@@ -60,7 +42,7 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         end = -1
         messages = channel.get_messages()[start:len(chnl_messages)+1]
     
-    msg_list = make_msg_list(messages)
+    msg_list = [msg.to_dict(auth_user_id) for msg in messages]
 
     return {
         'messages': msg_list,
@@ -107,7 +89,7 @@ def dm_messages_v1(user_id, dm_id, start):
         end = -1
         messages = chnl_messages[start:len(chnl_messages)]
     
-    msg_list = make_msg_list(messages)
+    msg_list = [msg.to_dict(user_id) for msg in messages]
 
     return {
         'messages': msg_list,
@@ -148,7 +130,6 @@ def message_send_v1(user_id, channel_id, message):
         u_id=user_id,
         message=message,
         chnl_id=channel_id,
-        time_sent=((dt.datetime.now(timezone.utc)).replace(tzinfo=timezone.utc)).timestamp()
     )
 
     # Append new message to data_store
@@ -194,7 +175,6 @@ def message_senddm_v1(user_id, dm_id, message):
         u_id=user_id,
         message=message,
         chnl_id=dm_id,
-        time_sent=((dt.datetime.now(timezone.utc)).replace(tzinfo=timezone.utc)).timestamp()
     )
 
     # Append new message to data_store
