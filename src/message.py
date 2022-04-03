@@ -292,3 +292,42 @@ def message_remove_v1(user_id, msg_id):
     User.remove_msg()
 
     return {}
+
+'''
+Function: message_pin_v1
+Given a message within a channel or DM, mark it as "pinned".
+
+Arguments:
+    - auth_user_id (int) - id of user pinning message
+    - message_id (int) - id of the message being pinned
+Exceptions:
+    - InputError - Occurs when message_id is not a valid message within a 
+                   channel or DM that the authorised user has joined
+    - InputError - Occurs when the message is already pinned
+    - AccessError - Occurs when message_id refers to a valid message in a joined
+                    channel/DM and the authorised user does not have owner
+                    permissions in the channel/DM
+Return Value: {}
+'''
+def message_pin_v1(auth_user_id, msg_id):
+    return {}
+
+'''
+Function: message_unpin_v1
+Given a message within a channel or DM, remove its mark as pinned.
+
+Arguments:
+    - auth_user_id (int) - id of user pinning message
+    - message_id (int) - id of the message being unpinned
+Exceptions
+    - InputError - Occurs when message_id is not a valid message within a 
+                   channel or DM that the authorised user has joined
+    - InputError - Occurs when the message is not already pinned
+    - AccessError - Occurs when message_id refers to a valid message in a joined
+                    channel/DM and the authorised user does not have owner
+                    permissions in the channel/DM
+'''
+def message_unpin_v1(auth_user_id, msg_id):
+    return {}
+
+
