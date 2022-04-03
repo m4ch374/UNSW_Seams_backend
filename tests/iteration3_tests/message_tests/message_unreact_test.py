@@ -61,7 +61,7 @@ def test_invalid_msg_id(get_usr_1, get_usr_2):
         'name': "another name",
         'is_public': True,
     }
-    requests.post(ENDPOINT_CREATE_CHNL, json=data).json()['channel_id']
+    requests.post(ENDPOINT_CREATE_CHNL, json=data)
 
     data = {
         'token': get_usr_1['token'],
