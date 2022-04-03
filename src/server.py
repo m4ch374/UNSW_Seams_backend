@@ -325,7 +325,18 @@ def message_remove_v1():
     response = msg.message_remove_v1(user_id, msg_id)
     return dumps (response)
 
-# Reserved for msg/share
+@APP.route("/message/share/v1", methods=['POST'])
+def message_share_v1():
+    data = request.get_json()
+    u_id = data_store.get_id_from_token(data['token'])
+    response = msg.message_share_v1(
+        u_id=u_id, 
+        og_msg_id=data['og_message_id'], 
+        msg=data['message'], 
+        chnl_id=data['channel_id'], 
+        dm_id=data['dm_id']
+    )
+    return dumps(response)
 
 @APP.route("/message/react/v1", methods=['POST'])
 def message_react_v1():
