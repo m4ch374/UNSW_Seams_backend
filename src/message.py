@@ -295,8 +295,38 @@ def check_valid_react_id(react_id):
         raise InputError(description="error: Invalid react ID")
 # ===============================================
 
-def message_share_v1():
-    pass
+def message_share_v1(u_id, og_msg_id, msg, chnl_id, dm_id):
+    # Error checks
+    if chnl_id == -1 and dm_id == -1:
+        raise InputError(description="error: Both channel and dm id are invalid")
+    
+    if chnl_id != -1 and dm_id != -1:
+        raise InputError(description="error: Neither id is invalid")
+
+    check_valid_msg_id(og_msg_id, u_id)
+    
+    if len(msg) > 1000:
+        raise InputError(description="error: Message too large")
+
+    dest_chnl = data_store.get_channel(chnl_id) if chnl_id != -1 else data_store.get_dm(dm_id)
+    if not dest_chnl.has_member_id(u_id):
+        raise AccessError(description="error: Not in channel")
+
+    # share mesage
+    original_msg_content = data_store.get_msg(og_msg_id).message
+    shared_msg = Message(
+        u_id=u_id,
+        message={msg} + 
+                "\n==========\n" + 
+                original_msg_content,
+        chnl_id=dest_chnl.id
+    )
+
+    data = data_store.get()
+    data['messages'].append(shared_msg)
+    data_store.set_store()
+
+    return {'shared_message_id': shared_msg.id}
 
 def message_react_v1(u_id, message_id, react_id):
     check_valid_msg_id(message_id, u_id)
