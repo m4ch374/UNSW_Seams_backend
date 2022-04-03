@@ -507,7 +507,7 @@ class Message:
 
         return reacts
 
-    def add_reaction_from_id(self, u_id, react_id, chnl_id):
+    def add_reaction_from_id(self, u_id, react_id):
         react_dict = next((item for item in self.reacts if item['react_id'] == react_id), None)
         if react_dict is None:
             self.reacts.append({
@@ -524,7 +524,7 @@ class Message:
         user.add_notif(
             notif_type=MSG_REACTED,
             user_handle=user.handle,
-            channel_id=chnl_id
+            channel_id=self.chnl_id
         )
 
         data_store.set_store()

@@ -303,7 +303,7 @@ def message_react_v1(u_id, message_id, react_id):
     check_valid_react_id(react_id)
 
     message = data_store.get_msg(message_id)
-    message.add_reaction_from_id(u_id, react_id, message.chnl_id)
+    message.add_reaction_from_id(u_id, react_id)
 
     return {}
 
