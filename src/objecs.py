@@ -2,6 +2,7 @@
 besides the given ones """
 
 # Imports
+from datetime import datetime, timezone
 from src.data_store import data_store
 from src.encrypt import hashing_password
 from src.error import InputError
@@ -472,13 +473,17 @@ class DmChannel(Channel):
         return DmChannel(None, [], jsn['id'], owners, members)
 
 class Message:
-    def __init__(self, u_id, message, chnl_id, time_sent, id=None):
-        self.id = self.__generate_id(id)
+    def __init__(self, u_id, message, chnl_id, **kwargs):
         self.u_id = u_id
         self.message = message
         self.chnl_id = chnl_id
-        self.time_sent = time_sent
-
+        self.id = self.__generate_id(kwargs.get('id', None))
+        self.time_sent = kwargs.get(
+                'time_sent', 
+                ((datetime.now(timezone.utc)).replace(tzinfo=timezone.utc)).timestamp()
+            )
+        self.reacts = kwargs.get('reacts', [])
+        self.is_pinned = kwargs.get('is_pinned', False)
 
     def __generate_id(self, id):
         if id is not None:
@@ -489,13 +494,33 @@ class Message:
         data['last_used_id']['messages'] = curr_id
         return curr_id
 
+    def __get_usr_specific_react_dict(self, u_id):
+        reacts = self.reacts.copy()
+        for react in reacts:
+            react['is_this_user_reacted'] = u_id in react['u_ids']
+
+        return reacts
+
+    def to_dict(self, u_id):
+        return {
+            'message_id': self.id,
+            'user_id': self.u_id,
+            'message': self.message,
+            'time_sent': self.time_sent,
+            'reacts': self.__get_usr_specific_react_dict(u_id),
+            'is_pinned': self.is_pinned,
+        }
+
     def serialize(self):
         return {
-            'id': self.id,
             'u_id': self.u_id,
             'message': self.message,
             'chnl_id': self.chnl_id,
-            'time_sent': self.time_sent,
+            'kwargs': {
+                'id': self.id,
+                'time_sent': self.time_sent,
+                'is_pinned': self.is_pinned,
+            }
         }
 
     @staticmethod
