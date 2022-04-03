@@ -525,7 +525,7 @@ class Message:
 
     @staticmethod
     def decode_json(jsn):
-        return Message(jsn['u_id'], jsn['message'], jsn['chnl_id'], jsn['time_sent'], jsn['id'])
+        return Message(jsn['u_id'], jsn['message'], jsn['chnl_id'], jsn['kwargs'])
 
 class Notification:
     def __init__(self, **kwargs):
