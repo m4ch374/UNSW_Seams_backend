@@ -19,8 +19,8 @@ def test_valid_input():
     response = requests.get(USER_STATS_V1, {'token': user_data['token']})
     assert response.status_code == 200
     user_stats = response.json()['user_stats']
-    assert len(user_stats['channels_joined']) == 1
-    assert len(user_stats['dms_joined']) == 0
-    assert len(user_stats['messages_sent']) == 1
+    assert len(user_stats['channels_joined']) == 2
+    assert len(user_stats['dms_joined']) == 1
+    assert len(user_stats['messages_sent']) == 2
     assert type(user_stats['involvement_rate']) == type(1.2345)
 
