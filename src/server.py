@@ -269,9 +269,10 @@ def dm_leave_v1():
     u_id = data_store.get_id_from_token(data['token'])
     response = dm.dm_leave_v1(u_id, data['dm_id'])
     return dumps(response)
+# ==================================================
 
 
-# # =============== /messages domain =================
+# =============== /messages domain =================
 @APP.route("/channel/messages/v2", methods=['GET'])
 def channel_messages_v2():
     user_id = data_store.get_id_from_token(request.args.get('token'))
@@ -322,6 +323,17 @@ def message_remove_v1():
     msg_id = data['message_id']
     response = msg.message_remove_v1(user_id, msg_id)
     return dumps (response)
+
+# Reserved for msg/share
+
+@APP.route("/message/react/v1", methods=['POST'])
+def message_react_v1():
+    data = request.get_json()
+    u_id = data_store.get_id_from_token(data['token'])
+    response = msg.message_react_v1(u_id, data['message_id'], data['react_id'])
+    return dumps(response)
+
+# ==================================================
 
 # ================ /admin domain ===================
 
