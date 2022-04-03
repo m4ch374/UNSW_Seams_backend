@@ -26,3 +26,5 @@ N = 8   # example: AS23F8GS
 # Default icon
 ICON = 'http://t4.ftcdn.net/jpg/02/29/75/83/360_F_229758328_7x8jwCwjtBMmC6rgFzLFhZoEpLobB6L8.jpg'
 
+# Valid react ids
+REACT_IDS = [1]

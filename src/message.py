@@ -1,25 +1,8 @@
-from datetime import timezone
-import datetime as dt
 from src.data_store import data_store
-from src.objecs import Message, Channel, DmChannel
+from src.objecs import Message
 from src.error import InputError, AccessError
 import src.stats_helper as User
-
-
-# Helper function used in channel and dm messages
-# Converts list of msgs to list of dictionaries containing msg info
-def make_msg_list(messages):
-    msg_list = []
-    for message in messages:
-        msg_list.append({'message_id': message.id,
-                        'user_id': message.u_id,
-                        'message': message.message,
-                        'time_sent': message.time_sent,
-                        })
-
-    return msg_list
-
-
+from src.config import REACT_IDS
 
 '''
 Function: channel_messages_v1
@@ -60,7 +43,7 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         end = -1
         messages = channel.get_messages()[start:len(chnl_messages)+1]
     
-    msg_list = make_msg_list(messages)
+    msg_list = [msg.to_dict(auth_user_id) for msg in messages]
 
     return {
         'messages': msg_list,
@@ -107,7 +90,7 @@ def dm_messages_v1(user_id, dm_id, start):
         end = -1
         messages = chnl_messages[start:len(chnl_messages)]
     
-    msg_list = make_msg_list(messages)
+    msg_list = [msg.to_dict(user_id) for msg in messages]
 
     return {
         'messages': msg_list,
@@ -148,7 +131,6 @@ def message_send_v1(user_id, channel_id, message):
         u_id=user_id,
         message=message,
         chnl_id=channel_id,
-        time_sent=((dt.datetime.now(timezone.utc)).replace(tzinfo=timezone.utc)).timestamp()
     )
 
     # Append new message to data_store
@@ -194,7 +176,6 @@ def message_senddm_v1(user_id, dm_id, message):
         u_id=user_id,
         message=message,
         chnl_id=dm_id,
-        time_sent=((dt.datetime.now(timezone.utc)).replace(tzinfo=timezone.utc)).timestamp()
     )
 
     # Append new message to data_store
@@ -290,5 +271,77 @@ def message_remove_v1(user_id, msg_id):
 
     User.user_remove_msg(user_id)
     User.remove_msg()
+
+    return {}
+
+# ===============================================
+# Every thing below here is written by Henry
+# ===============================================
+
+# ================= Helper ======================
+def check_valid_msg_id(message_id, u_id):
+    if not data_store.has_msg_id(message_id):
+        raise InputError(description="error: Invalid msg id")
+
+    message = data_store.get_msg(message_id)
+    channel_originated = (data_store.get_channel(message.chnl_id) 
+        if data_store.has_channel_id(message.chnl_id) else data_store.get_dm(message.chnl_id))
+
+    if not channel_originated.has_member_id(u_id):
+        raise InputError(description="error: Not in channel of associated message")
+
+def check_valid_react_id(react_id):
+    if react_id not in REACT_IDS:
+        raise InputError(description="error: Invalid react ID")
+# ===============================================
+
+def message_share_v1(u_id, og_msg_id, msg, chnl_id, dm_id):
+    # Error checks
+    if chnl_id == -1 and dm_id == -1:
+        raise InputError(description="error: Both channel and dm id are invalid")
+    
+    if chnl_id != -1 and dm_id != -1:
+        raise InputError(description="error: Neither id is invalid")
+
+    check_valid_msg_id(og_msg_id, u_id)
+    
+    if len(msg) > 1000:
+        raise InputError(description="error: Message too large")
+
+    dest_chnl = data_store.get_channel(chnl_id) if chnl_id != -1 else data_store.get_dm(dm_id)
+    if not dest_chnl.has_member_id(u_id):
+        raise AccessError(description="error: Not in channel")
+
+    # share mesage
+    original_msg_content = data_store.get_msg(og_msg_id).message
+    shared_msg = Message(
+        u_id=u_id,
+        message=msg + 
+                "\n==========\n" + 
+                original_msg_content,
+        chnl_id=dest_chnl.id
+    )
+
+    data = data_store.get()
+    data['messages'].append(shared_msg)
+    data_store.set_store()
+
+    return {'shared_message_id': shared_msg.id}
+
+def message_react_v1(u_id, message_id, react_id):
+    check_valid_msg_id(message_id, u_id)
+    check_valid_react_id(react_id)
+
+    message = data_store.get_msg(message_id)
+    message.add_reaction_from_id(u_id, react_id)
+
+    return {}
+
+def message_unreact_v1(u_id, message_id, react_id):
+    check_valid_msg_id(message_id, u_id)
+    check_valid_react_id(react_id)
+
+    message = data_store.get_msg(message_id)
+    message.remove_reaction_from_id(u_id, react_id)
 
     return {}
