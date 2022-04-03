@@ -316,7 +316,7 @@ def message_share_v1(u_id, og_msg_id, msg, chnl_id, dm_id):
     original_msg_content = data_store.get_msg(og_msg_id).message
     shared_msg = Message(
         u_id=u_id,
-        message={msg} + 
+        message=msg + 
                 "\n==========\n" + 
                 original_msg_content,
         chnl_id=dest_chnl.id

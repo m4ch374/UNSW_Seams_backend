@@ -202,7 +202,7 @@ def test_share_to_non_joined_chnl(get_usr_1, get_usr_2):
         'dm_id': INVALID_DM_ID,
     }
     resp = requests.post(ENDPOINT_MESSAGE_SHARE, json=data)
-    assert resp.status_code == InputError.code
+    assert resp.status_code == AccessError.code
 
 def test_valid(get_usr_1):
     data = {
