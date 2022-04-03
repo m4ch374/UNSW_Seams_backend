@@ -162,7 +162,13 @@ class User:
         data_store.set_store()
 
     # Wanted to use **kwargs as arguments but pylint said no
-    def add_notif(self, notif_type, user_handle, channel_id=-1, dm_id=-1, msg_content=''):
+    def add_notif(self, notif_type, user_handle, channel_id, msg_content=''):
+        if data_store.has_channel_id(channel_id):
+            dm_id = -1
+        else:
+            dm_id = channel_id
+            channel_id = -1
+
         kwargs = {
             'notif_type': notif_type,
             'user_handle': user_handle,
@@ -500,6 +506,28 @@ class Message:
             react['is_this_user_reacted'] = u_id in react['u_ids']
 
         return reacts
+
+    def add_reaction_from_id(self, u_id, react_id, chnl_id):
+        react_dict = next((item for item in self.reacts if item['react_id'] == react_id), None)
+        if react_dict is None:
+            self.reacts.append({
+                'react_id': react_id,
+                'u_ids': [u_id]
+            })
+        else:
+            if u_id in react_dict['u_ids']:
+                raise InputError(description='error: Already reacted')
+            else:
+                react_dict['u_ids'].append(u_id)
+
+        user = data_store.get_user(u_id)
+        user.add_notif(
+            notif_type=MSG_REACTED,
+            user_handle=user.handle,
+            channel_id=chnl_id
+        )
+
+        data_store.set_store()
 
     def to_dict(self, u_id):
         return {
