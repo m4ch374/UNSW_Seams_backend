@@ -1,10 +1,7 @@
 from src.data_store import data_store
 from src.objecs import User
-from datetime import timezone
-import datetime as dt
+from src.time import get_time
 
-def get_time():
-    return ((dt.datetime.now(timezone.utc)).replace(tzinfo=timezone.utc)).timestamp()
 
 def user_join_ch(u_id):
     time = get_time()
