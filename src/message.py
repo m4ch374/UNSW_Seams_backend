@@ -278,10 +278,8 @@ def message_remove_v1(user_id, msg_id):
 # Every thing below here is written by Henry
 # ===============================================
 
-def message_share_v1():
-    pass
-
-def message_react_v1(u_id, message_id, react_id):
+# ================= Helper ======================
+def check_valid_msg_id(message_id, u_id):
     if not data_store.has_msg_id(message_id):
         raise InputError(description="error: Invalid msg id")
 
@@ -290,11 +288,30 @@ def message_react_v1(u_id, message_id, react_id):
         if data_store.has_channel_id(message.chnl_id) else data_store.get_dm(message.chnl_id))
 
     if not channel_originated.has_member_id(u_id):
-        raise InputError(description="error: Not in channal of associated message")
+        raise InputError(description="error: Not in channel of associated message")
 
+def check_valid_react_id(react_id):
     if react_id not in REACT_IDS:
         raise InputError(description="error: Invalid react ID")
+# ===============================================
 
+def message_share_v1():
+    pass
+
+def message_react_v1(u_id, message_id, react_id):
+    check_valid_msg_id(message_id, u_id)
+    check_valid_react_id(react_id)
+
+    message = data_store.get_msg(message_id)
     message.add_reaction_from_id(u_id, react_id, message.chnl_id)
+
+    return {}
+
+def message_unreact_v1(u_id, message_id, react_id):
+    check_valid_msg_id(message_id, u_id)
+    check_valid_react_id(react_id)
+
+    message = data_store.get_msg(message_id)
+    message.remove_reaction_from_id(u_id, react_id)
 
     return {}

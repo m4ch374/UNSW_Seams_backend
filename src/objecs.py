@@ -529,6 +529,19 @@ class Message:
 
         data_store.set_store()
 
+    def remove_reaction_from_id(self, u_id, react_id):
+        print(react_id)
+        react_dict = next((item for item in self.reacts if item['react_id'] == react_id), None)
+        if react_dict is None or u_id not in react_dict['u_ids']:
+            raise InputError(description='error: User did not react in the first place')
+        else:
+            if len(react_dict['u_ids']) <= 1:
+                self.reacts.remove(react_dict)
+            else:
+                react_dict['u_ids'].remove(u_id)
+
+        data_store.set_store()
+
     def to_dict(self, u_id):
         return {
             'message_id': self.id,
