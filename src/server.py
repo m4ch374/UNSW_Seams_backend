@@ -53,7 +53,12 @@ def echo():
         'data': data
     })
 
-    
+# remove annoying error in the frontend
+@APP.route("/notifications/get/v1", methods=['GET'])
+def notifications_get():
+    token = request.args.get('token')
+    return dumps({'notifications': []})
+
 # =============== /user domain =================
 @APP.route("/auth/login/v2", methods=['POST'])
 def login_v2():
@@ -110,11 +115,6 @@ def profile_sethandle_v1():
     token = data['token']
     handle_str = data['handle_str']
     return dumps(auth.user_profile_sethandle_v1(token, handle_str))
-
-@APP.route("/notifications/get/v1", methods=['GET'])
-def notifications_get():
-    token = request.args.get('token')
-    return dumps(auth.notifications_get_v1(token))
 
 @APP.route("/search/v1", methods=['GET'])
 def search():

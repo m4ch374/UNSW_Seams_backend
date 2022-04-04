@@ -310,26 +310,6 @@ def user_profile_sethandle_v1(token, handle_str):
 '''
 Arguments:
     token (string)  Encrypted user id and time
-
-Exceptions:
-    AccessError  - Occurs    Invalid token
-
-Return Value:
-    list of dict        -[{channel_id, dm_id, notification_message}...]
-'''
-def notifications_get_v1(token):
-    if not data_store.is_valid_token(token):
-        raise AccessError(description="Token is invalid!")
-    else:
-        u_id = data_store.get_id_from_token(token)
-        for user in data_store.get()['users']:
-            if user.id == u_id:
-                return {'notifications': user.notifications}
-
-
-'''
-Arguments:
-    token (string)  Encrypted user id and time
     query_str (string)  string to search
 
 Exceptions:
@@ -358,7 +338,6 @@ def search_v1(token, query_str):
         msg_list = []
         for msg in store['messages']:
             if msg.chnl_id in id_list and query_str.casefold() in msg.message.casefold():
-                #TODO
                 msg_list.append({'message_id': msg.id,
                                 'u_id': msg.u_id,
                                 'message': msg.message,
@@ -418,20 +397,15 @@ Return Value:
     An empty dirt {}
 '''
 def auth_passwordreset_reset_v1(reset_code, new_password):
-    reset_code = reset_code.upper()
-    if not data_store.has_reset_code(reset_code):
-        raise InputError(description="Invalid reset_code")
-    elif len(new_password) < 6:                                 # password less than 6 characters
-        raise InputError(description="Length of password should more than 6 characters")
-    else:
-        store = data_store.get()
-        u_id = store['reset_code'][reset_code]
-        for user in store['users']:
-            if user.id == u_id:
-                user.password = hashing_password(new_password)
-                store['reset_code'].pop(reset_code)
-                data_store.set(store)
-                return {}
+    if not data_store.has_reset_code(reset_code): raise InputError(description="Invalid reset_code")
+    if len(new_password) < 6: raise InputError(description="Length of password should more than 6 characters")
+    store = data_store.get()
+    for user in store['users']:
+        if user.id == store['reset_code'][reset_code.upper()]:
+            user.password = hashing_password(new_password)
+            store['reset_code'].pop(reset_code.upper())
+            data_store.set(store)
+            return {}
 
 
 '''

@@ -36,3 +36,7 @@ SENDLATERDM = BASE_URL + "/message/sendlaterdm/v1"
 
 ENDPOINT_DM_CREATE = BASE_URL + "/dm/create/v1"
 
+ENDPOINT_DM_SEND = BASE_URL + "/message/senddm/v1"
+
+ENDPOINT_ADMIN_REMOVE = BASE_URL + "/admin/user/remove/v1"
+
