@@ -2,6 +2,7 @@
 besides the given ones """
 
 # Imports
+import re
 from datetime import datetime, timezone
 from src.data_store import data_store
 from src.encrypt import hashing_password
@@ -162,31 +163,6 @@ class User:
         self.removed = True
         data_store.set_store()
 
-    # Wanted to use **kwargs as arguments but pylint said no
-    def add_notif(self, notif_type, user_handle, channel_id, msg_content=''):
-        if data_store.has_channel_id(channel_id):
-            dm_id = -1
-        else:
-            dm_id = channel_id
-            channel_id = -1
-
-        kwargs = {
-            'notif_type': notif_type,
-            'user_handle': user_handle,
-            'channel_id': channel_id,
-            'dm_id': dm_id,
-            'msg_content': msg_content,
-        }
-
-        new_notif = Notification(**kwargs)
-        self.notifications.insert(0, new_notif)
-        data_store.set_store()
-
-    def remove_react_notif(self, chnl_id):
-        is_remove = lambda x: x.notif_type == MSG_REACTED and (x.channel_id == chnl_id or x.dm_id == chnl_id)
-        self.notifications = [notif for notif in self.notifications if not is_remove(notif)]
-        data_store.set_store()
-
     @staticmethod
     def decode_json(jsn):
         return User(
@@ -312,7 +288,14 @@ class Channel:
 
         Adds a user to the current channel
     '''
-    def add_member(self, usr):
+    def add_member(self, usr, adder):
+        if not usr == adder:
+            Notification.push_notif(
+                u_id=usr.id,
+                notif_type=ADDED,
+                user_handle=adder.handle,
+                channel_id=self.id,
+            )
         self.members.append(usr)
         data_store.set_store()
 
@@ -322,8 +305,8 @@ class Channel:
 
         Adds a usr corresponding to the id to the current channel
     '''
-    def add_member_id(self, usr_id):
-        self.add_member(data_store.get_user(usr_id))
+    def add_member_id(self, usr_id, adder):
+        self.add_member(data_store.get_user(usr_id), data_store.get_user(adder))
 
     '''
         Argument:
@@ -425,7 +408,7 @@ class DmChannel(Channel):
         # add members in channel
         usr_list = [data_store.get_user(u_id) for u_id in u_ids]
         for usr in usr_list:
-            self.add_member(usr)
+            self.add_member(usr, owner)
 
         # Set name
         self.name = ', '.join(sorted([mem.handle for mem in self.members]))
@@ -491,6 +474,10 @@ class Message:
             )
         self.reacts = kwargs.get('reacts', [])
         self.is_pinned = kwargs.get('is_pinned', False)
+        self.tagged_id = kwargs.get('tagged', [])
+
+        # Push notif to the specified user if the user is tagged
+        self.__push_notifs_if_tagged()
 
     def __generate_id(self, id):
         if id is not None:
@@ -508,6 +495,44 @@ class Message:
 
         return reacts
 
+    def __push_notifs_if_tagged(self):
+        tags = re.findall('@[a-zA-Z0-9]*', self.message)
+
+        # getting rid of duplicates
+        tags = list(set(tags))
+
+        origin_chnl = self.get_origin_channel()
+
+        if origin_chnl is None:
+            return
+
+        mem_list = origin_chnl.members
+        handle_to_usr = lambda x: next((usr for usr in mem_list if usr.handle == x), None)
+
+        for tag in tags:
+            usr = handle_to_usr(tag[1:])
+            if usr is not None and usr.id not in self.tagged_id:
+                Notification.push_notif(
+                    u_id=usr.id,
+                    notif_type=TAGGED,
+                    user_handle=data_store.get_user(self.u_id).handle,
+                    channel_id=self.chnl_id,
+                    msg_content=self.message,
+                )
+                self.tagged_id.append(usr.id)
+
+
+    def get_origin_channel(self):
+        channel_originated = (data_store.get_channel(self.chnl_id) 
+            if data_store.has_channel_id(self.chnl_id) else data_store.get_dm(self.chnl_id))
+        
+        return channel_originated
+
+    def edit_message(self, new_msg):
+        self.message = new_msg
+        self.__push_notifs_if_tagged()
+        data_store.set_store()
+
     def add_reaction_from_id(self, u_id, react_id):
         react_dict = next((item for item in self.reacts if item['react_id'] == react_id), None)
         if react_dict is None:
@@ -521,12 +546,14 @@ class Message:
             else:
                 react_dict['u_ids'].append(u_id)
 
-        user = data_store.get_user(u_id)
-        user.add_notif(
-            notif_type=MSG_REACTED,
-            user_handle=user.handle,
-            channel_id=self.chnl_id
-        )
+        # Push notifications
+        if self.get_origin_channel().has_member_id(self.u_id):
+            Notification.push_notif(
+                u_id=self.u_id,
+                notif_type=MSG_REACTED,
+                user_handle=data_store.get_user(u_id).handle,
+                channel_id=self.chnl_id,
+            )
 
         data_store.set_store()
 
@@ -562,6 +589,7 @@ class Message:
                 'time_sent': self.time_sent,
                 'reacts': self.reacts,
                 'is_pinned': self.is_pinned,
+                'tagged_id': self.tagged_id,
             }
         }
 
@@ -611,3 +639,27 @@ class Notification:
     @staticmethod
     def decode_json(jsn):
         return Notification(**jsn)
+
+    # Wanted to use **kwargs as arguments but pylint said no
+    @staticmethod
+    def push_notif(u_id, notif_type, user_handle, channel_id, msg_content=''):
+        usr = data_store.get_user(u_id)
+
+        # Should have a one line solution but i couldnt think of any
+        if data_store.has_channel_id(channel_id):
+            dm_id = -1
+        else:
+            dm_id = channel_id
+            channel_id = -1
+
+        kwargs = {
+            'notif_type': notif_type,
+            'user_handle': user_handle,
+            'channel_id': channel_id,
+            'dm_id': dm_id,
+            'msg_content': msg_content,
+        }
+
+        new_notif = Notification(**kwargs)
+        usr.notifications.insert(0, new_notif)
+        data_store.set_store()
