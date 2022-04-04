@@ -279,7 +279,81 @@ def message_remove_v1(user_id, msg_id):
     User.remove_msg()
 
     return {}
+# ============================
+#        Helper Function 
+# ============================
+'''
+Function that checks if a user has owner permissions in the channel /dm where
+the message originated from
+Return true if user has owner permissions
+return false otherwise
+'''
+def does_user_have_owner_permissions_for_msg_chnl(auth_user_id, message_id):
+    message = data_store.get_msg(message_id)
+    channel_originated = (data_store.get_channel(message.chnl_id) 
+        if data_store.has_channel_id(message.chnl_id) 
+        else data_store.get_dm(message.chnl_id))
+    user = data_store.get_user(auth_user_id)
+    # works if they are a global owner
+    if user.owner:
+        return user.owner
+    else:
+        return channel_originated.has_owner_id(auth_user_id)
+'''
+Function: message_pin_v1
+Given a message within a channel or DM, mark it as "pinned".
 
+Arguments:
+    - auth_user_id (int) - id of user pinning message
+    - message_id (int) - id of the message being pinned
+Exceptions:
+    - InputError - Occurs when message_id is not a valid message within a 
+                   channel or DM that the authorised user has joined
+    - InputError - Occurs when the message is already pinned
+    - AccessError - Occurs when message_id refers to a valid message in a joined
+                    channel/DM and the authorised user does not have owner
+                    permissions in the channel/DM
+Return Value: {}
+'''
+def message_pin_v1(auth_user_id, msg_id):
+    
+    check_valid_msg_id(msg_id, auth_user_id)
+    if not does_user_have_owner_permissions_for_msg_chnl(auth_user_id, msg_id):
+        raise AccessError(description = 'User does not have owner permissions')
+    message = data_store.get_msg(msg_id)
+    if message.is_pinned == True:
+        raise InputError(description = 'Message is already pinned')
+    
+    message.is_pinned = True
+    data_store.set_store()
+    return {}
+
+'''
+Function: message_unpin_v1
+Given a message within a channel or DM, remove its mark as pinned.
+
+Arguments:
+    - auth_user_id (int) - id of user pinning message
+    - message_id (int) - id of the message being unpinned
+Exceptions
+    - InputError - Occurs when message_id is not a valid message within a 
+                   channel or DM that the authorised user has joined
+    - InputError - Occurs when the message is not already pinned
+    - AccessError - Occurs when message_id refers to a valid message in a joined
+                    channel/DM and the authorised user does not have owner
+                    permissions in the channel/DM
+'''
+def message_unpin_v1(auth_user_id, msg_id):
+    check_valid_msg_id(msg_id, auth_user_id)
+    if not does_user_have_owner_permissions_for_msg_chnl(auth_user_id, msg_id):
+        raise AccessError(description = 'User does not have owner permissions')
+    message = data_store.get_msg(msg_id)
+    if message.is_pinned == False:
+        raise InputError(description = 'Message is already not pinned')
+    
+    message.is_pinned = False
+    data_store.set_store()
+    return {}
 
 # ===============================================
 # Every thing below here is written by Hanqi
