@@ -241,9 +241,8 @@ class Datastore:
     """
     def remove_token_by_id(self, id):
         store = data_store.get()
-        for token in store['tokens']:
-            if data_store.get_id_from_token(token) == id:
-                store['tokens'].remove(token)
+        store['tokens'] = [tok for tok in store['tokens'] 
+            if data_store.get_id_from_token(tok) != id]
         data_store.set(store)
 
     """
