@@ -4,13 +4,13 @@ import smtplib, ssl
 import string
 import random
 import requests
+import threading
 from PIL import Image
 from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.objecs import User
 from src.encrypt import hashing_password
-from src.config import SERVER_EMAIL, SERVER_PASSWORD
-from src.config import N
+from src.config import SERVER_EMAIL, SERVER_PASSWORD, N, EXPIRATION
 from src.stats_helper import cal_involvement_rate, cal_utilization_rate
 
 
@@ -367,6 +367,16 @@ def send_email(email, reset_code):
 
 '''
 Arguments:
+    reset_code (string)
+'''
+def remove_reset_code(reset_code):
+    store = data_store.get()
+    store['reset_code'].pop(reset_code)
+    data_store.set(store)
+
+
+'''
+Arguments:
     email (string)    - user's email
 
 Return Value:
@@ -380,6 +390,8 @@ def auth_passwordreset_request_v1(email):
             reset_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=N))
             store['reset_code'][reset_code] = user.id
             data_store.set(store)
+            t = threading.Timer(EXPIRATION, remove_reset_code, [reset_code])
+            t.start()
             send_email(email, reset_code)
     return {}
 
@@ -403,8 +415,7 @@ def auth_passwordreset_reset_v1(reset_code, new_password):
     for user in store['users']:
         if user.id == store['reset_code'][reset_code.upper()]:
             user.password = hashing_password(new_password)
-            store['reset_code'].pop(reset_code.upper())
-            data_store.set(store)
+            remove_reset_code(reset_code.upper())
             return {}
 
 

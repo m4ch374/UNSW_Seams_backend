@@ -1,8 +1,10 @@
 from src.config import url as BASE_URL
-
+from src.config import EXPIRATION
 """
 from tests.iteration3_tests.user_tests.definitions import *
 """
+
+E = EXPIRATION + 1
 
 NOTIFICATIONS_GET_V1 = BASE_URL + "/notifications/get/v1"
 
