@@ -325,6 +325,26 @@ def message_remove_v1():
     response = msg.message_remove_v1(user_id, msg_id)
     return dumps (response)
 
+@APP.route("/message/sendlater/v1", methods = ['POST'])
+def sendlater():
+    data = request.get_json()
+    token = data['token']
+    channel_id = data['channel_id']
+    message = data['message']
+    time_sent = data['time_sent']
+    response = msg.message_sendlater_v1(token, channel_id, message, time_sent)
+    return dumps (response)
+
+@APP.route("/message/sendlaterdm/v1", methods = ['POST'])
+def sendlaterdm():
+    data = request.get_json()
+    token = data['token']
+    dm_id = data['dm_id']
+    message = data['message']
+    time_sent = data['time_sent']
+    response = msg.message_sendlaterdm_v1(token, dm_id, message, time_sent)
+    return dumps (response)
+
 @APP.route("/message/share/v1", methods=['POST'])
 def message_share_v1():
     data = request.get_json()

@@ -7,6 +7,7 @@ from src.data_store import data_store
 from src.encrypt import hashing_password
 from src.error import InputError
 from src.config import TAGGED, MSG_REACTED, ADDED, ICON
+from src.time import get_time
 
 '''
 User Class, store information of each user
@@ -54,9 +55,9 @@ class User:
         self.channels = kwargs.get('channels', 0)
         self.dms = kwargs.get('dms', 0)
         self.messages = kwargs.get('messages', 0)
-        self.ch_list = kwargs.get('ch_list', [])    # {'num_channels_joined': user.channels, 'time_stamp': user.chtime}
-        self.dm_list = kwargs.get('dm_list', [])    # {'num_dms_joined': user.dms, 'time_stamp': user.dmtime}
-        self.mg_list = kwargs.get('mg_list', [])    # {'num_messages_sent': user.messages, 'time_stamp': user.mgtime}
+        self.ch_list = kwargs.get('ch_list', [{'num_channels_joined': 0, 'time_stamp': get_time()}])    # {'num_channels_joined': user.channels, 'time_stamp': user.chtime}
+        self.dm_list = kwargs.get('dm_list', [{'num_dms_joined': 0, 'time_stamp': self.ch_list[0]['time_stamp']}])    # {'num_dms_joined': user.dms, 'time_stamp': user.dmtime}
+        self.mg_list = kwargs.get('mg_list', [{'num_messages_sent': 0, 'time_stamp': self.ch_list[0]['time_stamp']}])    # {'num_messages_sent': user.messages, 'time_stamp': user.mgtime}
 
     '''
         Generates id for user

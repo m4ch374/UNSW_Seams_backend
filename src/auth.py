@@ -139,6 +139,11 @@ def auth_register_v1(email, password, name_first, name_last):
             name_last = name_last,
         )
         store = data_store.get()
+        if new_user.id == 1:
+            time = new_user.ch_list[0]['time_stamp']
+            store['stats_list']['chs_list'] = [{'num_channels_exist': 0, 'time_stamp': time}]
+            store['stats_list']['dms_list'] = [{'num_dms_exist': 0, 'time_stamp': time}]
+            store['stats_list']['msg_list'] = [{'num_messages_exist': 0, 'time_stamp': time}]
         token = data_store.generate_token(new_user.id)
         store['users'].append(new_user)
         data_store.set(store)
@@ -358,8 +363,8 @@ def search_v1(token, query_str):
                                 'u_id': msg.u_id,
                                 'message': msg.message,
                                 'time_sent': msg.time_sent,
-                                'reacts': 'msg.reacts',
-                                'is_pinned': 'msg.is_pinned'})
+                                'reacts': msg.reacts,
+                                'is_pinned': msg.is_pinned})
         return {'messages': msg_list}
 
 

@@ -52,6 +52,14 @@
 
 # Iteration - 3
 
+## **0. Assumptions **
+- email: cs153122t1t15bant@unsw.com
+- name: magicant
+- password: unsw1531ant
+
+- email: cs1531ant@gmail.com
+- password: unsw1531ant
+
 ## **1. Assumptions - `reset_code` in `data_store` **
 
 - inside of <reset_code> is: {"A reset code" : id}
