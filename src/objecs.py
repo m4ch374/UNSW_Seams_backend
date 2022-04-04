@@ -162,31 +162,6 @@ class User:
         self.removed = True
         data_store.set_store()
 
-    # Wanted to use **kwargs as arguments but pylint said no
-    def add_notif(self, notif_type, user_handle, channel_id, msg_content=''):
-        if data_store.has_channel_id(channel_id):
-            dm_id = -1
-        else:
-            dm_id = channel_id
-            channel_id = -1
-
-        kwargs = {
-            'notif_type': notif_type,
-            'user_handle': user_handle,
-            'channel_id': channel_id,
-            'dm_id': dm_id,
-            'msg_content': msg_content,
-        }
-
-        new_notif = Notification(**kwargs)
-        self.notifications.insert(0, new_notif)
-        data_store.set_store()
-
-    def remove_react_notif(self, chnl_id):
-        is_remove = lambda x: x.notif_type == MSG_REACTED and (x.channel_id == chnl_id or x.dm_id == chnl_id)
-        self.notifications = [notif for notif in self.notifications if not is_remove(notif)]
-        data_store.set_store()
-
     @staticmethod
     def decode_json(jsn):
         return User(
@@ -508,6 +483,12 @@ class Message:
 
         return reacts
 
+    def get_origin_channel(self):
+        channel_originated = (data_store.get_channel(self.chnl_id) 
+            if data_store.has_channel_id(self.chnl_id) else data_store.get_dm(self.chnl_id))
+        
+        return channel_originated
+
     def add_reaction_from_id(self, u_id, react_id):
         react_dict = next((item for item in self.reacts if item['react_id'] == react_id), None)
         if react_dict is None:
@@ -521,12 +502,14 @@ class Message:
             else:
                 react_dict['u_ids'].append(u_id)
 
-        user = data_store.get_user(u_id)
-        user.add_notif(
-            notif_type=MSG_REACTED,
-            user_handle=user.handle,
-            channel_id=self.chnl_id
-        )
+        # Push notifications
+        if self.get_origin_channel().has_member_id(self.u_id):
+            Notification.push_notif(
+                u_id=self.u_id,
+                notif_type=MSG_REACTED,
+                user_handle=data_store.get_user(u_id).handle,
+                channel_id=self.chnl_id,
+            )
 
         data_store.set_store()
 
@@ -611,3 +594,27 @@ class Notification:
     @staticmethod
     def decode_json(jsn):
         return Notification(**jsn)
+
+    # Wanted to use **kwargs as arguments but pylint said no
+    @staticmethod
+    def push_notif(u_id, notif_type, user_handle, channel_id, msg_content=''):
+        usr = data_store.get_user(u_id)
+
+        # Should have a one line solution but i couldnt think of any
+        if data_store.has_channel_id(channel_id):
+            dm_id = -1
+        else:
+            dm_id = channel_id
+            channel_id = -1
+
+        kwargs = {
+            'notif_type': notif_type,
+            'user_handle': user_handle,
+            'channel_id': channel_id,
+            'dm_id': dm_id,
+            'msg_content': msg_content,
+        }
+
+        new_notif = Notification(**kwargs)
+        usr.notifications.insert(0, new_notif)
+        data_store.set_store()
