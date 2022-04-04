@@ -86,7 +86,7 @@ def test_message_pin_v1_not_an_owner(user_1_made_channel, get_usr_2):
     assert response.status_code == AccessError.code
 
 # pin a message with no problems (since original owner of chnl)
-def test_message_pin_v1_success(user_1_made_channel, get_usr_2):
+def test_message_pin_v1_success_1(user_1_made_channel, get_usr_2):
     # create a chnl, then join a second user and send a message
     user1_token = user_1_made_channel['token']
     chnl_id1 = user_1_made_channel['channel']
@@ -100,6 +100,32 @@ def test_message_pin_v1_success(user_1_made_channel, get_usr_2):
     msg_id = send_response['message_id']
 
     pin_json_input = create_msg_pin_input_json(user1_token, msg_id)
+    response = requests.post(ENDPOINT_MESSAGE_PIN, json = pin_json_input)
+    assert response.status_code == 200
+
+    # verify that the message has been pinned
+    get_msg_input = create_chnl_get_msgs(user1_token, chnl_id1, 0)
+    msg = requests.get(ENDPOINT_CHANNEL_MESSAGE, 
+                       params=get_msg_input).json()['messages'][0]
+
+    assert msg['is_pinned'] == True
+
+# pin a message with no problems even though user 2 is not the owner ( since 
+#user2 has global permissions)
+def test_message_pin_v1_success_2(get_usr_2, user_1_made_channel):
+    # create a chnl, then join a second user and send a message
+    user1_token = user_1_made_channel['token']
+    chnl_id1 = user_1_made_channel['channel']
+    user2_token = get_usr_2['token']
+    chnl_join_json = create_chnl_join_input_json(user2_token, chnl_id1)
+    requests.post(ENDPOINT_JOIN_CHNL, json = chnl_join_json)
+    
+    msg_send_json = create_msg_send_input_json(user2_token, chnl_id1, "hello!")
+    send_response = requests.post(ENDPOINT_MESSAGE_SEND,
+                                  json=msg_send_json).json()
+    msg_id = send_response['message_id']
+
+    pin_json_input = create_msg_pin_input_json(user2_token, msg_id)
     response = requests.post(ENDPOINT_MESSAGE_PIN, json = pin_json_input)
     # assert response.status_code == 200
 
