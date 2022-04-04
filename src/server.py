@@ -393,7 +393,6 @@ def message_unreact_v1():
 
 # ==================================================
 
->>>>>>> master
 # ================ /admin domain ===================
 
 @APP.route("/admin/user/remove/v1", methods=['DELETE'])
