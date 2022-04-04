@@ -310,6 +310,7 @@ Exceptions:
 Return Value: {}
 '''
 def message_pin_v1(auth_user_id, msg_id):
+    print("function called")
     return {}
 
 '''

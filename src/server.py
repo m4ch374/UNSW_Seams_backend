@@ -325,14 +325,17 @@ def message_remove_v1():
 
 @APP.route("/message/pin/v1", methods = ['POST'])
 def message_pin_v1():
+    
     data = request.get_json()
     auth_user_id = data_store.get_id_from_token(data['token'])
     msg_id = data['message_id']
+    
     response = msg.message_pin_v1(auth_user_id, msg_id)
+    print(f"response is {response}")
     return dumps(response)
 
 @APP.route("/message/unpin/v1", methods = ['POST'])
-def message_pin_v1():
+def message_unpin_v1():
     data = request.get_json()
     auth_user_id = data_store.get_id_from_token(data['token'])
     msg_id = data['message_id']
