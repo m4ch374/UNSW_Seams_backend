@@ -402,8 +402,7 @@ def check_valid_msg_id(message_id, u_id):
         raise InputError(description="error: Invalid msg id")
 
     message = data_store.get_msg(message_id)
-    channel_originated = (data_store.get_channel(message.chnl_id) 
-        if data_store.has_channel_id(message.chnl_id) else data_store.get_dm(message.chnl_id))
+    channel_originated = message.get_origin_channel()
 
     if not channel_originated.has_member_id(u_id):
         raise InputError(description="error: Not in channel of associated message")
