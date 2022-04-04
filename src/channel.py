@@ -49,7 +49,7 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
         raise InputError("User is already a member of the channel")
     # now that no errors have been detected, join the user to the channel
     chnl = data_store.get_channel(channel_id)
-    chnl.add_member_id(u_id)
+    chnl.add_member_id(u_id, auth_user_id)
 
     User.user_join_ch(u_id)
 
@@ -138,7 +138,7 @@ def channel_join_v1(auth_user_id, channel_id):
     
     # now that no errors have been detected, join the user to the channel
     chnl = data_store.get_channel(channel_id)
-    chnl.add_member_id(auth_user_id)
+    chnl.add_member_id(auth_user_id, auth_user_id)
     
     User.user_join_ch(auth_user_id)
 

@@ -287,7 +287,14 @@ class Channel:
 
         Adds a user to the current channel
     '''
-    def add_member(self, usr):
+    def add_member(self, usr, adder):
+        if not usr == adder:
+            Notification.push_notif(
+                u_id=usr.id,
+                notif_type=ADDED,
+                user_handle=adder.handle,
+                channel_id=self.id,
+            )
         self.members.append(usr)
         data_store.set_store()
 
@@ -297,8 +304,8 @@ class Channel:
 
         Adds a usr corresponding to the id to the current channel
     '''
-    def add_member_id(self, usr_id):
-        self.add_member(data_store.get_user(usr_id))
+    def add_member_id(self, usr_id, adder):
+        self.add_member(data_store.get_user(usr_id), data_store.get_user(adder))
 
     '''
         Argument:
@@ -400,7 +407,7 @@ class DmChannel(Channel):
         # add members in channel
         usr_list = [data_store.get_user(u_id) for u_id in u_ids]
         for usr in usr_list:
-            self.add_member(usr)
+            self.add_member(usr, owner)
 
         # Set name
         self.name = ', '.join(sorted([mem.handle for mem in self.members]))
