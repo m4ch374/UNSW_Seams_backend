@@ -245,7 +245,7 @@ def message_edit_v1(user_id, msg_id, message):
         message_remove_v1(user_id, msg_id)
     else:
         msg = data_store.get_msg(msg_id)
-        msg.message = message
+        msg.edit_message(message)
 
     return {}
     

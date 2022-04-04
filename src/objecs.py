@@ -2,6 +2,7 @@
 besides the given ones """
 
 # Imports
+import re
 from datetime import datetime, timezone
 from src.data_store import data_store
 from src.encrypt import hashing_password
@@ -473,6 +474,10 @@ class Message:
             )
         self.reacts = kwargs.get('reacts', [])
         self.is_pinned = kwargs.get('is_pinned', False)
+        self.tagged_id = kwargs.get('tagged', [])
+
+        # Push notif to the specified user if the user is tagged
+        self.__push_notifs_if_tagged()
 
     def __generate_id(self, id):
         if id is not None:
@@ -490,11 +495,43 @@ class Message:
 
         return reacts
 
+    def __push_notifs_if_tagged(self):
+        tags = re.findall('@[a-zA-Z0-9]*', self.message)
+
+        # getting rid of duplicates
+        tags = list(set(tags))
+
+        origin_chnl = self.get_origin_channel()
+
+        if origin_chnl is None:
+            return
+
+        mem_list = origin_chnl.members
+        handle_to_usr = lambda x: next((usr for usr in mem_list if usr.handle == x), None)
+
+        for tag in tags:
+            usr = handle_to_usr(tag[1:])
+            if usr is not None and usr.id not in self.tagged_id:
+                Notification.push_notif(
+                    u_id=usr.id,
+                    notif_type=TAGGED,
+                    user_handle=data_store.get_user(self.u_id).handle,
+                    channel_id=self.chnl_id,
+                    msg_content=self.message,
+                )
+                self.tagged_id.append(usr.id)
+
+
     def get_origin_channel(self):
         channel_originated = (data_store.get_channel(self.chnl_id) 
             if data_store.has_channel_id(self.chnl_id) else data_store.get_dm(self.chnl_id))
         
         return channel_originated
+
+    def edit_message(self, new_msg):
+        self.message = new_msg
+        self.__push_notifs_if_tagged()
+        data_store.set_store()
 
     def add_reaction_from_id(self, u_id, react_id):
         react_dict = next((item for item in self.reacts if item['react_id'] == react_id), None)
@@ -552,6 +589,7 @@ class Message:
                 'time_sent': self.time_sent,
                 'reacts': self.reacts,
                 'is_pinned': self.is_pinned,
+                'tagged_id': self.tagged_id,
             }
         }
 
