@@ -127,7 +127,7 @@ def test_message_pin_v1_success_2(get_usr_2, user_1_made_channel):
 
     pin_json_input = create_msg_pin_input_json(user2_token, msg_id)
     response = requests.post(ENDPOINT_MESSAGE_PIN, json = pin_json_input)
-    # assert response.status_code == 200
+    assert response.status_code == 200
 
     # verify that the message has been pinned
     get_msg_input = create_chnl_get_msgs(user1_token, chnl_id1, 0)
