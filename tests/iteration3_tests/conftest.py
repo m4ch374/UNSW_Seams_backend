@@ -39,3 +39,12 @@ def get_usr_1():
 def get_usr_2():
     resp = requests.post(ENDPOINT_REGISTER_USR, json=REGISTER_DETAILS_2).json()
     return resp
+
+@pytest.fixture
+def user_1_made_channel():
+    user = requests.post(ENDPOINT_REGISTER_USR, json=REGISTER_DETAILS_1).json()
+    chnl = requests.post(ENDPOINT_CREATE_CHNL, json ={'token':user['token'],
+                                                      'name':"chnl_name",
+                                                      'is_public':True}).json()
+
+    return {'channel': chnl['channel_id'], 'token':user['token']}

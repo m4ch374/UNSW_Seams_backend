@@ -325,6 +325,22 @@ def message_remove_v1():
     response = msg.message_remove_v1(user_id, msg_id)
     return dumps (response)
 
+@APP.route("/message/pin/v1", methods = ['POST'])
+def message_pin_v1():
+    data = request.get_json()
+    auth_user_id = data_store.get_id_from_token(data['token'])
+    msg_id = data['message_id']
+    response = msg.message_pin_v1(auth_user_id, msg_id)
+    return dumps(response)
+
+@APP.route("/message/unpin/v1", methods = ['POST'])
+def message_unpin_v1():
+    data = request.get_json()
+    auth_user_id = data_store.get_id_from_token(data['token'])
+    msg_id = data['message_id']
+    response = msg.message_unpin_v1(auth_user_id, msg_id)
+    return dumps(response)
+
 @APP.route("/message/sendlater/v1", methods = ['POST'])
 def sendlater():
     data = request.get_json()
