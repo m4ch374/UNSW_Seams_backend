@@ -29,3 +29,10 @@ ENDPOINT_CHNL_INVITE = BASE_URL + '/channel/invite/v2'
 ENDPOINT_CREATE_CHNL = BASE_URL + '/channels/create/v2'
 
 ENDPOINT_MESSAGE_SEND = BASE_URL + '/message/send/v1'
+
+SENDLATER = BASE_URL + "/message/sendlater/v1"
+
+SENDLATERDM = BASE_URL + "/message/sendlaterdm/v1"
+
+ENDPOINT_DM_CREATE = BASE_URL + "/dm/create/v1"
+
