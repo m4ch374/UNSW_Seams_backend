@@ -370,9 +370,10 @@ Arguments:
     reset_code (string)
 '''
 def remove_reset_code(reset_code):
-    store = data_store.get()
-    store['reset_code'].pop(reset_code)
-    data_store.set(store)
+    if data_store.has_reset_code(reset_code.upper()):
+        store = data_store.get()
+        store['reset_code'].pop(reset_code.upper())
+        data_store.set(store)
 
 
 '''
@@ -409,14 +410,13 @@ Return Value:
     An empty dirt {}
 '''
 def auth_passwordreset_reset_v1(reset_code, new_password):
-    if not data_store.has_reset_code(reset_code): raise InputError(description="Invalid reset_code")
+    if not data_store.has_reset_code(reset_code.upper()): raise InputError(description="Invalid reset_code")
+    u_id = data_store.get()['reset_code'][reset_code.upper()]
+    remove_reset_code(reset_code.upper())
     if len(new_password) < 6: raise InputError(description="Length of password should more than 6 characters")
-    store = data_store.get()
-    for user in store['users']:
-        if user.id == store['reset_code'][reset_code.upper()]:
-            user.password = hashing_password(new_password)
-            remove_reset_code(reset_code.upper())
-            return {}
+    for user in data_store.get()['users']:
+        if user.id == u_id: user.password = hashing_password(new_password)
+    return {}
 
 
 '''
