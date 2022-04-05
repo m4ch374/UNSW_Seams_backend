@@ -35,10 +35,10 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         raise InputError(description='Invalid channel')
     channel = data_store.get_channel(channel_id)
     if channel.has_member_id(auth_user_id) == False:
-        raise AccessError('Invalid access to channel')
+        raise AccessError(description='Invalid access to channel')
     chnl_messages = channel.get_messages()
     if start > len(chnl_messages) or start < 0:
-        raise InputError('Invalid message start index')
+        raise InputError(description='Invalid message start index')
     
     # Splitting the stored messages list to paginate returned messages
     if start + 50 < len(chnl_messages):
@@ -243,16 +243,9 @@ def message_edit_v1(user_id, msg_id, message):
 
     if len(message) == 0:
         message_remove_v1(user_id, msg_id)
-<<<<<<< HEAD
-        return {}
-    
-    msg = data_store.get_msg(msg_id)
-    msg.message = message
-=======
     else:
         msg = data_store.get_msg(msg_id)
         msg.edit_message(message)
->>>>>>> b271ad130fc01380e7bbef9572e7cfa6bba64296
 
     return {}
     
@@ -278,13 +271,9 @@ def message_remove_v1(user_id, msg_id):
     message_edit_and_remove_checks(user_id, msg_id)
 
     msg = data_store.get_msg(msg_id)
-<<<<<<< HEAD
-    data_store.remove_msg(msg)
-=======
     data = data_store.get()
     data['messages'].remove(msg)
     data_store.set_store()
->>>>>>> b271ad130fc01380e7bbef9572e7cfa6bba64296
 
     User.user_remove_msg(user_id)
     User.remove_msg()

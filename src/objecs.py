@@ -215,7 +215,7 @@ class Channel:
         self.owners = self.__get_owners(owner, owners)
         self.members = self.__get_members(owner, members)
         self.is_public = is_public
-        self.standup_end = {}
+        self.standup = {'active': False, 'user_id': None, 'end': None, 'message': '',}
 
     '''
         Generates id for Channel
@@ -387,6 +387,13 @@ class Channel:
             'all_members': [member.to_dict() for member in self.members],
         }
         return return_dict
+    
+    def clear_standup(self, usr):
+        self.standup['active'] = False
+        self.standup['user_id'] = None
+        self.standup['end'] = None
+        self.standup['message'] = ''
+        data_store.set_store()
 
     @staticmethod
     def decode_json(jsn, owners, members):
