@@ -20,7 +20,7 @@ def test_invalid_url():
 def test_invalid_size():
     user = requests.post(REGISTER_V2, json = {'email': 'z5555555@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'William', 'name_last': 'Wu'})
     user_data = user.json()
-    size = 9999999
+    size = 9999
     json = {'token': user_data['token'], 'img_url': JPG, 'x_start': size, 'y_start': size, 'x_end': size, 'y_end': size}
     response = requests.post(USER_PROFILE_UPLOADPHOTO_V1, json = json)
     assert response.status_code == 400
