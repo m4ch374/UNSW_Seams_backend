@@ -21,7 +21,7 @@ SERVER_EMAIL = "cs1531ant@gmail.com"
 SERVER_PASSWORD = 'unsw1531ant'
 
 # size of reset_code
-N = 8   # example: AS23F8GS
+N = 5   # example: AS23F8GS
 
 # expiration of reset_code
 EXPIRATION = 1 # 60 when submitting

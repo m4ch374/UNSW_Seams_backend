@@ -1,10 +1,11 @@
 import re
 import urllib.request
-import smtplib, ssl
+import smtplib
 import string
 import random
 import requests
 import threading
+from email.message import EmailMessage
 from PIL import Image
 from src.data_store import data_store
 from src.error import InputError, AccessError
@@ -353,16 +354,15 @@ Arguments:
     reset_code (string) - reset code
 '''
 def send_email(email, reset_code):
-    port = 465
-    smtp_server = "smtp.gmail.com"
-    sender_email = SERVER_EMAIL
-    password = SERVER_PASSWORD
-    receiver_email = email
-    message = reset_code
-    context = ssl.create_default_context()
-    with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
-        server.login(sender_email, password)
-        server.sendmail(sender_email, receiver_email, message)
+    msg = EmailMessage()
+    msg.set_content(f'Your reset code is: < {reset_code} >, expire in one minute.\n(Do not share this verification code with others)')
+    msg['Subject'] = 'Seams Reset Code'
+    msg['From'] = "UNSW Seams"
+    msg['To'] = email
+    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    server.login(SERVER_EMAIL, SERVER_PASSWORD)
+    server.send_message(msg)
+    server.quit()
 
 
 '''
