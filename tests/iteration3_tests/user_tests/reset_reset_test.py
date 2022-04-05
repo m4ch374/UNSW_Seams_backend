@@ -6,11 +6,11 @@ from src.config import SERVER_EMAIL, SERVER_PASSWORD
 def get_code():
     server = imaplib.IMAP4_SSL("imap.gmail.com")
     server.login(SERVER_EMAIL, SERVER_PASSWORD)
-    inbox = server.select("INBOX")
-    type, data = server.search(None, "ALL")
+    _ = server.select("INBOX")
+    _, data = server.search(None, "ALL")
     msgList = data[0].split()
     latest = msgList[len(msgList) - 1]
-    type, datas = server.fetch(latest, '(RFC822)')
+    _, datas = server.fetch(latest, '(RFC822)')
     text = datas[0][1].decode('utf8')
     message = email.message_from_string(text)
     msglist = str(message).split('\n')
