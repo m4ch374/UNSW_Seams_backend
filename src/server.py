@@ -56,7 +56,6 @@ def echo():
 # remove annoying error in the frontend
 @APP.route("/notifications/get/v1", methods=['GET'])
 def notifications_get():
-    token = request.args.get('token')
     return dumps({'notifications': []})
 
 # =============== /user domain =================
