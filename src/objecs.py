@@ -2,11 +2,13 @@
 besides the given ones """
 
 # Imports
-import sys
+import re
+from datetime import datetime, timezone
 from src.data_store import data_store
 from src.encrypt import hashing_password
 from src.error import InputError
 from src.config import TAGGED, MSG_REACTED, ADDED, ICON
+from src.time import get_time
 
 '''
 User Class, store information of each user
@@ -40,23 +42,23 @@ To represent User in dict
 usr_in_dict = new_user.to_dict()
 '''
 class User:
-    def __init__(self, email, password, name_first, name_last, id=None, removed=False, notifications=[], is_load=False):
+    def __init__(self, email, password, name_first, name_last, is_load=False, **kwargs):
         self.email = email
         self.password = hashing_password(password) if not is_load else password
         self.name_first = name_first
         self.name_last = name_last
-        self.id = self.__generate_id(id)
-        self.handle = self.__create_handle(name_first, name_last)
-        self.owner = self.id == 1
-        self.removed = removed
-        self.img = ICON
-        self.notifications = notifications
-        self.channels = 0
-        self.dms = 0
-        self.messages = 0
-        self.ch_list =[]    # {'num_channels_joined': user.channels, 'time_stamp': user.chtime}
-        self.dm_list =[]    # {'num_dms_joined': user.dms, 'time_stamp': user.dmtime}
-        self.mg_list =[]    # {'num_messages_sent': user.messages, 'time_stamp': user.mgtime}
+        self.id = self.__generate_id(kwargs.get('id', None))
+        self.handle = kwargs.get('handle', self.__create_handle(name_first, name_last))
+        self.owner = kwargs.get('owner', self.id == 1)
+        self.removed = kwargs.get('removed', False)
+        self.img = kwargs.get('img', ICON)
+        self.notifications = [Notification.decode_json(item) for item in kwargs.get('notifications', [])]
+        self.channels = kwargs.get('channels', 0)
+        self.dms = kwargs.get('dms', 0)
+        self.messages = kwargs.get('messages', 0)
+        self.ch_list = kwargs.get('ch_list', [{'num_channels_joined': 0, 'time_stamp': get_time()}])    # {'num_channels_joined': user.channels, 'time_stamp': user.chtime}
+        self.dm_list = kwargs.get('dm_list', [{'num_dms_joined': 0, 'time_stamp': self.ch_list[0]['time_stamp']}])    # {'num_dms_joined': user.dms, 'time_stamp': user.dmtime}
+        self.mg_list = kwargs.get('mg_list', [{'num_messages_sent': 0, 'time_stamp': self.ch_list[0]['time_stamp']}])    # {'num_messages_sent': user.messages, 'time_stamp': user.mgtime}
 
     '''
         Generates id for user
@@ -108,24 +110,27 @@ class User:
             handle = handle_temp
         return handle
 
+    # dosent look clean but i have no better idea
     def serialize(self):
         return {
             'email': self.email,
             'password': self.password,
             'name_first': self.name_first,
             'name_last': self.name_last,
-            'id': self.id,
-            'handle': self.handle,
-            'owner': self.owner,
-            'removed': self.removed,
-            'img': self.img,
-            'notifications': [notif.serialize() for notif in self.notifications],
-            'channels': self.channels,
-            'dms': self.dms,
-            'messages': self.messages,
-            'ch_list': self.ch_list,
-            'dm_list': self.dm_list,
-            'mg_list': self.mg_list,
+            'kwargs': {
+                'id': self.id,
+                'handle': self.handle,
+                'owner': self.owner,
+                'removed': self.removed,
+                'img': self.img,
+                'notifications': [notif.serialize() for notif in self.notifications],
+                'channels': self.channels,
+                'dms': self.dms,
+                'messages': self.messages,
+                'ch_list': self.ch_list,
+                'dm_list': self.dm_list,
+                'mg_list': self.mg_list,
+            }
         }
 
     '''
@@ -158,31 +163,16 @@ class User:
         self.removed = True
         data_store.set_store()
 
-    # Wanted to use **kwargs as arguments but pylint said no
-    def add_notif(self, notif_type, user_handle, channel_id=-1, dm_id=-1, msg_content=''):
-        kwargs = {
-            'notif_type': notif_type,
-            'user_handle': user_handle,
-            'channel_id': channel_id,
-            'dm_id': dm_id,
-            'msg_content': msg_content,
-        }
-
-        new_notif = Notification(**kwargs)
-        self.notifications.insert(0, new_notif)
-        data_store.set_store()
-
-    def remove_react_notif(self, chnl_id):
-        is_remove = lambda x: x.notif_type == MSG_REACTED and (x.channel_id == chnl_id or x.dm_id == chnl_id)
-        self.notifications = [notif for notif in self.notifications if not is_remove(notif)]
-        data_store.set_store()
-
     @staticmethod
     def decode_json(jsn):
-        notif_lst = [Notification.decode_json(item) for item in jsn['notifications']]
-
-        return User(jsn['email'], jsn['password'], jsn['name_first'], 
-            jsn['name_last'], jsn['id'], jsn['removed'], notif_lst, True)
+        return User(
+            email=jsn['email'], 
+            password=jsn['password'], 
+            name_first=jsn['name_first'], 
+            name_last=jsn['name_last'], 
+            is_load=True, 
+            kwargs=jsn['kwargs']
+        )
 
 '''
 Channel class, stores info of a channel
@@ -299,7 +289,14 @@ class Channel:
 
         Adds a user to the current channel
     '''
-    def add_member(self, usr):
+    def add_member(self, usr, adder):
+        if not usr == adder:
+            Notification.push_notif(
+                u_id=usr.id,
+                notif_type=ADDED,
+                user_handle=adder.handle,
+                channel_id=self.id,
+            )
         self.members.append(usr)
         data_store.set_store()
 
@@ -309,8 +306,8 @@ class Channel:
 
         Adds a usr corresponding to the id to the current channel
     '''
-    def add_member_id(self, usr_id):
-        self.add_member(data_store.get_user(usr_id))
+    def add_member_id(self, usr_id, adder):
+        self.add_member(data_store.get_user(usr_id), data_store.get_user(adder))
 
     '''
         Argument:
@@ -412,7 +409,7 @@ class DmChannel(Channel):
         # add members in channel
         usr_list = [data_store.get_user(u_id) for u_id in u_ids]
         for usr in usr_list:
-            self.add_member(usr)
+            self.add_member(usr, owner)
 
         # Set name
         self.name = ', '.join(sorted([mem.handle for mem in self.members]))
@@ -469,13 +466,21 @@ class DmChannel(Channel):
         return DmChannel(None, [], jsn['id'], owners, members)
 
 class Message:
-    def __init__(self, u_id, message, chnl_id, time_sent, id=None):
-        self.id = self.__generate_id(id)
+    def __init__(self, u_id, message, chnl_id, **kwargs):
         self.u_id = u_id
         self.message = message
         self.chnl_id = chnl_id
-        self.time_sent = time_sent
+        self.id = self.__generate_id(kwargs.get('id', None))
+        self.time_sent = kwargs.get(
+                'time_sent', 
+                ((datetime.now(timezone.utc)).replace(tzinfo=timezone.utc)).timestamp()
+            )
+        self.reacts = kwargs.get('reacts', [])
+        self.is_pinned = kwargs.get('is_pinned', False)
+        self.tagged_id = kwargs.get('tagged', [])
 
+        # Push notif to the specified user if the user is tagged
+        self.__push_notifs_if_tagged()
 
     def __generate_id(self, id):
         if id is not None:
@@ -486,18 +491,119 @@ class Message:
         data['last_used_id']['messages'] = curr_id
         return curr_id
 
+    def __get_usr_specific_react_dict(self, u_id):
+        reacts = self.reacts.copy()
+        for react in reacts:
+            react['is_this_user_reacted'] = u_id in react['u_ids']
+
+        return reacts
+
+    def __push_notifs_if_tagged(self):
+        tags = re.findall('@[a-zA-Z0-9]*', self.message)
+
+        # getting rid of duplicates
+        tags = list(set(tags))
+
+        origin_chnl = self.get_origin_channel()
+
+        if origin_chnl is None:
+            return
+
+        mem_list = origin_chnl.members
+        handle_to_usr = lambda x: next((usr for usr in mem_list if usr.handle == x), None)
+
+        for tag in tags:
+            usr = handle_to_usr(tag[1:])
+            if usr is not None and usr.id not in self.tagged_id:
+                Notification.push_notif(
+                    u_id=usr.id,
+                    notif_type=TAGGED,
+                    user_handle=data_store.get_user(self.u_id).handle,
+                    channel_id=self.chnl_id,
+                    msg_content=self.message,
+                )
+                self.tagged_id.append(usr.id)
+
+
+    def get_origin_channel(self):
+        channel_originated = (data_store.get_channel(self.chnl_id) 
+            if data_store.has_channel_id(self.chnl_id) else data_store.get_dm(self.chnl_id))
+        
+        return channel_originated
+
+    def edit_message(self, new_msg):
+        self.message = new_msg
+        self.__push_notifs_if_tagged()
+        data_store.set_store()
+
+    def add_reaction_from_id(self, u_id, react_id):
+        react_dict = next((item for item in self.reacts if item['react_id'] == react_id), None)
+        if react_dict is None:
+            self.reacts.append({
+                'react_id': react_id,
+                'u_ids': [u_id]
+            })
+        else:
+            if u_id in react_dict['u_ids']:
+                raise InputError(description='error: Already reacted')
+            else:
+                react_dict['u_ids'].append(u_id)
+
+        # Push notifications
+        if self.get_origin_channel().has_member_id(self.u_id):
+            Notification.push_notif(
+                u_id=self.u_id,
+                notif_type=MSG_REACTED,
+                user_handle=data_store.get_user(u_id).handle,
+                channel_id=self.chnl_id,
+            )
+
+        data_store.set_store()
+
+    def remove_reaction_from_id(self, u_id, react_id):
+        react_dict = next((item for item in self.reacts if item['react_id'] == react_id), None)
+        if react_dict is None or u_id not in react_dict['u_ids']:
+            raise InputError(description='error: User did not react in the first place')
+        else:
+            if len(react_dict['u_ids']) <= 1:
+                self.reacts.remove(react_dict)
+            else:
+                react_dict['u_ids'].remove(u_id)
+
+        data_store.set_store()
+
+    def to_dict(self, u_id):
+        return {
+            'message_id': self.id,
+            'user_id': self.u_id,
+            'message': self.message,
+            'time_sent': self.time_sent,
+            'reacts': self.__get_usr_specific_react_dict(u_id),
+            'is_pinned': self.is_pinned,
+        }
+
     def serialize(self):
         return {
-            'id': self.id,
             'u_id': self.u_id,
             'message': self.message,
             'chnl_id': self.chnl_id,
-            'time_sent': self.time_sent,
+            'kwargs': {
+                'id': self.id,
+                'time_sent': self.time_sent,
+                'reacts': self.reacts,
+                'is_pinned': self.is_pinned,
+                'tagged_id': self.tagged_id,
+            }
         }
 
     @staticmethod
     def decode_json(jsn):
-        return Message(jsn['u_id'], jsn['message'], jsn['chnl_id'], jsn['time_sent'], jsn['id'])
+        return Message(
+            u_id=jsn['u_id'],
+            message=jsn['message'], 
+            chnl_id=jsn['chnl_id'], 
+            kwargs=jsn['kwargs']
+        )
 
 class Notification:
     def __init__(self, **kwargs):
@@ -536,3 +642,27 @@ class Notification:
     @staticmethod
     def decode_json(jsn):
         return Notification(**jsn)
+
+    # Wanted to use **kwargs as arguments but pylint said no
+    @staticmethod
+    def push_notif(u_id, notif_type, user_handle, channel_id, msg_content=''):
+        usr = data_store.get_user(u_id)
+
+        # Should have a one line solution but i couldnt think of any
+        if data_store.has_channel_id(channel_id):
+            dm_id = -1
+        else:
+            dm_id = channel_id
+            channel_id = -1
+
+        kwargs = {
+            'notif_type': notif_type,
+            'user_handle': user_handle,
+            'channel_id': channel_id,
+            'dm_id': dm_id,
+            'msg_content': msg_content,
+        }
+
+        new_notif = Notification(**kwargs)
+        usr.notifications.insert(0, new_notif)
+        data_store.set_store()

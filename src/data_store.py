@@ -63,7 +63,7 @@ initial_object = {
         'dms_list': [],     # [{'num_dms_exist': dms_num, 'time_stamp': time}]
         'msg_list': [],     # [{'num_messages_exist': msg_num, 'time_stamp': time}]
     },
-} # credit to Hanqi for this placeholder love you <3
+}
 
 # Definitions
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__)) + '/'
@@ -81,10 +81,10 @@ class Datastore:
             data = self.__json_to_obj(json.load(file_content))
         except Exception as e:   # if file is not found or file is empty, return initial obj
             print(e)
+            traceback.print_exc()
             file_content = open(DATA_PATH, "w+")
             data = initial_object
             json.dump(data, file_content, indent=4)
-            traceback.print_exc()
         
         file_content.close()
         return data
@@ -238,9 +238,8 @@ class Datastore:
     """
     def remove_token_by_id(self, id):
         store = data_store.get()
-        for token in store['tokens']:
-            if data_store.get_id_from_token(token) == id:
-                store['tokens'].remove(token)
+        store['tokens'] = [tok for tok in store['tokens'] 
+            if data_store.get_id_from_token(tok) != id]
         data_store.set(store)
 
     """

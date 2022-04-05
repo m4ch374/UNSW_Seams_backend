@@ -1,24 +1,12 @@
-from datetime import timezone
-import datetime as dt
 from src.data_store import data_store
-from src.objecs import Message, Channel, DmChannel
+from src.objecs import Message
 from src.error import InputError, AccessError
 import src.stats_helper as User
-
-
-# Helper function used in channel and dm messages
-# Converts list of msgs to list of dictionaries containing msg info
-def make_msg_list(messages):
-    msg_list = []
-    for message in messages:
-        msg_list.append({'message_id': message.id,
-                        'user_id': message.u_id,
-                        'message': message.message,
-                        'time_sent': message.time_sent,
-                        })
-
-    return msg_list
-
+from src.config import REACT_IDS
+from src.time import get_time
+from datetime import timezone
+import datetime as dt
+import threading
 
 
 '''
@@ -60,7 +48,7 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         end = -1
         messages = channel.get_messages()[start:len(chnl_messages)+1]
     
-    msg_list = make_msg_list(messages)
+    msg_list = [msg.to_dict(auth_user_id) for msg in messages]
 
     return {
         'messages': msg_list,
@@ -107,7 +95,7 @@ def dm_messages_v1(user_id, dm_id, start):
         end = -1
         messages = chnl_messages[start:len(chnl_messages)]
     
-    msg_list = make_msg_list(messages)
+    msg_list = [msg.to_dict(user_id) for msg in messages]
 
     return {
         'messages': msg_list,
@@ -148,7 +136,6 @@ def message_send_v1(user_id, channel_id, message):
         u_id=user_id,
         message=message,
         chnl_id=channel_id,
-        time_sent=((dt.datetime.now(timezone.utc)).replace(tzinfo=timezone.utc)).timestamp()
     )
 
     # Append new message to data_store
@@ -194,7 +181,6 @@ def message_senddm_v1(user_id, dm_id, message):
         u_id=user_id,
         message=message,
         chnl_id=dm_id,
-        time_sent=((dt.datetime.now(timezone.utc)).replace(tzinfo=timezone.utc)).timestamp()
     )
 
     # Append new message to data_store
@@ -214,8 +200,6 @@ def message_edit_and_remove_checks(user_id, msg_id):
     if data_store.has_msg_id(msg_id) == False:
         raise InputError(description='Message id does not exist')
     msg = data_store.get_msg(msg_id)
-    if msg.chnl_id == -1:
-        raise InputError(description='Message has been deleted')
     channel = data_store.get_channel(msg.chnl_id)
     channel_type = 'channel'
     if channel == None:
@@ -256,12 +240,19 @@ def message_edit_v1(user_id, msg_id, message):
     
     if len(message) > 1000:
         raise InputError(description='Message must be less than 1000 characters')
+
     if len(message) == 0:
         message_remove_v1(user_id, msg_id)
+<<<<<<< HEAD
         return {}
     
     msg = data_store.get_msg(msg_id)
     msg.message = message
+=======
+    else:
+        msg = data_store.get_msg(msg_id)
+        msg.edit_message(message)
+>>>>>>> b271ad130fc01380e7bbef9572e7cfa6bba64296
 
     return {}
     
@@ -287,9 +278,272 @@ def message_remove_v1(user_id, msg_id):
     message_edit_and_remove_checks(user_id, msg_id)
 
     msg = data_store.get_msg(msg_id)
+<<<<<<< HEAD
     data_store.remove_msg(msg)
+=======
+    data = data_store.get()
+    data['messages'].remove(msg)
+    data_store.set_store()
+>>>>>>> b271ad130fc01380e7bbef9572e7cfa6bba64296
 
     User.user_remove_msg(user_id)
     User.remove_msg()
+
+    return {}
+# ============================
+#        Helper Function 
+# ============================
+'''
+Function that checks if a user has owner permissions in the channel /dm where
+the message originated from
+Return true if user has owner permissions
+return false otherwise
+'''
+def does_user_have_owner_permissions_for_msg_chnl(auth_user_id, message_id):
+    message = data_store.get_msg(message_id)
+    channel_originated = (data_store.get_channel(message.chnl_id) 
+        if data_store.has_channel_id(message.chnl_id) 
+        else data_store.get_dm(message.chnl_id))
+    user = data_store.get_user(auth_user_id)
+    # works if they are a global owner
+    if user.owner:
+        return user.owner
+    else:
+        return channel_originated.has_owner_id(auth_user_id)
+'''
+Function: message_pin_v1
+Given a message within a channel or DM, mark it as "pinned".
+
+Arguments:
+    - auth_user_id (int) - id of user pinning message
+    - message_id (int) - id of the message being pinned
+Exceptions:
+    - InputError - Occurs when message_id is not a valid message within a 
+                   channel or DM that the authorised user has joined
+    - InputError - Occurs when the message is already pinned
+    - AccessError - Occurs when message_id refers to a valid message in a joined
+                    channel/DM and the authorised user does not have owner
+                    permissions in the channel/DM
+Return Value: {}
+'''
+def message_pin_v1(auth_user_id, msg_id):
+    
+    check_valid_msg_id(msg_id, auth_user_id)
+    if not does_user_have_owner_permissions_for_msg_chnl(auth_user_id, msg_id):
+        raise AccessError(description = 'User does not have owner permissions')
+    message = data_store.get_msg(msg_id)
+    if message.is_pinned == True:
+        raise InputError(description = 'Message is already pinned')
+    
+    message.is_pinned = True
+    data_store.set_store()
+    return {}
+
+'''
+Function: message_unpin_v1
+Given a message within a channel or DM, remove its mark as pinned.
+
+Arguments:
+    - auth_user_id (int) - id of user pinning message
+    - message_id (int) - id of the message being unpinned
+Exceptions
+    - InputError - Occurs when message_id is not a valid message within a 
+                   channel or DM that the authorised user has joined
+    - InputError - Occurs when the message is not already pinned
+    - AccessError - Occurs when message_id refers to a valid message in a joined
+                    channel/DM and the authorised user does not have owner
+                    permissions in the channel/DM
+'''
+def message_unpin_v1(auth_user_id, msg_id):
+    check_valid_msg_id(msg_id, auth_user_id)
+    if not does_user_have_owner_permissions_for_msg_chnl(auth_user_id, msg_id):
+        raise AccessError(description = 'User does not have owner permissions')
+    message = data_store.get_msg(msg_id)
+    if message.is_pinned == False:
+        raise InputError(description = 'Message is already not pinned')
+    
+    message.is_pinned = False
+    data_store.set_store()
+    return {}
+
+# ===============================================
+# Every thing below here is written by Hanqi
+# ===============================================
+"""
+    sent msg to channel/dm
+    for sentlater ch/dm
+"""
+def send_msg(new_message, u_id):
+    data = data_store.get()
+    data['messages'].append(new_message)
+    data_store.set(data)
+
+    User.user_sent_msg(u_id)
+    User.add_msg()
+
+
+'''
+Arguments:
+    token           (string)
+    channel_id      (int)
+    message         (string)
+    time_sent       (int) send time
+
+Exceptions:
+    InputError  - Occurs    Invalid channel id
+                            message < 1 or > 1000
+                            time_sent is a time in the past
+    AccessError - Occurs    Invalid token
+                            user not a member
+
+Return Value:
+    message_id      (int)
+'''
+def message_sendlater_v1(token, channel_id, message, time_sent):
+    if not data_store.is_valid_token(token):
+        raise AccessError(description="Token is invalid!")
+
+    if not data_store.has_channel_id(channel_id):
+        raise InputError(description="channel_id does not refer to a valid channel")
+
+    user_id = data_store.get_id_from_token(token)
+    channel = data_store.get_channel(channel_id)
+    if not channel.has_member_id(user_id):
+        raise AccessError(description="user not a member")
+
+    if len(message) < 1 or len(message) > 1000:
+        raise InputError(description="message should be 1 to 1000")
+
+    time_now = get_time()
+    if time_sent <= time_now:
+        raise InputError(description="time_sent is a time in the past")
+
+    new_message = Message(
+        u_id=user_id,
+        message=message,
+        chnl_id=channel_id,
+        time_sent=time_sent
+    )
+    t = threading.Timer(time_sent - time_now, send_msg, [new_message, user_id])
+    t.start()
+
+    return {'message_id': new_message.id}
+
+
+'''
+Arguments:
+    token           (string)
+    dm_id      (int)
+    message         (string)
+    time_sent       (int) send time
+
+Exceptions:
+    InputError  - Occurs    Invalid channel id
+                            message < 1 or > 1000
+                            time_sent is a time in the past
+    AccessError - Occurs    Invalid token
+                            user not a member
+
+Return Value:
+    message_id      (int)
+'''
+def message_sendlaterdm_v1(token, dm_id, message, time_sent):
+    if not data_store.is_valid_token(token):
+        raise AccessError(description="Token is invalid!")
+
+    if not data_store.has_dm_id(dm_id):
+        raise InputError(description="dm_id does not refer to a valid dm")
+
+    user_id = data_store.get_id_from_token(token)
+    dm = data_store.get_dm(dm_id)
+    if not dm.has_member_id(user_id):
+        raise AccessError(description="user not a member")
+
+    if len(message) < 1 or len(message) > 1000:
+        raise InputError(description="message should be 1 to 1000")
+
+    time_now = get_time()
+    if time_sent <= time_now:
+        raise InputError(description="time_sent is a time in the past")
+
+    new_message = Message(
+        u_id=user_id,
+        message=message,
+        chnl_id=dm_id,
+        time_sent=time_sent
+    )
+    t = threading.Timer(time_sent - time_now, send_msg, [new_message, user_id])
+    t.start()
+
+    return {'message_id': new_message.id}
+
+# ===============================================
+# Every thing below here is written by Henry
+# ===============================================
+
+# ================= Helper ======================
+def check_valid_msg_id(message_id, u_id):
+    if not data_store.has_msg_id(message_id):
+        raise InputError(description="error: Invalid msg id")
+
+    message = data_store.get_msg(message_id)
+    channel_originated = message.get_origin_channel()
+
+    if not channel_originated.has_member_id(u_id):
+        raise InputError(description="error: Not in channel of associated message")
+
+def check_valid_react_id(react_id):
+    if react_id not in REACT_IDS:
+        raise InputError(description="error: Invalid react ID")
+# ===============================================
+
+def message_share_v1(u_id, og_msg_id, msg, chnl_id, dm_id):
+    # Error checks
+    if chnl_id == -1 and dm_id == -1:
+        raise InputError(description="error: Both channel and dm id are invalid")
+    
+    if chnl_id != -1 and dm_id != -1:
+        raise InputError(description="error: Neither id is invalid")
+
+    check_valid_msg_id(og_msg_id, u_id)
+    
+    if len(msg) > 1000:
+        raise InputError(description="error: Message too large")
+
+    dest_chnl = data_store.get_channel(chnl_id) if chnl_id != -1 else data_store.get_dm(dm_id)
+    if not dest_chnl.has_member_id(u_id):
+        raise AccessError(description="error: Not in channel")
+
+    # share mesage
+    original_msg_content = data_store.get_msg(og_msg_id).message
+    shared_msg = Message(
+        u_id=u_id,
+        message=msg + 
+                "\n==========\n" + 
+                original_msg_content,
+        chnl_id=dest_chnl.id
+    )
+
+    data = data_store.get()
+    data['messages'].append(shared_msg)
+    data_store.set_store()
+
+    return {'shared_message_id': shared_msg.id}
+
+def message_react_v1(u_id, message_id, react_id):
+    check_valid_msg_id(message_id, u_id)
+    check_valid_react_id(react_id)
+
+    message = data_store.get_msg(message_id)
+    message.add_reaction_from_id(u_id, react_id)
+
+    return {}
+
+def message_unreact_v1(u_id, message_id, react_id):
+    check_valid_msg_id(message_id, u_id)
+    check_valid_react_id(react_id)
+
+    message = data_store.get_msg(message_id)
+    message.remove_reaction_from_id(u_id, react_id)
 
     return {}
