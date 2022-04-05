@@ -32,6 +32,7 @@ def test_short_password():
     assert response.status_code == 400
 
 def test_valid_input():
+    requests.post(REGISTER_V2, json = {'email': 'z8888888@ed.unsw.edu.au', 'password': '12345678', 'name_first': 'Russell', 'name_last': 'Wang'})
     requests.post(REGISTER_V2, json = {'email': SERVER_EMAIL, 'password': '12345678', 'name_first': 'Russell', 'name_last': 'Wang'})
     requests.post(AUTH_PASSWORDRESET_REQUEST_V1, json = {'email': SERVER_EMAIL})
     time.sleep(5)
