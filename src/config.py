@@ -27,7 +27,7 @@ N = 5   # example: AS23F
 EXPIRATION = 60
 
 # Default icon
-ICON = url + 'static/icon.jpg'
+ICON = url + 'static/default.jpg'
 
 # Valid react ids
 REACT_IDS = [1]
