@@ -21,7 +21,10 @@ SERVER_EMAIL = "cs1531ant@gmail.com"
 SERVER_PASSWORD = 'unsw1531ant'
 
 # size of reset_code
-N = 8   # example: AS23F8GS
+N = 5   # example: AS23F8GS
+
+# expiration of reset_code
+EXPIRATION = 1 # 60 when submitting
 
 # Default icon
 ICON = 'http://t4.ftcdn.net/jpg/02/29/75/83/360_F_229758328_7x8jwCwjtBMmC6rgFzLFhZoEpLobB6L8.jpg'

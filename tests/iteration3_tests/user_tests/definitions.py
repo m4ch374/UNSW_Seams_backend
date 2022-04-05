@@ -1,8 +1,10 @@
 from src.config import url as BASE_URL
-
+from src.config import EXPIRATION
 """
 from tests.iteration3_tests.user_tests.definitions import *
 """
+
+E = EXPIRATION + 1
 
 NOTIFICATIONS_GET_V1 = BASE_URL + "/notifications/get/v1"
 
@@ -35,4 +37,8 @@ SENDLATER = BASE_URL + "/message/sendlater/v1"
 SENDLATERDM = BASE_URL + "/message/sendlaterdm/v1"
 
 ENDPOINT_DM_CREATE = BASE_URL + "/dm/create/v1"
+
+ENDPOINT_DM_SEND = BASE_URL + "/message/senddm/v1"
+
+ENDPOINT_ADMIN_REMOVE = BASE_URL + "/admin/user/remove/v1"
 

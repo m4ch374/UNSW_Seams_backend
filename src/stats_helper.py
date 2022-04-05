@@ -104,10 +104,8 @@ def cal_utilization_rate():
     store = data_store.get()
     users = 0
     for user in store['users']:
-        if not user.name_first == 'Removed':
+        if not user.removed:
             users += 1
-    if users == 0:
-        return float(0)
     last_ch_id = store['last_used_id']['channel']
     last_ch_users = 0
     for ch in store['channel']:
