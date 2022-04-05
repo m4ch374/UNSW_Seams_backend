@@ -12,7 +12,7 @@ from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.objecs import User
 from src.encrypt import hashing_password
-from src.config import SERVER_EMAIL, SERVER_PASSWORD, N, EXPIRATION
+from src.config import SERVER_EMAIL, SERVER_PASSWORD, N, EXPIRATION, port
 from src.stats_helper import cal_involvement_rate, cal_utilization_rate
 
 
@@ -463,15 +463,16 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
         raise InputError(description="Image size not matched")
     # download the img
     u_id = data_store.get_id_from_token(token)
-    urllib.request.urlretrieve(img_url, f"images/{u_id}.jpg")
-    img = Image.open(f"images/{u_id}.jpg")
+    urllib.request.urlretrieve(img_url, f"src/static/{u_id}.jpg")
+    img = Image.open(f"src/static/{u_id}.jpg")
     # cut the img
     cropped = img.crop((x_start, y_start, x_end, y_end))
-    cropped.save(f"images/{u_id}.jpg")
+    cropped.save(f"src/static/{u_id}.jpg")
     store = data_store.get()
     for user in store['users']:
         if user.id == u_id:
-            user.img = img_url
+            url = f'http://localhost:{port}/static/{u_id}.jpg'
+            user.img = url
     data_store.set(store)
     return {}
 

@@ -27,7 +27,7 @@ N = 5   # example: AS23F
 EXPIRATION = 60
 
 # Default icon
-ICON = 'http://t4.ftcdn.net/jpg/02/29/75/83/360_F_229758328_7x8jwCwjtBMmC6rgFzLFhZoEpLobB6L8.jpg'
+ICON = url + 'static/icon.jpg'
 
 # Valid react ids
 REACT_IDS = [1]
