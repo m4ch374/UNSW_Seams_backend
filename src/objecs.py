@@ -225,6 +225,7 @@ class Channel:
         self.owners = self.__get_owners(owner, owners)
         self.members = self.__get_members(owner, members)
         self.is_public = is_public
+        self.standup_end = {}
 
     '''
         Generates id for Channel
@@ -426,7 +427,9 @@ class DmChannel(Channel):
     # get all messages from a channel OR dm
     def get_messages(self):
         msg_list = data_store.get()['messages']
-        return [msg for msg in msg_list if msg.chnl_id == self.id]
+        msg_list = [msg for msg in msg_list if msg.chnl_id == self.id]
+        msg_list.reverse()
+        return msg_list
 
     # NOTE: Members include the owner
     def channel_details_dict(self):
