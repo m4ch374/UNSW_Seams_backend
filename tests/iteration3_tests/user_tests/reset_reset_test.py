@@ -1,6 +1,21 @@
-import requests
+import requests, time, imaplib, email
 from tests.iteration3_tests.user_tests.definitions import REGISTER_V2, AUTH_PASSWORDRESET_RESET_V1, AUTH_PASSWORDRESET_REQUEST_V1
+from src.config import SERVER_EMAIL, SERVER_PASSWORD
 
+
+def get_code():
+    server = imaplib.IMAP4_SSL("imap.gmail.com")
+    server.login(SERVER_EMAIL, SERVER_PASSWORD)
+    inbox = server.select("INBOX")
+    type, data = server.search(None, "ALL")
+    msgList = data[0].split()
+    latest = msgList[len(msgList) - 1]
+    type, datas = server.fetch(latest, '(RFC822)')
+    text = datas[0][1].decode('utf8')
+    message = email.message_from_string(text)
+    msglist = str(message).split('\n')
+    msgline = [line for line in msglist if 'Your reset code is:' in line]
+    return msgline[0][22:27]
 
 def test_invalid_reset_code():
     requests.post(REGISTER_V2, json = {'email': 'z8888888@ed.unsw.edu.au', 'password': '12345678', 'name_first': 'Russell', 'name_last': 'Wang'})
@@ -8,24 +23,20 @@ def test_invalid_reset_code():
     response = requests.post(AUTH_PASSWORDRESET_RESET_V1, json = {'reset_code': '123', 'new_password': '1234567'})
     assert response.status_code == 400
 
-# def test_short_password():
-#     requests.post(REGISTER_V2, json = {'email': 'z8888888@ed.unsw.edu.au', 'password': '12345678', 'name_first': 'Russell', 'name_last': 'Wang'})
-#     requests.post(AUTH_PASSWORDRESET_REQUEST_V1, json = {'email': 'z8888888@ed.unsw.edu.au'})
-#     reset_code = list(data_store.get()['reset_code'].items())[0][0]
-#     response = requests.post(AUTH_PASSWORDRESET_RESET_V1, json = {'reset_code': reset_code, 'new_password': '123'})
-#     assert response.status_code == 400
+def test_short_password():
+    requests.post(REGISTER_V2, json = {'email': SERVER_EMAIL, 'password': '12345678', 'name_first': 'Russell', 'name_last': 'Wang'})
+    requests.post(AUTH_PASSWORDRESET_REQUEST_V1, json = {'email': SERVER_EMAIL})
+    time.sleep(5)
+    reset_code = get_code()
+    response = requests.post(AUTH_PASSWORDRESET_RESET_V1, json = {'reset_code': reset_code, 'new_password': '123'})
+    assert response.status_code == 400
 
-# def test_valid_input():
-#     requests.post(REGISTER_V2, json = {'email': 'z1@ed.unsw.edu.au', 'password': '1234567', 'name_first': '11', 'name_last': '11'})
-#     requests.post(REGISTER_V2, json = {'email': 'z2@ed.unsw.edu.au', 'password': '1234567', 'name_first': '22', 'name_last': '22'})
-#     requests.post(REGISTER_V2, json = {'email': 'z3@ed.unsw.edu.au', 'password': '1234567', 'name_first': '33', 'name_last': '33'})
-#     requests.post(REGISTER_V2, json = {'email': 'z4@ed.unsw.edu.au', 'password': '1234567', 'name_first': '44', 'name_last': '44'})
-#     requests.post(REGISTER_V2, json = {'email': 'z8888888@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'Russell', 'name_last': 'Wang'})
-#     requests.post(REGISTER_V2, json = {'email': 'cs1531ant@gmail.com', 'password': '12345678', 'name_first': 'Russell', 'name_last': 'Wang'})
-#     requests.post(AUTH_PASSWORDRESET_REQUEST_V1, json = {'email': 'cs1531ant@gmail.com'})
-#     reset_code = list(data_store.get()['reset_code'].items())[0][0]
-#     response = requests.post(AUTH_PASSWORDRESET_RESET_V1, json = {'reset_code': reset_code, 'new_password': '1234567'})
-#     assert response.status_code == 200
-#     response_data = response.json()
-#     assert response_data == {}
+def test_valid_input():
+    requests.post(REGISTER_V2, json = {'email': SERVER_EMAIL, 'password': '12345678', 'name_first': 'Russell', 'name_last': 'Wang'})
+    requests.post(AUTH_PASSWORDRESET_REQUEST_V1, json = {'email': SERVER_EMAIL})
+    time.sleep(5)
+    reset_code = get_code()
+    response = requests.post(AUTH_PASSWORDRESET_RESET_V1, json = {'reset_code': reset_code, 'new_password': '123456'})
+    assert response.status_code == 200
+    assert response.json() == {}
 
