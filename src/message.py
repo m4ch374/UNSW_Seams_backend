@@ -275,7 +275,6 @@ def message_remove_v1(user_id, msg_id):
     data['messages'].remove(msg)
     data_store.set_store()
 
-    User.user_remove_msg(user_id)
     User.remove_msg()
 
     return {}
