@@ -31,3 +31,10 @@ ICON = url + 'static/default.jpg'
 
 # Valid react ids
 REACT_IDS = [1]
+
+# Constans for updating user and data_store stats
+CHNL = 'chs'
+DM = 'dms'
+MSG = 'msg'
+INCREMENT = 1
+DECREMENT = -1

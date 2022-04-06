@@ -7,7 +7,7 @@ This file contains function for the domain
 from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.objecs import DmChannel
-import src.stats_helper as User
+from src.config import DM, INCREMENT, DECREMENT
 
 # =================== helpers ======================
 def check_valid_dm_id(dm_id):
@@ -28,10 +28,10 @@ def dm_create_v1(u_id, u_ids):
     dm_chnl = DmChannel(data_store.get_user(u_id), u_ids)
     data_store.add_dm(dm_chnl)
 
-    User.user_join_dm(u_id)
+    data_store.get_user(u_id).update_stats(DM, INCREMENT)
     for id in u_ids:
-        User.user_join_dm(id)
-    User.add_dm()
+        data_store.get_user(id).update_stats(DM, INCREMENT)
+    data_store.update_stats(DM, INCREMENT)
 
     return {'dm_id': dm_chnl.id}
 
@@ -47,15 +47,12 @@ def dm_remove_v1(u_id, dm_id):
     
     check_is_creator(dm_chnl, u_id)
 
+    for mem in dm_chnl.members:
+        mem.update_stats(DM, DECREMENT)
+
     dm_chnl.remove_associated_msg()
     data_store.remove_dm(dm_chnl)
-
-    User.user_leave_dm(u_id)
-    for dm in data_store.get()['dm']:
-        if dm.id == dm_id:
-            for user in dm.members:
-                User.user_leave_dm(user.id)
-    User.remove_dm()
+    data_store.update_stats(DM, DECREMENT)
 
     return {}
 
@@ -76,4 +73,7 @@ def dm_leave_v1(u_id, dm_id):
     check_is_member(dm_chnl, u_id)
 
     dm_chnl.remove_member_id(u_id)
+
+    data_store.get_user(u_id).update_stats(DM, DECREMENT)
+
     return {}
