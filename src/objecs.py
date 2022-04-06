@@ -3,7 +3,6 @@ besides the given ones """
 
 # Imports
 import re
-from datetime import datetime, timezone
 from src.data_store import data_store
 from src.encrypt import hashing_password
 from src.error import InputError
@@ -468,10 +467,7 @@ class Message:
         self.message = message
         self.chnl_id = chnl_id
         self.id = self.__generate_id(kwargs.get('id', None))
-        self.time_sent = kwargs.get(
-                'time_sent', 
-                ((datetime.now(timezone.utc)).replace(tzinfo=timezone.utc)).timestamp()
-            )
+        self.time_sent = kwargs.get('time_sent', get_time())
         self.reacts = kwargs.get('reacts', [])
         self.is_pinned = kwargs.get('is_pinned', False)
         self.tagged_id = kwargs.get('tagged', [])
