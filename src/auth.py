@@ -13,7 +13,6 @@ from src.error import InputError, AccessError
 from src.objecs import User
 from src.encrypt import hashing_password
 from src.config import SERVER_EMAIL, SERVER_PASSWORD, N, EXPIRATION, port
-from src.stats_helper import cal_involvement_rate, cal_utilization_rate
 
 
 '''
@@ -491,14 +490,14 @@ def user_stats_v1(token):
     if not data_store.is_valid_token(token):
         raise AccessError(description="Token is invalid!")
     u_id = data_store.get_id_from_token(token)
-    # find the user and return the data
-    for user in data_store.get()['users']:
-        if user.id == u_id:
-            rate = cal_involvement_rate(user.channels, user.dms, user.messages)
-            ret_dict =  {'channels_joined': user.ch_list,
-                        'dms_joined': user.dm_list,
-                        'messages_sent': user.mg_list,
-                        'involvement_rate': rate}
+    user = data_store.get_user(u_id)
+    rate = user.involvement_rate()
+    ret_dict = {
+        'channels_joined': user.ch_list,
+        'dms_joined': user.dm_list,
+        'messages_sent': user.mg_list,
+        'involvement_rate': rate
+    }
     return {'user_stats': ret_dict}
 
 
@@ -516,9 +515,13 @@ def users_stats_v1(token):
     if not data_store.is_valid_token(token):
         raise AccessError(description="Token is invalid!")
     store = data_store.get()
-    rate = cal_utilization_rate()
-    return {'workspace_stats': {'channels_exist': store['stats_list']['chs_list'],
-                                'dms_exist': store['stats_list']['dms_list'],
-                                'messages_exist': store['stats_list']['msg_list'],
-                                'utilization_rate': rate}}
+    rate = data_store.utilization_rate()
+    return {
+        'workspace_stats': {
+                'channels_exist': store['stats_list']['chs_list'],
+                'dms_exist': store['stats_list']['dms_list'],
+                'messages_exist': store['stats_list']['msg_list'],
+                'utilization_rate': rate
+            }
+        }
 
