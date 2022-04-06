@@ -18,7 +18,7 @@ from src import auth
 from src import admin
 from src.other import clear_v1
 from src.data_store import data_store
-
+from flask import send_from_directory
 
 def quit_gracefully(*args):
     '''For coverage'''
@@ -35,7 +35,7 @@ def defaultHandler(err):
     response.content_type = 'application/json'
     return response
 
-APP = Flask(__name__)
+APP = Flask(__name__, static_url_path='/static/')
 CORS(APP)
 
 APP.config['TRAP_HTTP_EXCEPTIONS'] = True
@@ -57,6 +57,11 @@ def echo():
 @APP.route("/notifications/get/v1", methods=['GET'])
 def notifications_get():
     return dumps({'notifications': []})
+
+# =============== /img domain ==================
+@APP.route("/static/<path:path>")
+def send_js(path):
+    return send_from_directory('', path)
 
 # =============== /user domain =================
 @APP.route("/auth/login/v2", methods=['POST'])

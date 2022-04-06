@@ -48,15 +48,6 @@ def user_leave_dm(u_id):
             user.dm_list.append({'num_dms_joined': user.dms, 'time_stamp': time})
     data_store.set(store)
 
-def user_remove_msg(u_id):
-    time = get_time()
-    store = data_store.get()
-    for user in store['users']:
-        if user.id == u_id:
-            user.messages -= 1
-            user.mg_list.append({'num_messages_sent': user.messages, 'time_stamp': time})
-    data_store.set(store)
-
 def add_ch():
     time = get_time()
     store = data_store.get()
