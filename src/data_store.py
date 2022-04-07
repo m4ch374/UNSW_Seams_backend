@@ -42,6 +42,7 @@ from src.config import TOKEN_SECRET
 from src.error import AccessError
 import traceback
 from src.time import get_time
+from src.config import CHNL, DM, MSG
 
 # Initial object
 initial_object = {
@@ -256,11 +257,24 @@ class Datastore:
         time = get_time()
         store = self.__store
         stats = store['stats_list']
-        stats[f'{item}_num'] += number
-        stats[f'{item}_list'].append({
-            'num_channels_exist': stats[f'{item}_num'],
-            'time_stamp': time,
-        })
+        if item == CHNL:
+            stats['chs_num'] += number
+            stats['chs_list'].append({
+                'num_channels_exist': stats['chs_num'],
+                'time_stamp': time,
+            })
+        elif item == DM:
+            stats['dms_num'] += number
+            stats['dms_list'].append({
+                'num_dms_exist': stats['dms_num'],
+                'time_stamp': time,
+            })
+        elif item == MSG:
+            stats['msg_num'] += number
+            stats['msg_list'].append({
+                'num_messages_exist': stats['msg_num'],
+                'time_stamp': time,
+            })
         data_store.set(store)
 
     def utilization_rate(self):

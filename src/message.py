@@ -198,11 +198,14 @@ def message_edit_and_remove_checks(user_id, msg_id):
     if data_store.has_msg_id(msg_id) == False:
         raise InputError(description='Message id does not exist')
     msg = data_store.get_msg(msg_id)
-    channel = data_store.get_channel(msg.chnl_id)
-    channel_type = 'channel'
-    if channel == None:
+
+    if data_store.has_channel_id(msg.chnl_id):
+        channel_type = 'channel'
+        channel = data_store.get_channel(msg.chnl_id)
+    elif data_store.has_dm_id(msg.chnl_id):
         channel_type = 'dm'
         channel = data_store.get_dm(msg.chnl_id)
+
     if not channel.has_member_id(user_id):
         raise InputError(description='Message id does not exist in your channels')
 
