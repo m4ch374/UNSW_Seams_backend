@@ -584,7 +584,7 @@ class Message:
     def to_dict(self, u_id):
         return {
             'message_id': self.id,
-            'user_id': self.u_id,
+            'u_id': self.u_id,
             'message': self.message,
             'time_sent': self.time_sent,
             'reacts': self.__get_usr_specific_react_dict(u_id),
