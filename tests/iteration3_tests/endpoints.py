@@ -84,7 +84,7 @@ ENDPOINT_MESSAGE_SENDLATER      = f"{url}message/sendlater/v1"
 
 ENDPOINT_MESSAGE_SENDLATERDM    = f"{url}message/sendlaterdm/v1"
 
-ENDOPINT_STANDUP_START          = f"{url}standup/start/v1"
+ENDPOINT_STANDUP_START          = f"{url}standup/start/v1"
 
 ENDPOINT_STANDUP_ACTIVE         = f"{url}standup/active/v1"
 

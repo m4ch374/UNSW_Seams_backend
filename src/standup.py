@@ -1,5 +1,5 @@
 import datetime as dt
-from re import I
+from src.config import MSG, INCREMENT
 from src.data_store import data_store
 from src.objecs import Message
 from src.error import InputError, AccessError
@@ -20,9 +20,7 @@ def standup_thread_helper(user_id, channel_id, length):
     data['messages'].append(new_message)
     data_store.set(data)
 
-    # for stats
-    '''User.user_sent_msg(user_id)
-    User.add_msg()'''
+    data_store.update_stats(MSG, INCREMENT)
 
     # reset channel standup
     channel.clear_standup()
