@@ -66,8 +66,8 @@ def standup_send_v1(user_id, channel_id, message):
         raise AccessError(description='Invalid access to channel')
     if not channel.standup['active']:
         raise InputError(description='No standup active in this channel')
-    if len(message) > 1000:
-        raise InputError(description='message must be less than 1000 characters')
+    if len(message) > 1000 or len(message) == 0:
+        raise InputError(description='Message must be between 1 and 1000 characters')
 
     channel.standup['message'] += f'{data_store.get_user(user_id).handle}: {message}\n'
 

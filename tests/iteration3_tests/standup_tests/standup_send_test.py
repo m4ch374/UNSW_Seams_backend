@@ -78,3 +78,11 @@ def test_standup_send_message_too_long(user_1_made_channel):
     requests.post(ENDPOINT_STANDUP_START, json=json_helper_start(token, channel_id, 1)) 
     response = requests.post(ENDPOINT_STANDUP_SEND, json=json_helper_send(token, channel_id, 'a'*1001))
     assert response.status_code == InputError.code
+
+def test_standup_send_no_message(user_1_made_channel):
+    channel_id = user_1_made_channel['channel']
+    token = user_1_made_channel['token']
+
+    requests.post(ENDPOINT_STANDUP_START, json=json_helper_start(token, channel_id, 1)) 
+    response = requests.post(ENDPOINT_STANDUP_SEND, json=json_helper_send(token, channel_id, ''))
+    assert response.status_code == InputError.code
