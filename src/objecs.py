@@ -367,7 +367,9 @@ class Channel:
     '''
     def get_messages(self):
         msg_list = data_store.get()['messages']
-        return [msg for msg in msg_list if msg.chnl_id == self.id]
+        msg_list = [msg for msg in msg_list if msg.chnl_id == self.id]
+        msg_list.reverse()
+        return msg_list
 
     '''
         Removes all messages in the channel
