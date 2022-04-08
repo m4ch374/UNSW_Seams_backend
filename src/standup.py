@@ -10,17 +10,19 @@ import time
 def standup_thread_helper(user_id, channel_id, length):
     time.sleep(length)
     channel = data_store.get_channel(channel_id)
+    
     # Create and send standup message (no 1000 character limit)
-    new_message = Message(
-        u_id=user_id,
-        message=channel.standup['message'],
-        chnl_id=channel_id,
-    )
-    data = data_store.get()
-    data['messages'].append(new_message)
-    data_store.set(data)
+    if channel.standup['message'] != '':
+        new_message = Message(
+            u_id=user_id,
+            message=channel.standup['message'],
+            chnl_id=channel_id,
+        )
+        data = data_store.get()
+        data['messages'].append(new_message)
+        data_store.set(data)
 
-    data_store.update_stats(MSG, INCREMENT)
+        data_store.update_stats(MSG, INCREMENT)
 
     # reset channel standup
     channel.clear_standup()

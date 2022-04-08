@@ -2,7 +2,6 @@
 from multiprocessing.connection import wait
 import requests
 from http.client import OK
-import time
 
 # Import errors
 from src.error import InputError, AccessError

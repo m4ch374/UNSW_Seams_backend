@@ -23,6 +23,7 @@ def test_standup_start_simple(user_1_made_channel):
 
     assert response.status_code == OK
 
+
 # Error cases
 def test_standup_start_invalid_length(user_1_made_channel):
     channel_id = user_1_made_channel['channel']
