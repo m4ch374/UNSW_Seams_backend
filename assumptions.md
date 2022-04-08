@@ -63,9 +63,16 @@
 ## **1. Assumptions - `reset_code` in `data_store` **
 
 - inside of <reset_code> is: {"A reset code" : id}
+- expiration is 60 seconds
 
 ## **2. Assumptions - `other.py`**
 
 - clear() will also remove the images made by tests
 
 - 'a_test.py' will change data_store to init state after tests
+
+## **2. Assumptions - `Images`**
+
+- all imgs in src/static/
+
+- There should be no need to manually clean up, because it will be automatically overwritten when a new user with the same id uploads an image

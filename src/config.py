@@ -21,10 +21,20 @@ SERVER_EMAIL = "cs1531ant@gmail.com"
 SERVER_PASSWORD = 'unsw1531ant'
 
 # size of reset_code
-N = 8   # example: AS23F8GS
+N = 5   # example: AS23F
+
+# expiration of reset_code
+EXPIRATION = 60
 
 # Default icon
-ICON = 'http://t4.ftcdn.net/jpg/02/29/75/83/360_F_229758328_7x8jwCwjtBMmC6rgFzLFhZoEpLobB6L8.jpg'
+ICON = url + 'static/default.jpg'
 
 # Valid react ids
 REACT_IDS = [1]
+
+# Constans for updating user and data_store stats
+CHNL = 'chs'
+DM = 'dms'
+MSG = 'msg'
+INCREMENT = 1
+DECREMENT = -1

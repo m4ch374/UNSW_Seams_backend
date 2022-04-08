@@ -3,11 +3,10 @@ besides the given ones """
 
 # Imports
 import re
-from datetime import datetime, timezone
 from src.data_store import data_store
 from src.encrypt import hashing_password
 from src.error import InputError
-from src.config import TAGGED, MSG_REACTED, ADDED, ICON
+from src.config import TAGGED, MSG_REACTED, ADDED, ICON, CHNL, DM, MSG
 from src.time import get_time
 
 '''
@@ -56,9 +55,11 @@ class User:
         self.channels = kwargs.get('channels', 0)
         self.dms = kwargs.get('dms', 0)
         self.messages = kwargs.get('messages', 0)
-        self.ch_list = kwargs.get('ch_list', [{'num_channels_joined': 0, 'time_stamp': get_time()}])    # {'num_channels_joined': user.channels, 'time_stamp': user.chtime}
-        self.dm_list = kwargs.get('dm_list', [{'num_dms_joined': 0, 'time_stamp': self.ch_list[0]['time_stamp']}])    # {'num_dms_joined': user.dms, 'time_stamp': user.dmtime}
-        self.mg_list = kwargs.get('mg_list', [{'num_messages_sent': 0, 'time_stamp': self.ch_list[0]['time_stamp']}])    # {'num_messages_sent': user.messages, 'time_stamp': user.mgtime}
+
+        curr_time = get_time()
+        self.ch_list = kwargs.get('ch_list', [{'num_channels_joined': 0, 'time_stamp': curr_time}])    # {'num_channels_joined': user.channels, 'time_stamp': user.chtime}
+        self.dm_list = kwargs.get('dm_list', [{'num_dms_joined': 0, 'time_stamp': curr_time}])    # {'num_dms_joined': user.dms, 'time_stamp': user.dmtime}
+        self.mg_list = kwargs.get('mg_list', [{'num_messages_sent': 0, 'time_stamp': curr_time}])    # {'num_messages_sent': user.messages, 'time_stamp': user.mgtime}
 
     '''
         Generates id for user
@@ -163,6 +164,32 @@ class User:
         self.removed = True
         data_store.set_store()
 
+    def update_stats(self, item, number):
+        time = get_time()
+        store = data_store.get()
+
+        if item == CHNL:
+            self.channels += number
+            self.ch_list.append({'num_channels_joined': self.channels, 'time_stamp': time})
+        elif item == DM:
+            self.dms += number
+            self.dm_list.append({'num_dms_joined': self.dms, 'time_stamp': time})
+        elif item == MSG:
+            self.messages += number
+            self.mg_list.append({'num_messages_sent': self.messages, 'time_stamp': time})
+
+        data_store.set(store)
+
+    def involvement_rate(self):
+        store = data_store.get()
+        global_num = store['stats_list']['chs_num'] + store['stats_list']['dms_num'] + store['stats_list']['msg_num']
+
+        if global_num == 0:
+            return float(0)
+
+        ir = min((self.channels + self.dms + self.messages) / global_num, 1)
+        return float(ir)
+
     @staticmethod
     def decode_json(jsn):
         return User(
@@ -212,8 +239,8 @@ class Channel:
     def __init__(self, name, owner, is_public, id=None, owners=None, members=None):
         self.id = self.__generate_id(id)
         self.name = name
-        self.owners = self.__get_owners(owner, owners)
-        self.members = self.__get_members(owner, members)
+        self.owners = owners if owners is not None else [owner]
+        self.members = members if members is not None else [owner]
         self.is_public = is_public
         self.standup = {'active': False, 'user_id': None, 'end': None, 'message': '',}
 
@@ -228,18 +255,6 @@ class Channel:
         curr_id = data['last_used_id']['channel'] + 1
         data['last_used_id']['channel'] = curr_id
         return curr_id
-
-    def __get_owners(self, owner, owners):
-        if owners is not None:
-            return owners
-
-        return [owner]
-
-    def __get_members(self, owner, members):
-        if members is not None:
-            return members
-
-        return [owner]
 
     def serialize(self):
         return {
@@ -478,10 +493,7 @@ class Message:
         self.message = message
         self.chnl_id = chnl_id
         self.id = self.__generate_id(kwargs.get('id', None))
-        self.time_sent = kwargs.get(
-                'time_sent', 
-                ((datetime.now(timezone.utc)).replace(tzinfo=timezone.utc)).timestamp()
-            )
+        self.time_sent = kwargs.get('time_sent', get_time())
         self.reacts = kwargs.get('reacts', [])
         self.is_pinned = kwargs.get('is_pinned', False)
         self.tagged_id = kwargs.get('tagged', [])
@@ -582,7 +594,7 @@ class Message:
     def to_dict(self, u_id):
         return {
             'message_id': self.id,
-            'user_id': self.u_id,
+            'u_id': self.u_id,
             'message': self.message,
             'time_sent': self.time_sent,
             'reacts': self.__get_usr_specific_react_dict(u_id),

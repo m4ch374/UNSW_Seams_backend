@@ -8,7 +8,7 @@
 from src.data_store import data_store
 from src.error import InputError
 from src.objecs import Channel
-import src.stats_helper as User
+from src.config import CHNL, INCREMENT
 
 '''
 Arguments:
@@ -78,7 +78,7 @@ def channels_create_v1(auth_user_id, name, is_public):
     data['channel'].append(new_channel)
     data_store.set(data)
 
-    User.user_join_ch(auth_user_id)
-    User.add_ch()
+    data_store.get_user(auth_user_id).update_stats(CHNL, INCREMENT)
+    data_store.update_stats(CHNL, INCREMENT)
 
     return {'channel_id': new_channel.id}
