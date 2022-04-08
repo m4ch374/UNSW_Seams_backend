@@ -405,7 +405,7 @@ class Channel:
         }
         return return_dict
     
-    def clear_standup(self, usr):
+    def clear_standup(self):
         self.standup['active'] = False
         self.standup['user_id'] = None
         self.standup['end'] = None

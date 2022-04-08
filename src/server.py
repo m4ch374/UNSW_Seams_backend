@@ -427,9 +427,8 @@ def standup_start_v1():
 
 @APP.route("/standup/active/v1", methods = ['GET'])
 def standup_active_v1():
-    data = request.get_json()
-    user_id = data_store.get_id_from_token(data['token'])
-    channel_id = data['channel_id']
+    user_id = data_store.get_id_from_token(request.args.get('token'))
+    channel_id = int(request.args.get('channel_id'))
     response = stdup.standup_active_v1(user_id, channel_id)
     return dumps(response)
 
@@ -457,4 +456,4 @@ def clear():
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, quit_gracefully) # For coverage
-    APP.run(port=config.port, debug=False, threaded=True) # Do not edit this port
+    APP.run(port=config.port, debug=True, threaded=True) # Do not edit this port
