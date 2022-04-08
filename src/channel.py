@@ -1,6 +1,6 @@
 from src.data_store import data_store
 from src.error import InputError, AccessError
-import src.stats_helper as User
+from src.config import CHNL, INCREMENT, DECREMENT
 
 '''
 Function that determines if a user is in the channel
@@ -51,7 +51,7 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     chnl = data_store.get_channel(channel_id)
     chnl.add_member_id(u_id, auth_user_id)
 
-    User.user_join_ch(u_id)
+    data_store.get_user(u_id).update_stats(CHNL, INCREMENT)
 
     return {}
 
@@ -140,7 +140,7 @@ def channel_join_v1(auth_user_id, channel_id):
     chnl = data_store.get_channel(channel_id)
     chnl.add_member_id(auth_user_id, auth_user_id)
     
-    User.user_join_ch(auth_user_id)
+    data_store.get_user(auth_user_id).update_stats(CHNL, INCREMENT)
 
     return {}
 
@@ -173,7 +173,7 @@ def channel_leave_v1(auth_user_id, channel_id):
         chnl.owners.remove(user)
         data_store.set_store()
 
-    User.user_leave_ch(auth_user_id)
+    data_store.get_user(auth_user_id).update_stats(CHNL, DECREMENT)
 
     return {}
 '''

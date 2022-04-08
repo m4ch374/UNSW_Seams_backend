@@ -19,7 +19,7 @@ from src import auth
 from src import admin
 from src.other import clear_v1
 from src.data_store import data_store
-
+from flask import send_from_directory
 
 def quit_gracefully(*args):
     '''For coverage'''
@@ -36,7 +36,7 @@ def defaultHandler(err):
     response.content_type = 'application/json'
     return response
 
-APP = Flask(__name__)
+APP = Flask(__name__, static_url_path='/static/')
 CORS(APP)
 
 APP.config['TRAP_HTTP_EXCEPTIONS'] = True
@@ -54,7 +54,16 @@ def echo():
         'data': data
     })
 
-    
+# remove annoying error in the frontend
+@APP.route("/notifications/get/v1", methods=['GET'])
+def notifications_get():
+    return dumps({'notifications': []})
+
+# =============== /img domain ==================
+@APP.route("/static/<path:path>")
+def send_js(path):
+    return send_from_directory('', path)
+
 # =============== /user domain =================
 @APP.route("/auth/login/v2", methods=['POST'])
 def login_v2():
@@ -111,11 +120,6 @@ def profile_sethandle_v1():
     token = data['token']
     handle_str = data['handle_str']
     return dumps(auth.user_profile_sethandle_v1(token, handle_str))
-
-@APP.route("/notifications/get/v1", methods=['GET'])
-def notifications_get():
-    token = request.args.get('token')
-    return dumps(auth.notifications_get_v1(token))
 
 @APP.route("/search/v1", methods=['GET'])
 def search():

@@ -1,11 +1,9 @@
 from src.data_store import data_store
 from src.objecs import Message
 from src.error import InputError, AccessError
-import src.stats_helper as User
 from src.config import REACT_IDS
 from src.time import get_time
-from datetime import timezone
-import datetime as dt
+from src.config import MSG, INCREMENT, DECREMENT
 import threading
 
 
@@ -143,8 +141,8 @@ def message_send_v1(user_id, channel_id, message):
     data['messages'].append(new_message)
     data_store.set(data)
 
-    User.user_sent_msg(user_id)
-    User.add_msg()
+    data_store.get_user(user_id).update_stats(MSG, INCREMENT)
+    data_store.update_stats(MSG, INCREMENT)
 
     return {'message_id': new_message.id}
 
@@ -188,8 +186,8 @@ def message_senddm_v1(user_id, dm_id, message):
     data['messages'].append(new_message)
     data_store.set(data)
 
-    User.user_sent_msg(user_id)
-    User.add_msg()
+    data_store.get_user(user_id).update_stats(MSG, INCREMENT)
+    data_store.update_stats(MSG, INCREMENT)
 
     return {'message_id': new_message.id}
 
@@ -200,11 +198,14 @@ def message_edit_and_remove_checks(user_id, msg_id):
     if data_store.has_msg_id(msg_id) == False:
         raise InputError(description='Message id does not exist')
     msg = data_store.get_msg(msg_id)
-    channel = data_store.get_channel(msg.chnl_id)
-    channel_type = 'channel'
-    if channel == None:
+
+    if data_store.has_channel_id(msg.chnl_id):
+        channel_type = 'channel'
+        channel = data_store.get_channel(msg.chnl_id)
+    else:
         channel_type = 'dm'
         channel = data_store.get_dm(msg.chnl_id)
+
     if not channel.has_member_id(user_id):
         raise InputError(description='Message id does not exist in your channels')
 
@@ -286,8 +287,7 @@ def message_remove_v1(user_id, msg_id):
     data_store.set_store()
 >>>>>>> b271ad130fc01380e7bbef9572e7cfa6bba64296
 
-    User.user_remove_msg(user_id)
-    User.remove_msg()
+    data_store.update_stats(MSG, DECREMENT)
 
     return {}
 # ============================
@@ -378,8 +378,8 @@ def send_msg(new_message, u_id):
     data['messages'].append(new_message)
     data_store.set(data)
 
-    User.user_sent_msg(u_id)
-    User.add_msg()
+    data_store.get_user(u_id).update_stats(MSG, INCREMENT)
+    data_store.update_stats(MSG, INCREMENT)
 
 
 '''
@@ -527,6 +527,9 @@ def message_share_v1(u_id, og_msg_id, msg, chnl_id, dm_id):
     data = data_store.get()
     data['messages'].append(shared_msg)
     data_store.set_store()
+
+    data_store.get_user(u_id).update_stats(MSG, INCREMENT)
+    data_store.update_stats(MSG, INCREMENT)
 
     return {'shared_message_id': shared_msg.id}
 
