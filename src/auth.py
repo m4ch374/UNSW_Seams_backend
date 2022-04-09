@@ -373,10 +373,12 @@ Arguments:
     reset_code (string)
 '''
 def remove_reset_code(reset_code):
-    if data_store.has_reset_code(reset_code.upper()):
-        store = data_store.get()
-        store['reset_code'].pop(reset_code.upper())
-        data_store.set(store)
+    store = data_store.get()
+    # remove a reset code
+    # set reset code point to -1 to prevent reset code used before expired
+    store['reset_code'][reset_code.upper()] = -1
+    store['reset_code'].pop(reset_code.upper())
+    data_store.set(store)
 
 
 '''
