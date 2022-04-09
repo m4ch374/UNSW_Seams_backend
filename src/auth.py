@@ -373,10 +373,12 @@ Arguments:
     reset_code (string)
 '''
 def remove_reset_code(reset_code):
-    if data_store.has_reset_code(reset_code.upper()):
-        store = data_store.get()
-        store['reset_code'].pop(reset_code.upper())
-        data_store.set(store)
+    store = data_store.get()
+    # remove a reset code
+    # set reset code point to -1 to prevent reset code used before expired
+    store['reset_code'][reset_code.upper()] = -1
+    store['reset_code'].pop(reset_code.upper())
+    data_store.set(store)
 
 
 '''
@@ -391,6 +393,10 @@ def auth_passwordreset_request_v1(email):
     for user in store['users']:
         if user.email == email:
             data_store.remove_token_by_id(user.id)
+            # remove the old reset code
+            code_list = [code for code in store['reset_code'] if store['reset_code'][code] == user.id]
+            for code in code_list:
+                remove_reset_code(code)
             # generate a random string
             reset_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=N))
             # save the string to data_store
