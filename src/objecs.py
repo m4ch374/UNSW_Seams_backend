@@ -242,6 +242,7 @@ class Channel:
         self.owners = owners if owners is not None else [owner]
         self.members = members if members is not None else [owner]
         self.is_public = is_public
+        self.standup = {'active': False, 'user_id': None, 'end': None, 'message': '',}
 
     '''
         Generates id for Channel
@@ -366,7 +367,9 @@ class Channel:
     '''
     def get_messages(self):
         msg_list = data_store.get()['messages']
-        return [msg for msg in msg_list if msg.chnl_id == self.id]
+        msg_list = [msg for msg in msg_list if msg.chnl_id == self.id]
+        msg_list.reverse()
+        return msg_list
 
     '''
         Removes all messages in the channel
@@ -401,6 +404,13 @@ class Channel:
             'all_members': [member.to_dict() for member in self.members],
         }
         return return_dict
+    
+    def clear_standup(self):
+        self.standup['active'] = False
+        self.standup['user_id'] = None
+        self.standup['end'] = None
+        self.standup['message'] = ''
+        data_store.set_store()
 
     @staticmethod
     def decode_json(jsn, owners, members):
@@ -438,7 +448,9 @@ class DmChannel(Channel):
     # get all messages from a channel OR dm
     def get_messages(self):
         msg_list = data_store.get()['messages']
-        return [msg for msg in msg_list if msg.chnl_id == self.id]
+        msg_list = [msg for msg in msg_list if msg.chnl_id == self.id]
+        msg_list.reverse()
+        return msg_list
 
     # NOTE: Members include the owner
     def channel_details_dict(self):

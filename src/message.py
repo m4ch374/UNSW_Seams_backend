@@ -33,10 +33,10 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         raise InputError(description='Invalid channel')
     channel = data_store.get_channel(channel_id)
     if channel.has_member_id(auth_user_id) == False:
-        raise AccessError('Invalid access to channel')
+        raise AccessError(description='Invalid access to channel')
     chnl_messages = channel.get_messages()
     if start > len(chnl_messages) or start < 0:
-        raise InputError('Invalid message start index')
+        raise InputError(description='Invalid message start index')
     
     # Splitting the stored messages list to paginate returned messages
     if start + 50 < len(chnl_messages):

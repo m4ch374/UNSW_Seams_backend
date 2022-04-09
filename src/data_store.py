@@ -215,11 +215,8 @@ class Datastore:
         data_store.set_store()
     
     def remove_msg(self, msg):
-        data = self.get()
-        for message in data['messages']:
-            if message == msg:
-                message == None
-        data_store.set(data)
+        self.__store['messages'].remove(msg)
+        data_store.set_store()
 
     '''
         replace every message associated with the user given with

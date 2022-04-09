@@ -13,6 +13,7 @@ from src import channel
 import src.channel as chnl
 import src.channels as chnls
 import src.message as msg
+import src.standup as stdup
 from src import dm
 from src import auth
 from src import admin
@@ -414,9 +415,36 @@ def admin_userpermission_change_v1():
                                                     permission_id)
     return dumps(response)
 
-# ==================================================
+# ================ /standup domain ===================
+@APP.route("/standup/start/v1", methods = ['POST'])
+def standup_start_v1():
+    data = request.get_json()
+    user_id = data_store.get_id_from_token(data['token'])
+    channel_id = data['channel_id']
+    length = data['length']
+    response = stdup.standup_start_v1(user_id, channel_id, length)
+    return dumps(response)
 
-# ================ /clear domain ===================
+@APP.route("/standup/active/v1", methods = ['GET'])
+def standup_active_v1():
+    user_id = data_store.get_id_from_token(request.args.get('token'))
+    channel_id = int(request.args.get('channel_id'))
+    response = stdup.standup_active_v1(user_id, channel_id)
+    return dumps(response)
+
+@APP.route("/standup/send/v1", methods = ['POST'])
+def standup_send_v1():
+    data = request.get_json()
+    user_id = data_store.get_id_from_token(data['token'])
+    channel_id = data['channel_id']
+    message = data['message']
+    response = stdup.standup_send_v1(user_id, channel_id, message)
+    return dumps(response)
+
+
+# ====================================================
+
+# ================ /clear domain =====================
 @APP.route("/clear/v1", methods=['DELETE'])
 def clear():
     clear_v1()
