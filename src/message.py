@@ -362,10 +362,9 @@ def message_unpin_v1(auth_user_id, msg_id):
     check whether the message is able to send
 """
 def send_msg_check(ch_id, u_id):
-    user = data_store.get_user(u_id)
-    if data_store.has_channel_id(ch_id) and data_store.get_channel(ch_id).has_member_id(user):
+    if data_store.has_channel_id(ch_id) and data_store.get_channel(ch_id).has_member_id(u_id):
         return True
-    if data_store.has_dm_id(ch_id) and data_store.get_dm(ch_id).has_member_id(user):
+    if data_store.has_dm_id(ch_id) and data_store.get_dm(ch_id).has_member_id(u_id):
         return True
     return False
 
