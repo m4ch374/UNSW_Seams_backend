@@ -60,10 +60,11 @@
 - email: cs1531ant@gmail.com
 - password: unsw1531ant
 
-## **1. Assumptions - `reset_code` in `data_store` **
+## **1. Assumptions - `reset_code`**
 
 - inside of <reset_code> is: {"A reset code" : id}
 - expiration is 60 seconds
+- when a user request multiple times, only the latest one is valid to use
 
 ## **2. Assumptions - `other.py`**
 

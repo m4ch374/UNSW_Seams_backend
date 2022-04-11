@@ -1,5 +1,5 @@
 import requests, time
-from tests.iteration3_tests.endpoints import ENDPOINT_REGISTER_USR, ENDPOINT_MESSAGE_SENDLATER, ENDPOINT_CREATE_CHNL
+from tests.iteration3_tests.endpoints import ENDPOINT_REGISTER_USR, ENDPOINT_MESSAGE_SENDLATER, ENDPOINT_CREATE_CHNL, ENDPOINT_CHNL_LEAVE
 from src.time import get_time
 
 
@@ -49,6 +49,18 @@ def test_valid_input():
     json = {'token': user['token'], 'channel_id':1, 'message':'123123', 'time_sent':int(get_time()) + 3}
     response = requests.post(ENDPOINT_MESSAGE_SENDLATER, json = json)
     time.sleep(3)
+    assert response.status_code == 200
+    response_data = response.json()
+    assert response_data == {'message_id': 1}
+
+def test_user_removed_from_ch():
+    user = requests.post(ENDPOINT_REGISTER_USR, json = {'email': 'z5555555@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'William', 'name_last': 'Wu'}).json()
+    requests.post(ENDPOINT_CREATE_CHNL, json = {'token':user['token'],'name':"123", 'is_public':False})
+    json = {'token': user['token'], 'channel_id':1, 'message':'123123', 'time_sent':int(get_time()) + 3}
+    response = requests.post(ENDPOINT_MESSAGE_SENDLATER, json = json)
+    time.sleep(1)
+    requests.post(ENDPOINT_CHNL_LEAVE, json = {'token':user['token'],'channel_id':1})
+    time.sleep(2)
     assert response.status_code == 200
     response_data = response.json()
     assert response_data == {'message_id': 1}
