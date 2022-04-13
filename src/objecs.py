@@ -174,7 +174,7 @@ class User:
         elif item == DM:
             self.dms += number
             self.dm_list.append({'num_dms_joined': self.dms, 'time_stamp': time})
-        elif item == MSG:
+        else:
             self.messages += number
             self.mg_list.append({'num_messages_sent': self.messages, 'time_stamp': time})
 
