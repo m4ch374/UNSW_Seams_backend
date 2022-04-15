@@ -667,20 +667,14 @@ class Notification:
             return self.dm_name
 
     def __generate_msg(self):
-        ######################################################
-        # notif = f"{self.notif_type}: \"{self.user_handle} "
         notif = f"{self.user_handle} "
-        ######################################################
         if self.notif_type == TAGGED:
-            notif += f"tagged you in {self.__get_chnl_name()}: {self.msg_content[:20]}\""
+            notif += f"tagged you in {self.__get_chnl_name()}: {self.msg_content[:20]}"
         elif self.notif_type == MSG_REACTED:
-            notif += f"reacted to your message in {self.__get_chnl_name()}\""
+            notif += f"reacted to your message in {self.__get_chnl_name()}"
         else:
             # for when self.notif_type == ADDED (condition removed for coverage)
-            notif += f"added you to {self.__get_chnl_name()}\""
-        #################
-        notif = notif[:-1]
-        #################
+            notif += f"added you to {self.__get_chnl_name()}"
         return notif
 
     def serialize(self):
