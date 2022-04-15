@@ -17,6 +17,7 @@ import src.standup as stdup
 from src import dm
 from src import auth
 from src import admin
+from src import notif
 from src.other import clear_v1
 from src.data_store import data_store
 from flask import send_from_directory
@@ -54,10 +55,12 @@ def echo():
         'data': data
     })
 
-# remove annoying error in the frontend
+# ========== /notifications domain =============
 @APP.route("/notifications/get/v1", methods=['GET'])
 def notifications_get():
-    return dumps({'notifications': []})
+    token = request.args.get('token')
+    auth_user_id = data_store.get_id_from_token(token)
+    return dumps(notif.notifications_get_v1(auth_user_id))
 
 # =============== /img domain ==================
 @APP.route("/static/<path:path>")

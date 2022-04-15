@@ -304,13 +304,21 @@ class Channel:
 
         Adds a user to the current channel
     '''
-    def add_member(self, usr, adder):
-        if not usr == adder:
+    def add_member(self, usr, adder, dm_name=None):
+        if not usr == adder and dm_name is None:
             Notification.push_notif(
                 u_id=usr.id,
                 notif_type=ADDED,
                 user_handle=adder.handle,
                 channel_id=self.id,
+            )
+        elif not usr == adder and dm_name is not None:
+            Notification.push_notif(
+                u_id=usr.id,
+                notif_type=ADDED,
+                user_handle=adder.handle,
+                channel_id=self.id,
+                dm_name=dm_name,
             )
         self.members.append(usr)
         data_store.set_store()
@@ -429,11 +437,15 @@ class DmChannel(Channel):
 
         # Initiate class
         super().__init__('', owner, False, id, owners, members)
-
         # add members in channel
         usr_list = [data_store.get_user(u_id) for u_id in u_ids]
+        handle_list = [curr_user.handle for curr_user in usr_list]
+        if owner is not None:
+            handle_list.insert(0, owner.handle)
+        
+        dm_name = ', '.join(sorted(handle_list))
         for usr in usr_list:
-            self.add_member(usr, owner)
+            self.add_member(usr, owner, dm_name)
 
         # Set name
         self.name = ', '.join(sorted([mem.handle for mem in self.members]))
@@ -531,10 +543,12 @@ class Message:
             return
 
         mem_list = origin_chnl.members
+        
         handle_to_usr = lambda x: next((usr for usr in mem_list if usr.handle == x), None)
 
         for tag in tags:
             usr = handle_to_usr(tag[1:])
+
             if usr is not None and usr.id not in self.tagged_id:
                 Notification.push_notif(
                     u_id=usr.id,
@@ -633,22 +647,34 @@ class Notification:
         self.channel_id = kwargs.get('channel_id', -1)
         self.dm_id = kwargs.get('dm_id', -1)
         self.msg_content = kwargs.get('msg_content', '')
+
+        dm_name = kwargs.get('dm_name')
+        if dm_name is not None:
+            self.dm_name = dm_name
+
         self.msg = self.__generate_msg()
+        
+        
 
     def __get_chnl_name(self):
         if self.channel_id != -1:
             return data_store.get_channel(self.channel_id).name
-        else:
+        #####
+        elif data_store.get_dm(self.dm_id) is not None:
             return data_store.get_dm(self.dm_id).name
+        #####
+        else:
+            return self.dm_name
 
     def __generate_msg(self):
-        notif = f"{self.notif_type}: \"{self.user_handle} "
+        notif = f"{self.user_handle} "
         if self.notif_type == TAGGED:
-            notif += f"tagged you in {self.__get_chnl_name()}: {self.msg_content[:20]}\""
+            notif += f"tagged you in {self.__get_chnl_name()}: {self.msg_content[:20]}"
         elif self.notif_type == MSG_REACTED:
-            notif += f"reacted to your message in {self.__get_chnl_name}\""
-        elif self.notif_type == ADDED:
-            notif += f"added you to {self.__get_chnl_name}\""
+            notif += f"reacted to your message in {self.__get_chnl_name()}"
+        else:
+            # for when self.notif_type == ADDED (condition removed for coverage)
+            notif += f"added you to {self.__get_chnl_name()}"
         return notif
 
     def serialize(self):
@@ -666,7 +692,8 @@ class Notification:
 
     # Wanted to use **kwargs as arguments but pylint said no
     @staticmethod
-    def push_notif(u_id, notif_type, user_handle, channel_id, msg_content=''):
+    def push_notif(u_id, notif_type, user_handle, channel_id, 
+                   msg_content='', dm_name=None):
         usr = data_store.get_user(u_id)
 
         # Should have a one line solution but i couldnt think of any
@@ -683,7 +710,20 @@ class Notification:
             'dm_id': dm_id,
             'msg_content': msg_content,
         }
+        if dm_name is not None:
+            kwargs['dm_name'] = dm_name
 
         new_notif = Notification(**kwargs)
         usr.notifications.insert(0, new_notif)
         data_store.set_store()
+
+    def to_dict(self):
+        return {
+            'notif_type': self.notif_type,
+            'user_handle': self.user_handle,
+            'channel_id': self.channel_id,
+            'dm_id': self.dm_id,
+            'msg_content': self.msg_content,
+            'msg': self.msg
+        }
+
