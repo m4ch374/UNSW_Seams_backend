@@ -44,7 +44,7 @@ def edit_msg_json(token, msg_id, message):
     }
 
 
-# helper function that repeatedly sends messages from a given list tagging 
+# helper function that repeatedly sends messages from a given list tagging
 # a given handle
 def send_repeated_messages(message_list, handle_to_tag, sender_tok, chnl_id):
     for message in message_list:
@@ -53,4 +53,4 @@ def send_repeated_messages(message_list, handle_to_tag, sender_tok, chnl_id):
         'channel_id': chnl_id,
         'message': f"@{handle_to_tag} {message}",
         }
-        requests.post(ENDPOINT_MESSAGE_SEND, json=data).json()['message_id']
+        requests.post(ENDPOINT_MESSAGE_SEND, json=data)

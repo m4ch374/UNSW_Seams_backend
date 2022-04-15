@@ -15,14 +15,12 @@ from src.error import AccessError
 
 from tests.iteration3_tests.endpoints import (
     ENDPOINT_NOTIF_GET, ENDPOINT_CHNL_INVITE, ENDPOINT_DM_DETAILS,
-    ENDPOINT_MESSAGE_SEND, ENDPOINT_MESSAGE_REACT, ENDPOINT_CHANNEL_MESSAGE,
-    ENDPOINT_DM_SEND, ENDPOINT_DM_CREATE, ENDPOINT_CHNL_LEAVE, 
-    ENDPOINT_MESSAGE_EDIT,
+    ENDPOINT_MESSAGE_SEND, ENDPOINT_MESSAGE_REACT, ENDPOINT_MESSAGE_EDIT,
+    ENDPOINT_DM_SEND, ENDPOINT_CHNL_LEAVE,
 )
 from tests.iteration3_tests.notif_tests.helper import (
     create_chnl_invite_input_json, generate_dm_json, send_repeated_messages,
-    send_dm_json, generate_dm_input_json, create_chnl_join_input_json,
-    edit_msg_json,
+    send_dm_json, create_chnl_join_input_json, edit_msg_json,
 )
 from tests.iteration3_tests.notif_tests.definitions import (
     REACT_ID, INVALID_TOK, ALPHABET_LIST,
@@ -70,10 +68,7 @@ def test_single_notif_in_channel(user_1_made_channel, get_usr_2):
 # return a single notification for a user who has been added to a DM
 def test_single_notif_in_dm(user_1_made_dm_with_global_owner):
     dm_id1 = user_1_made_dm_with_global_owner['dm']
-    creator_tok = user_1_made_dm_with_global_owner['creator_token']
     member_tok = user_1_made_dm_with_global_owner['member_token']
-    creator_id = user_1_made_dm_with_global_owner['creator_id']
-    member_id = user_1_made_dm_with_global_owner['member_id']
 
     # get notifications for dm member
     response = requests.get(generate_notif_url(member_tok))
@@ -177,7 +172,7 @@ def test_notif_for_tagged_in_chnl(user_1_made_channel, get_usr_2):
         'channel_id': chnl_id,
         'message': "@obamaprism hello hello :D",
     }
-    msg_id = requests.post(ENDPOINT_MESSAGE_SEND, json=data).json()['message_id']
+    requests.post(ENDPOINT_MESSAGE_SEND, json=data)
 
     # assert that the most recent notification is because of the react
     response = requests.get(generate_notif_url(user2_token))
@@ -200,7 +195,7 @@ def test_notif_for_dm_tagged(user_1_made_dm_with_global_owner):
     member_tok = user_1_made_dm_with_global_owner['member_token']
 
     data = send_dm_json(creator_tok, dm_id1, '@obamaprism hi how are you')
-    msg_id = requests.post(ENDPOINT_DM_SEND, json=data).json()['message_id']
+    requests.post(ENDPOINT_DM_SEND, json=data)
 
     # get the name of the dm and set up expected output
     data = generate_dm_json(member_tok, dm_id1)
@@ -230,10 +225,10 @@ def test_notif_for_many_tagged_in_chnl(user_1_made_channel, get_usr_2):
     user2_token = get_usr_2['token']
     json_input = create_chnl_invite_input_json(user1_token, chnl_id, user2_id)
     response = requests.post(ENDPOINT_CHNL_INVITE, json = json_input)
-    
-    # send a tonne of messages to dm tagging obamaprism 
+
+    # send a tonne of messages to dm tagging obamaprism
     send_repeated_messages(ALPHABET_LIST, 'obamaprism', user1_token, chnl_id)
-    
+
     response = requests.get(generate_notif_url(user2_token))
     notif_list = (response.json())['notifications']
     assert len(notif_list) == 20
@@ -254,7 +249,7 @@ def test_notif_for_many_tagged_in_chnl(user_1_made_channel, get_usr_2):
     }
     assert notif_list[19] == expected_output2
 
-# return no notifications for a user who has been tagged in a chnl (since the 
+# return no notifications for a user who has been tagged in a chnl (since the
 # tagged person has laready been removed from the channel)
 def test_notif_tagged_left_member_in_chnl(user_1_made_channel, get_usr_2):
     # create a chnl with two members
@@ -264,18 +259,18 @@ def test_notif_tagged_left_member_in_chnl(user_1_made_channel, get_usr_2):
     user2_token = get_usr_2['token']
     json_input = create_chnl_invite_input_json(user1_token, chnl_id, user2_id)
     response = requests.post(ENDPOINT_CHNL_INVITE, json = json_input)
-    
+
     # remove the user from the channel
     json_input = create_chnl_join_input_json(user2_token, chnl_id)
     response = requests.post(ENDPOINT_CHNL_LEAVE, json = json_input)
-    
+
     # send a message via user 1 tagging user2
     data = {
         'token': user1_token,
         'channel_id': chnl_id,
         'message': "@obamaprism hello hello :D",
     }
-    msg_id = requests.post(ENDPOINT_MESSAGE_SEND, json=data).json()['message_id']
+    requests.post(ENDPOINT_MESSAGE_SEND, json=data)
 
     # assert that there is not notification from the tagging
     response = requests.get(generate_notif_url(user2_token))
@@ -288,7 +283,7 @@ def test_notif_tagged_left_member_in_chnl(user_1_made_channel, get_usr_2):
     notif_list = (response.json())['notifications']
     assert notif_list[0] != expected_output
 
-# return a notification when a message that previously didn't have a tag is 
+# return a notification when a message that previously didn't have a tag is
 # edited to have a tag
 def test_notif_tag_when_message_edited(user_1_made_channel, get_usr_2):
     # create a chnl with two members
@@ -298,7 +293,7 @@ def test_notif_tag_when_message_edited(user_1_made_channel, get_usr_2):
     user2_token = get_usr_2['token']
     json_input = create_chnl_invite_input_json(user1_token, chnl_id, user2_id)
     response = requests.post(ENDPOINT_CHNL_INVITE, json = json_input)
-    
+
     # send a message via user 1 that DOES NOT tag user2
     data = {
         'token': user1_token,
@@ -306,12 +301,12 @@ def test_notif_tag_when_message_edited(user_1_made_channel, get_usr_2):
         'message': "there is no tag in this message :D",
     }
     msg_id = requests.post(ENDPOINT_MESSAGE_SEND, json=data).json()['message_id']
-    
+
     # edit the message so that now it does tag the user
     new_msg = "@obamaprism this is now an edited message"
-    response = requests.put(ENDPOINT_MESSAGE_EDIT, 
+    response = requests.put(ENDPOINT_MESSAGE_EDIT,
                             json=edit_msg_json(user1_token, msg_id, new_msg))
-    
+
     response = requests.get(generate_notif_url(user2_token))
     expected_output = {
         'channel_id': chnl_id,
