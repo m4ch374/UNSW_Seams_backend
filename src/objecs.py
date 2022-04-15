@@ -198,7 +198,7 @@ class User:
             name_first=jsn['name_first'], 
             name_last=jsn['name_last'], 
             is_load=True, 
-            kwargs=jsn['kwargs']
+            **jsn['kwargs']
         )
 
 '''
@@ -637,7 +637,7 @@ class Message:
             u_id=jsn['u_id'],
             message=jsn['message'], 
             chnl_id=jsn['chnl_id'], 
-            kwargs=jsn['kwargs']
+            **jsn['kwargs']
         )
 
 class Notification:
