@@ -652,7 +652,7 @@ class Notification:
         if dm_name is not None:
             self.dm_name = dm_name
 
-        self.msg = self.__generate_msg()
+        self.msg = self.__generate_msg(kwargs.get('msg', None))
         
         
 
@@ -666,7 +666,10 @@ class Notification:
         else:
             return self.dm_name
 
-    def __generate_msg(self):
+    def __generate_msg(self, msg=None):
+        if msg is not None:
+            return msg
+
         notif = f"{self.user_handle} "
         if self.notif_type == TAGGED:
             notif += f"tagged you in {self.__get_chnl_name()}: {self.msg_content[:20]}"
@@ -684,10 +687,12 @@ class Notification:
             'channel_id': self.channel_id,
             'dm_id': self.dm_id,
             'msg_content': self.msg_content,
+            'msg': self.msg
         }
 
     @staticmethod
     def decode_json(jsn):
+        print(jsn['msg'])
         return Notification(**jsn)
 
     # Wanted to use **kwargs as arguments but pylint said no
