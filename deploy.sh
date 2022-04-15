@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-WORKING_DIRECTORY="~/www/cs1531deploy"
+WORKING_DIRECTORY="~/www/cs1531_deploy"
 
-USERNAME="TODO-TODO-TODO"
-SSH_HOST="TODO-TODO-TODO"
+USERNAME="magicant"
+SSH_HOST="ssh-magicant.alwaysdata.net"
 
 rm -rf ./**/__pycache__ ./**/.pytest_cache > /dev/null
 scp -r ./requirements.txt ./src "$USERNAME@$SSH_HOST:$WORKING_DIRECTORY"
