@@ -164,7 +164,10 @@ def channel_leave_v1(auth_user_id, channel_id):
         raise InputError(description="Channel does not exist")
     if not user_in_channel(auth_user_id, channel_id):
         raise AccessError(description="User is not a member of the channel")
-    
+    channel = data_store.get_channel(channel_id)
+    if channel.standup['active'] and channel.standup['user_id'] == auth_user_id:
+        raise InputError(description='User is is owner of active stratup')
+
     chnl = data_store.get_channel(channel_id)
     user = data_store.get_user(auth_user_id)
     chnl.remove_member(user)

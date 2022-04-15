@@ -2,16 +2,6 @@ from src.data_store import data_store
 from src.objecs import Notification
 from src.config import TAGGED, MSG_REACTED, ADDED
 
-# helper functions
-'''
-function that is given a notif_dict, and returns the name of the chnl/dm which 
-the dm took place in
-'''
-def get_chnldm_name_from_notif_dict(notif_dict):
-    if notif_dict['channel_id'] != -1:
-        return (data_store.get_channel(notif_dict['channel_id'])).name
-    else:
-        return (data_store.get_dm(notif_dict['dm_id'])).name
 '''
 Function that is given a notification object, and returns the dict of format:
 { channel_id, dm_id, notification_message } where channel_id and DM id are the
