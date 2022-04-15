@@ -31,17 +31,19 @@ def dict_from_notif_obj(notif):
         'notification_message': notif_dict['msg']
     }
 '''
-List of dictionaries, where each dictionary contains types { channel_id, dm_id, notification_message } where channel_id is the id of the channel that the event happened in, and is -1 if it is being sent to a DM. dm_id is the DM that the event happened in, and is -1 if it is being sent to a channel. Notification_message is a string of the following format for each trigger action:
-      
-        tagged: "{User??s handle} tagged you in {channel/DM name}: {first 20 characters of the message}"
-        reacted message: "{User??s handle} reacted to your message in {channel/DM name}"
-        added to a channel/DM: "{User??s handle} added you to {channel/DM name}"
+Return List of dictionaries, where each dictionary contains types {channel_id, 
+dm_id, notification_message} where channel_id is the id of the channel that the
+event happened in, and is -1 if it is being sent to a DM. dm_id is the DM that
+the event happened in, and is -1 if it is being sent to a channel. 
+Notification_message is a string of the following format for each trigger action:
+    - tagged: "{User??s handle} tagged you in {channel/DM name}: {first 20 
+               characters of the message}"
+    - reacted message: "{User??s handle} reacted to your message in 
+      {channel/DM name}"
+    - added to a channel/DM: "{User??s handle} added you to {channel/DM name}"
 '''
 def notifications_get_v1(auth_user_id):
     auth_user = data_store.get_user(auth_user_id)
-    curr_notifs = auth_user.notifications
-
     notiffs = [dict_from_notif_obj(notif) for notif in auth_user.notifications]
     notiffs = notiffs[:20]
-
     return {'notifications': notiffs}
