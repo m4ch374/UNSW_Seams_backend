@@ -659,10 +659,8 @@ class Notification:
     def __get_chnl_name(self):
         if self.channel_id != -1:
             return data_store.get_channel(self.channel_id).name
-        #####
         elif data_store.get_dm(self.dm_id) is not None:
             return data_store.get_dm(self.dm_id).name
-        #####
         else:
             return self.dm_name
 
