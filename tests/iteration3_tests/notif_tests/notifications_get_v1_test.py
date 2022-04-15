@@ -16,7 +16,8 @@ from src.error import AccessError
 from tests.iteration3_tests.endpoints import (
     ENDPOINT_NOTIF_GET, ENDPOINT_CHNL_INVITE, ENDPOINT_DM_DETAILS,
     ENDPOINT_MESSAGE_SEND, ENDPOINT_MESSAGE_REACT, ENDPOINT_MESSAGE_EDIT,
-    ENDPOINT_DM_SEND, ENDPOINT_CHNL_LEAVE,
+    ENDPOINT_DM_SEND, ENDPOINT_CHNL_LEAVE, ENDPOINT_CREATE_CHNL,
+    ENDPOINT_REGISTER_USR
 )
 from tests.iteration3_tests.notif_tests.helper import (
     create_chnl_invite_input_json, generate_dm_json, send_repeated_messages,
@@ -316,3 +317,19 @@ def test_notif_tag_when_message_edited(user_1_made_channel, get_usr_2):
     }
     notif_list = (response.json())['notifications']
     assert notif_list[0] == expected_output
+
+def test_leave_before_react():
+    a = requests.post(ENDPOINT_REGISTER_USR, json = {'email': 'z1@ed.unsw.edu.au', 'password': '1234567', 'name_first': '11', 'name_last': '11'}).json()
+    b = requests.post(ENDPOINT_REGISTER_USR, json = {'email': 'z2@ed.unsw.edu.au', 'password': '1234567', 'name_first': '22', 'name_last': '22'}).json()
+
+    requests.post(ENDPOINT_CREATE_CHNL, json = {'token':a['token'],'name':"123", 'is_public':False})
+    requests.post(ENDPOINT_CHNL_INVITE, json = {'token':a['token'],'channel_id':1, 'u_id':2})
+
+    requests.post(ENDPOINT_MESSAGE_SEND, json = {'token':b['token'],'channel_id':1, 'message':'qqq'})
+    requests.post(ENDPOINT_CHNL_LEAVE, json = {'token':b['token'],'channel_id':1})
+    data = {
+        'token': a['token'],
+        'message_id': 1,
+        'react_id': REACT_ID,
+    }
+    requests.post(ENDPOINT_MESSAGE_REACT, json=data)

@@ -8,6 +8,8 @@ def clear_v1():
         if os.path.exists(f):
             os.remove(f)
 
+    data_store.get_store()
+
     clearted_data = {
         'users' : [],
         'channel' : [],
@@ -30,4 +32,3 @@ def clear_v1():
         },
     }
     data_store.set(clearted_data)
-

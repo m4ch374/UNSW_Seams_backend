@@ -539,8 +539,8 @@ class Message:
 
         origin_chnl = self.get_origin_channel()
 
-        if origin_chnl is None:
-            return
+        # if origin_chnl is None:
+        #     return
 
         mem_list = origin_chnl.members
         
