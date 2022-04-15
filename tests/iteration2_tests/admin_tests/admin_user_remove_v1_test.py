@@ -19,7 +19,7 @@ from tests.iteration2_tests.endpoints import (
     ENDPOINT_ADMIN_REMOVE, ENDPOINT_JOIN_CHNL, ENDPOINT_LIST_CHNL,
     ENDPOINT_CREATE_CHNL, ENDPOINT_DM_CREATE, ENDPOINT_USER_PROF,
     ENDPOINT_DM_DETAILS, ENDPOINT_USERS_ALL, ENDPOINT_MESSAGE_SEND,
-    ENDPOINT_LOGOUT, ENDPOINT_REGISTER_USR
+    ENDPOINT_LOGOUT, ENDPOINT_REGISTER_USR, ENDPOINT_CHNL_INVITE
 )
 from tests.iteration2_tests.admin_tests.definitions import (
     INVALID_TOKEN, INVALID_U_ID,
@@ -183,3 +183,20 @@ def test_removed_user_cant_logout(get_usr_1, get_usr_2):
     response = requests.post(ENDPOINT_LOGOUT, json = {'token': get_usr_2['token']})
     assert response.status_code == 403
 
+def test_valid_input():
+    a = requests.post(ENDPOINT_REGISTER_USR, json = {'email': 'z1@ed.unsw.edu.au', 'password': '1234567', 'name_first': '11', 'name_last': '11'}).json()
+    requests.post(ENDPOINT_REGISTER_USR, json = {'email': 'z2@ed.unsw.edu.au', 'password': '1234567', 'name_first': '22', 'name_last': '22'}).json()
+    c = requests.post(ENDPOINT_REGISTER_USR, json = {'email': 'z3@ed.unsw.edu.au', 'password': '1234567', 'name_first': '33', 'name_last': '33'}).json()
+    d = requests.post(ENDPOINT_REGISTER_USR, json = {'email': 'z4@ed.unsw.edu.au', 'password': '1234567', 'name_first': '44', 'name_last': '44'}).json()
+
+    requests.post(ENDPOINT_CREATE_CHNL, json = {'token':c['token'],'name':"123", 'is_public':False})
+    requests.post(ENDPOINT_CHNL_INVITE, json = {'token':c['token'],'channel_id':1, 'u_id':4})
+    requests.post(ENDPOINT_CREATE_CHNL, json = {'token':d['token'],'name':"123", 'is_public':False})
+    requests.post(ENDPOINT_CHNL_INVITE, json = {'token':d['token'],'channel_id':1, 'u_id':1})
+    requests.post(ENDPOINT_CHNL_INVITE, json = {'token':d['token'],'channel_id':1, 'u_id':2})
+    requests.post(ENDPOINT_CHNL_INVITE, json = {'token':d['token'],'channel_id':1, 'u_id':3})
+
+    json_input = create_admin_remove_user_input_json(a['token'], 2)
+    requests.delete(ENDPOINT_ADMIN_REMOVE, json = json_input)
+    json_input = create_admin_remove_user_input_json(a['token'], 4)
+    requests.delete(ENDPOINT_ADMIN_REMOVE, json = json_input)

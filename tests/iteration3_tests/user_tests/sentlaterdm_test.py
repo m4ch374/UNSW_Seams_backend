@@ -46,9 +46,9 @@ def test_past_time():
 def test_valid_input():
     user = requests.post(ENDPOINT_REGISTER_USR, json = {'email': 'z5555555@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'William', 'name_last': 'Wu'}).json()
     requests.post(ENDPOINT_DM_CREATE, json = {'token':user['token'],'u_ids':[]})
-    json = {'token': user['token'], 'dm_id':1, 'message':'123123', 'time_sent':int(get_time()) + 1}
+    json = {'token': user['token'], 'dm_id':1, 'message':'123123', 'time_sent':int(get_time()) + 2}
     response = requests.post(ENDPOINT_MESSAGE_SENDLATERDM, json = json)
-    time.sleep(1)
+    time.sleep(2)
     assert response.status_code == 200
     response_data = response.json()
     assert response_data == {'message_id': 1}
