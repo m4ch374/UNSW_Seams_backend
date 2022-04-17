@@ -72,8 +72,13 @@
 
 - 'a_test.py' will change data_store to init state after tests
 
-## **2. Assumptions - `Images`**
+## **3. Assumptions - `Images`**
 
 - all imgs in src/static/
 
 - There should be no need to manually clean up, because it will be automatically overwritten when a new user with the same id uploads an image
+
+## **4. Assumptions - `Standup messages`**
+- Empty messages sent during a standup will not be added to the standup buffer
+
+- If no messages have been sent to a standup by the end of the standup no message will be generated.
