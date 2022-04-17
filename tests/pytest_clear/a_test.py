@@ -10,4 +10,3 @@ ENDPOINT_CLEAR = url + '/clear/v1'
 def test_clear():
     requests.delete(ENDPOINT_CLEAR)
     pass
-

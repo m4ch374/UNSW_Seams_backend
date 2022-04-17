@@ -48,3 +48,19 @@ def user_1_made_channel():
                                                       'is_public':True}).json()
 
     return {'channel': chnl['channel_id'], 'token':user['token']}
+
+@pytest.fixture
+def user_1_made_dm_with_global_owner():
+    dm_member = requests.post(ENDPOINT_REGISTER_USR, json=REGISTER_DETAILS_2).json()
+    dm_creator = requests.post(ENDPOINT_REGISTER_USR, json=REGISTER_DETAILS_1).json()
+
+    dm = requests.post(ENDPOINT_DM_CREATE, json ={'token':dm_creator['token'],
+                                                  'u_ids':[dm_member['auth_user_id'],]}).json()
+    return {
+        'dm': dm['dm_id'], 
+        'creator_token':dm_creator['token'],
+        'member_token':dm_member['token'],
+        'creator_id':dm_creator['auth_user_id'],
+        'member_id':dm_member['auth_user_id'],
+    }
+

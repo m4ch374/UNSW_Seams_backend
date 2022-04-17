@@ -19,6 +19,7 @@ def test_valid_email():
     requests.post(ENDPOINT_REGISTER_USR, json = {'email': 'z4@ed.unsw.edu.au', 'password': '1234567', 'name_first': '44', 'name_last': '44'})
     requests.post(ENDPOINT_REGISTER_USR, json = {'email': 'z8888888@ed.unsw.edu.au', 'password': '1234567', 'name_first': 'Russell', 'name_last': 'Wang'})
     response = requests.post(ENDPOINT_PWORD_REQUEST, json = {'email': 'z8888888@ed.unsw.edu.au'})
+    response = requests.post(ENDPOINT_PWORD_REQUEST, json = {'email': 'z8888888@ed.unsw.edu.au'})
     assert response.status_code == 200
     response_data = response.json()
     assert response_data == {}
