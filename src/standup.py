@@ -1,3 +1,8 @@
+"""
+This file contains function for the domain
+/standup
+"""
+
 import datetime as dt
 from src.config import MSG, INCREMENT
 from src.data_store import data_store
@@ -6,12 +11,12 @@ from src.error import InputError, AccessError
 import threading
 import time
 
-
+# Helper function which keeps sleeps for the length of a standup then sends 
+# standup message at the end of the wait time and ends standup.
 def standup_thread_helper(user_id, channel_id, length):
     time.sleep(length)
     channel = data_store.get_channel(channel_id)
     
-    # Create and send standup message (no 1000 character limit)
     if channel.standup['message'] != '':
         new_message = Message(
             u_id=user_id,
@@ -24,9 +29,22 @@ def standup_thread_helper(user_id, channel_id, length):
 
         data_store.update_stats(MSG, INCREMENT)
 
-    # reset channel standup
     channel.clear_standup()
 
+'''
+Arguments:
+      user_id (int) - id of user who is starting the standup
+      channel_id (int) - id of channel standup will be started in
+      length (int) - Time of standup in seconds
+
+Exceptions:
+      Access Error - Occurs when auth_user_id is invalid
+      Input Error - When the channel id is invalid, when length is less than 1 or when stnadup
+                     is already active in the channel
+
+Return value:
+        { end } - Timestamp of when the standup is to end
+'''
 def standup_start_v1(user_id, channel_id, length):
     if not data_store.has_channel_id(channel_id):
         raise InputError(description='Invalid channel')
@@ -46,7 +64,20 @@ def standup_start_v1(user_id, channel_id, length):
     standup.start()
 
     return channel.standup['end']
-    
+
+'''
+Arguments:
+      user_id (int) - id of user who is starting the standup
+      channel_id (int) - id of channel standup will be started in
+
+Exceptions:
+      Access Error - Occurs when auth_user_id is invalid
+      Input Error - When the channel id is invalid
+
+Return value:
+        { is_active, time_finish } - If standup is active in channel and timestamp of when it will end
+'''
+
 def standup_active_v1(user_id, channel_id):
     if not data_store.has_channel_id(channel_id):
         raise InputError(description='Invalid channel')
@@ -69,6 +100,9 @@ def standup_send_v1(user_id, channel_id, message):
     if len(message) > 1000 or len(message) == 0:
         raise InputError(description='Message must be between 1 and 1000 characters')
 
-    channel.standup['message'] += f'{data_store.get_user(user_id).handle}: {message}\n'
+    if channel.standup['message'] != '':
+        channel.standup['message'] += '\n'
+
+    channel.standup['message'] += f'{data_store.get_user(user_id).handle}: {message}'
 
     return {}
