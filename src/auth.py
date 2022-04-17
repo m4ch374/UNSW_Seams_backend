@@ -12,7 +12,7 @@ from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.objecs import User
 from src.encrypt import hashing_password
-from src.config import SERVER_EMAIL, SERVER_PASSWORD, N, EXPIRATION, url
+from src.config import SERVER_EMAIL, SERVER_PASSWORD, N, EXPIRATION, port
 
 
 '''
@@ -476,7 +476,7 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
     store = data_store.get()
     for user in store['users']:
         if user.id == u_id:
-            url = f'{url}static/{u_id}.jpg'
+            url = f'http://localhost:{port}/static/{u_id}.jpg'
             user.img = url
     data_store.set(store)
     return {}
