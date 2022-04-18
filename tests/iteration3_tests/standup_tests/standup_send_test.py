@@ -28,7 +28,7 @@ def test_standup_send_simple(user_1_made_channel):
     channel_id = user_1_made_channel['channel']
     token = user_1_made_channel['token']
 
-    requests.post(ENDPOINT_STANDUP_START, json=json_helper_start(token, channel_id, 0.5))
+    requests.post(ENDPOINT_STANDUP_START, json=json_helper_start(token, channel_id, 0.3))
     response = requests.post(ENDPOINT_STANDUP_SEND, json=json_helper_send(token, channel_id, 'a'))
     assert response.status_code == OK
     time.sleep(0.5)
