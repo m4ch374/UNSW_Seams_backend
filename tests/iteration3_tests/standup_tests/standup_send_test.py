@@ -28,10 +28,10 @@ def test_standup_send_simple(user_1_made_channel):
     channel_id = user_1_made_channel['channel']
     token = user_1_made_channel['token']
 
-    requests.post(ENDPOINT_STANDUP_START, json=json_helper_start(token, channel_id, 0.1))
+    requests.post(ENDPOINT_STANDUP_START, json=json_helper_start(token, channel_id, 0.5))
     response = requests.post(ENDPOINT_STANDUP_SEND, json=json_helper_send(token, channel_id, 'a'))
     assert response.status_code == OK
-    time.sleep(0.1)
+    time.sleep(0.5)
     response = requests.get(generate_get_channel_message_url(token, channel_id, 0))
     assert response.status_code == OK
     assert len(response.json()['messages']) == 1
@@ -40,11 +40,11 @@ def test_standup_send_simple_second(user_1_made_channel):
     channel_id = user_1_made_channel['channel']
     token = user_1_made_channel['token']
 
-    requests.post(ENDPOINT_STANDUP_START, json=json_helper_start(token, channel_id, 0.1))
+    requests.post(ENDPOINT_STANDUP_START, json=json_helper_start(token, channel_id, 0.5))
     requests.post(ENDPOINT_STANDUP_SEND, json=json_helper_send(token, channel_id, 'a'))
     response = requests.post(ENDPOINT_STANDUP_SEND, json=json_helper_send(token, channel_id, 'b'))
     assert response.status_code == OK
-    time.sleep(0.1)
+    time.sleep(0.5)
     response = requests.get(generate_get_channel_message_url(token, channel_id, 0))
     assert response.status_code == OK
     assert len(response.json()['messages']) == 1
@@ -53,8 +53,8 @@ def test_standup_send_simple_elapses(user_1_made_channel):
     channel_id = user_1_made_channel['channel']
     token = user_1_made_channel['token']
 
-    requests.post(ENDPOINT_STANDUP_START, json=json_helper_start(token, channel_id, 0.1))
-    time.sleep(0.1)
+    requests.post(ENDPOINT_STANDUP_START, json=json_helper_start(token, channel_id, 0.5))
+    time.sleep(0.5)
     response = requests.get(generate_get_channel_message_url(token, channel_id, 0))
     assert response.status_code == OK
     assert len(response.json()['messages']) == 0
